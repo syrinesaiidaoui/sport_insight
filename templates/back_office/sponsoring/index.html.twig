@@ -1,0 +1,100 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Admin - Sponsoring{% endblock %}
+{% block page_title %}Sponsoring{% endblock %}
+
+{% block header_actions %}
+    <button class="btn btn-primary btn-sm">
+        <i class="lucide-plus" style="font-size:14px"></i> Nouveau sponsor
+    </button>
+{% endblock %}
+
+{% block body %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Sponsors actifs</div>
+                <div class="stat-card-value">6</div>
+                <div class="stat-card-sub">2 en negociation</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Revenu annuel</div>
+                <div class="stat-card-value">320K DT</div>
+                <div class="stat-card-sub">+25% vs an dernier</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Contrats actifs</div>
+                <div class="stat-card-value">8</div>
+                <div class="stat-card-sub">2 expirent bientot</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Valeur moyenne</div>
+                <div class="stat-card-value">40K DT</div>
+                <div class="stat-card-sub">Par contrat</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-table">
+        <div class="data-table-header">
+            <h3>Liste des sponsors</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sponsor</th>
+                    <th>Type</th>
+                    <th>Montant</th>
+                    <th>Debut</th>
+                    <th>Fin</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Tunisie Telecom</strong></td>
+                    <td>Maillot principal</td>
+                    <td>120 000 DT/an</td>
+                    <td>01/07/2025</td>
+                    <td>30/06/2027</td>
+                    <td><span class="badge-success">Actif</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>BIAT</strong></td>
+                    <td>Stade</td>
+                    <td>80 000 DT/an</td>
+                    <td>01/01/2025</td>
+                    <td>31/12/2026</td>
+                    <td><span class="badge-success">Actif</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Coca-Cola</strong></td>
+                    <td>Boissons officiel</td>
+                    <td>45 000 DT/an</td>
+                    <td>01/09/2025</td>
+                    <td>31/08/2026</td>
+                    <td><span class="badge-warning">Expire bientot</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel Utilisateur{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">
+          <i class="bi bi-person-plus"></i> Nouvel Utilisateur
+        </h3>
+      </div>
+      <div class="card-body">
+        {{ include('user/_form.html.twig') }}
+      </div>
+    </div>
+    <a href="{{ path('app_user_index') }}" class="btn btn-secondary mt-3">
+      <i class="bi bi-arrow-left"></i> Retour a la liste
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Admin - Equipement{% endblock %}
+{% block page_title %}Equipement{% endblock %}
+
+{% block header_actions %}
+    <button class="btn btn-primary btn-sm">
+        <i class="lucide-plus" style="font-size:14px"></i> Ajouter equipement
+    </button>
+{% endblock %}
+
+{% block body %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Articles total</div>
+                <div class="stat-card-value">156</div>
+                <div class="stat-card-sub">12 categories</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">En stock</div>
+                <div class="stat-card-value">142</div>
+                <div class="stat-card-sub">91% disponible</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Stock bas</div>
+                <div class="stat-card-value">8</div>
+                <div class="stat-card-sub" style="color:#dc2626">A commander</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Valeur inventaire</div>
+                <div class="stat-card-value">45K DT</div>
+                <div class="stat-card-sub">Estimation totale</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-table">
+        <div class="data-table-header">
+            <h3>Inventaire equipement</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Article</th>
+                    <th>Categorie</th>
+                    <th>Quantite</th>
+                    <th>Etat</th>
+                    <th>Derniere MAJ</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Maillots domicile 2025/26</td>
+                    <td>Tenue</td>
+                    <td>48</td>
+                    <td><span class="badge-success">En stock</span></td>
+                    <td>01/02/2026</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ballons entrainement</td>
+                    <td>Materiel</td>
+                    <td>5</td>
+                    <td><span class="badge-danger">Stock bas</span></td>
+                    <td>28/01/2026</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cones et plots</td>
+                    <td>Materiel</td>
+                    <td>60</td>
+                    <td><span class="badge-success">En stock</span></td>
+                    <td>15/01/2026</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Chaussures Adidas Predator</td>
+                    <td>Chaussures</td>
+                    <td>3</td>
+                    <td><span class="badge-danger">Stock bas</span></td>
+                    <td>20/01/2026</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

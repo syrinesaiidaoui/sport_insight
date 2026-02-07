@@ -1,0 +1,56 @@
+{{ form_start(form, {attr: {novalidate: 'novalidate', enctype: 'multipart/form-data'}}) }}
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      {{ form_label(form.nom) }}
+      {{ form_widget(form.nom) }}
+      {{ form_errors(form.nom) }}
+    </div>
+    <div class="col-md-6 mb-3">
+      {{ form_label(form.prenom) }}
+      {{ form_widget(form.prenom) }}
+      {{ form_errors(form.prenom) }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      {{ form_label(form.email) }}
+      {{ form_widget(form.email) }}
+      {{ form_errors(form.email) }}
+    </div>
+    <div class="col-md-6 mb-3">
+      {{ form_label(form.password) }}
+      {{ form_widget(form.password) }}
+      {{ form_errors(form.password) }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      {{ form_label(form.telephone) }}
+      {{ form_widget(form.telephone) }}
+      {{ form_errors(form.telephone) }}
+    </div>
+    <div class="col-md-6 mb-3">
+      {{ form_label(form.dateNaissance) }}
+      {{ form_widget(form.dateNaissance) }}
+      {{ form_errors(form.dateNaissance) }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      {{ form_label(form.photo) }}
+      {{ form_widget(form.photo) }}
+      {{ form_errors(form.photo) }}
+    </div>
+    <div class="col-md-3 mb-3">
+      {{ form_label(form.statut) }}
+      {{ form_widget(form.statut) }}
+    </div>
+    <div class="col-md-3 mb-3">
+      {{ form_label(form.roles) }}
+      {{ form_widget(form.roles) }}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">
+    <i class="bi bi-check-lg"></i> {{ button_label|default('Enregistrer') }}
+  </button>
+{{ form_end(form) }}
