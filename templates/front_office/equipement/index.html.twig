@@ -1,0 +1,41 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Equipement - FC Club{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Equipement du Club</h2>
+
+    <div class="front-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Article</th>
+                    <th>Categorie</th>
+                    <th>Disponibilite</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Maillots domicile 2025/26</td>
+                    <td>Tenue</td>
+                    <td><span class="badge-success">Disponible</span></td>
+                </tr>
+                <tr>
+                    <td>Maillots exterieur 2025/26</td>
+                    <td>Tenue</td>
+                    <td><span class="badge-success">Disponible</span></td>
+                </tr>
+                <tr>
+                    <td>Short officiel</td>
+                    <td>Tenue</td>
+                    <td><span class="badge-success">Disponible</span></td>
+                </tr>
+                <tr>
+                    <td>Ballons entrainement</td>
+                    <td>Materiel</td>
+                    <td><span class="badge-danger">Rupture</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

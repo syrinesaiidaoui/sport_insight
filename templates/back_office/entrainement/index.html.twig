@@ -1,0 +1,113 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Admin - Entrainement{% endblock %}
+{% block page_title %}Entrainement{% endblock %}
+
+{% block header_actions %}
+    <button class="btn btn-primary btn-sm">
+        <i class="lucide-plus" style="font-size:14px"></i> Ajouter
+    </button>
+{% endblock %}
+
+{% block body %}
+    <!-- Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Seances / semaine</div>
+                <div class="stat-card-value">5</div>
+                <div class="stat-card-sub">+1 cette semaine</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Joueurs actifs</div>
+                <div class="stat-card-value">24</div>
+                <div class="stat-card-sub">100% presents</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Heures ce mois</div>
+                <div class="stat-card-value">48h</div>
+                <div class="stat-card-sub">+12% vs dernier mois</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Taux presence</div>
+                <div class="stat-card-value">92%</div>
+                <div class="stat-card-sub">Excellent</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="data-table">
+        <div class="data-table-header">
+            <h3>Planning des seances</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Horaire</th>
+                    <th>Type</th>
+                    <th>Intensite</th>
+                    <th>Presents</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# {% for entrainement in entrainements %}
+                <tr>
+                    <td>{{ entrainement.date|date('d/m/Y') }}</td>
+                    <td>{{ entrainement.horaire }}</td>
+                    <td>{{ entrainement.type }}</td>
+                    <td><span class="badge-warning">{{ entrainement.intensite }}</span></td>
+                    <td>{{ entrainement.presents }}/24</td>
+                    <td>
+                        <a href="{{ path('back_entrainement_edit', {id: entrainement.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                        <a href="{{ path('back_entrainement_delete', {id: entrainement.id}) }}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %} #}
+
+                <!-- Donnees statiques (remplacer par la boucle ci-dessus) -->
+                <tr>
+                    <td>05/02/2026</td>
+                    <td>09:00 - 11:00</td>
+                    <td>Tactique</td>
+                    <td><span class="badge-warning">Moyenne</span></td>
+                    <td>22/24</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>06/02/2026</td>
+                    <td>15:00 - 17:30</td>
+                    <td>Physique</td>
+                    <td><span class="badge-danger">Haute</span></td>
+                    <td>24/24</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>07/02/2026</td>
+                    <td>10:00 - 12:00</td>
+                    <td>Technique</td>
+                    <td><span class="badge-success">Legere</span></td>
+                    <td>20/24</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
