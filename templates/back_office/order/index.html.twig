@@ -1,0 +1,83 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Admin - Commandes{% endblock %}
+{% block page_title %}Commandes{% endblock %}
+
+{% block body %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Commandes total</div>
+                <div class="stat-card-value">{{ orders|length }}</div>
+                <div class="stat-card-sub">Toutes les commandes</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Commandes en attente</div>
+                <div class="stat-card-value">{{ orders|filter(o => o.status == 'pending')|length }}</div>
+                <div class="stat-card-sub">À traiter</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Commandes confirmées</div>
+                <div class="stat-card-value">{{ orders|filter(o => o.status == 'confirmed')|length }}</div>
+                <div class="stat-card-sub">Traitées</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Commandes annulées</div>
+                <div class="stat-card-value">{{ orders|filter(o => o.status == 'cancelled')|length }}</div>
+                <div class="stat-card-sub">Refusées</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-table">
+        <div class="data-table-header">
+            <h3>Liste des commandes</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.product.name }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.entraineur.prenom }} {{ order.entraineur.nom }}</td>
+                        <td>{{ order.orderDate|date('d/m/Y') }}</td>
+                        <td>
+                            {% if order.status == 'pending' %}
+                                <span class="badge-warning">En attente</span>
+                            {% elseif order.status == 'confirmed' %}
+                                <span class="badge-success">Confirmée</span>
+                            {% elseif order.status == 'cancelled' %}
+                                <span class="badge-danger">Annulée</span>
+                            {% else %}
+                                <span class="badge-secondary">{{ order.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">Voir</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Aucune commande.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

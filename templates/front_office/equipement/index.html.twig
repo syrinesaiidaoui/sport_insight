@@ -1,0 +1,48 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Equipement - FC Club{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Equipement du Club</h2>
+
+    <div class="front-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Article</th>
+                    <th>Categorie</th>
+                    <th>Prix</th>
+                    <th>Disponibilite</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.category }}</td>
+                        <td>{{ product.price }}</td>
+                        <td>
+                            {% if product.stock > 0 %}
+                                <span class="badge-success">Disponible ({{ product.stock }})</span>
+                            {% else %}
+                                <span class="badge-danger">Rupture</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if product.stock > 0 %}
+                                <a class="btn btn-primary btn-sm" href="{{ path('front_equipement_buy', {'id': product.id}) }}">Acheter</a>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm" disabled>Indisponible</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">Aucun produit trouvé.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

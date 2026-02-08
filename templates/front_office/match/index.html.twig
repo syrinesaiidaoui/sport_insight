@@ -1,0 +1,69 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Matchs - FC Club{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Matchs a venir</h2>
+
+    <div class="front-table mb-5">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Adversaire</th>
+                    <th>Lieu</th>
+                    <th>Competition</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>08/02/2026</td>
+                    <td>ES Tunis</td>
+                    <td><span class="badge-success">Domicile</span></td>
+                    <td>Ligue 1</td>
+                </tr>
+                <tr>
+                    <td>15/02/2026</td>
+                    <td>CA Bizertin</td>
+                    <td><span class="badge-info">Exterieur</span></td>
+                    <td>Coupe</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="section-title">Derniers resultats</h2>
+
+    <div class="front-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Adversaire</th>
+                    <th>Score</th>
+                    <th>Resultat</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>01/02/2026</td>
+                    <td>Club Africain</td>
+                    <td><strong>3 - 1</strong></td>
+                    <td><span class="badge-success">Victoire</span></td>
+                </tr>
+                <tr>
+                    <td>25/01/2026</td>
+                    <td>Etoile Sahel</td>
+                    <td><strong>2 - 2</strong></td>
+                    <td><span class="badge-warning">Nul</span></td>
+                </tr>
+                <tr>
+                    <td>18/01/2026</td>
+                    <td>US Monastir</td>
+                    <td><strong>0 - 1</strong></td>
+                    <td><span class="badge-danger">Defaite</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
