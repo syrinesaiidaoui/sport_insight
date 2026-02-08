@@ -64,10 +64,16 @@
                     <td>Domicile</td>
                     <td>Ligue 1</td>
                     <td><span class="badge-info">Programme</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
-                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
-                    </td>
+                                        <td>
+                                                                        {# Voir: affiche les details du match #}
+                                                                        <a href="#" class="action-btn action-view" title="Voir"><i class="lucide-eye"></i></a>
+                                                                        {# Modifier: editer la ligne (ouvre formulaire) #}
+                                                                        <a href="#" class="action-btn action-edit" title="Modifier"><i class="lucide-edit-2"></i></a>
+                                                                        {# Supprimer: suppression via formulaire POST (CSRF) #}
+                                                                        <form method="post" action="#" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+                                                                            <button class="action-btn action-delete" title="Supprimer"><i class="lucide-trash-2"></i></button>
+                                                                        </form>
+                                        </td>
                 </tr>
                 <tr>
                     <td>15/02/2026</td>
@@ -75,10 +81,13 @@
                     <td>Exterieur</td>
                     <td>Coupe</td>
                     <td><span class="badge-info">Programme</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
-                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
-                    </td>
+                                        <td>
+                                                <a href="#" class="action-btn action-view" title="Voir"><i class="lucide-eye"></i></a>
+                                                <a href="#" class="action-btn action-edit" title="Modifier"><i class="lucide-edit-2"></i></a>
+                                                <form method="post" action="#" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+                                                    <button class="action-btn action-delete" title="Supprimer"><i class="lucide-trash-2"></i></button>
+                                                </form>
+                                        </td>
                 </tr>
             </tbody>
         </table>

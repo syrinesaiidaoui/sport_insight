@@ -1,18 +1,77 @@
-{% extends 'base.html.twig' %}
+{% extends 'back_office/base.html.twig' %}
 
-{% block title %}Liste des Utilisateurs{% endblock %}
+{% block title %}Liste des Utilisateurs - Admin{% endblock %}
+
+{% block page_title %}
+  Liste des Utilisateurs
+{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('app_user_new') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg"></i>&nbsp;Nouvel Utilisateur
+  </a>
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    /* Action buttons in table: larger, clearer, pill style */
+    .action-btn {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      padding: 0;
+      margin: 0 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      border: none;
+      transition: transform .08s ease, box-shadow .08s ease;
+    }
+    .action-btn i {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+    .action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+    /* smaller icon-only style for delete form button */
+  .action-form { display:inline-block; }
+  /* hide labels entirely for compact icon-only actions */
+  .action-label { display: none; }
+
+  /* specific colors matching design */
+  .action-view { background: #00d2ff; color: #002b33; }
+  .action-edit { background: #ffd24d; color: #2b2b2b; }
+  .action-delete { background: #e24b5a; color: #ffffff; }
+
+  .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
+  </style>
+{% endblock %}
 
 {% block body %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="bi bi-people"></i> Liste des Utilisateurs</h1>
-    <a href="{{ path('app_user_new') }}" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Nouvel Utilisateur
-    </a>
-</div>
-
-<div class="card">
-  <div class="card-body p-0">
-    <table class="table table-hover table-striped mb-0">
+<div class="data-table">
+  <div class="data-table-header">
+    <h3>Utilisateurs</h3>
+    <div>
+      <form method="get" class="d-flex" style="gap:8px;">
+        <input type="search" name="q" value="{{ search_q|e }}" placeholder="Recherche par email, nom..." class="form-control form-control-sm">
+        <select name="sort" class="form-select form-select-sm">
+          <option value="name_asc" {{ sort == 'name_asc' ? 'selected' : '' }}>Nom ↑</option>
+          <option value="name_desc" {{ sort == 'name_desc' ? 'selected' : '' }}>Nom ↓</option>
+        </select>
+        <button class="btn btn-sm btn-primary">Filtrer</button>
+        <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
+      </form>
+    </div>
+  </div>
+  <div class="p-3 d-flex align-items-center justify-content-between">
+    <div>
+      <span class="badge badge-success">Actifs: {{ stats.actif|default(0) }}</span>
+      <span class="badge badge-danger">Bloqués: {{ stats.bloque|default(0) }}</span>
+    </div>
+  </div>
+  <div class="p-0">
+    <table class="table mb-0">
       <thead>
         <tr>
           <th>#</th>
@@ -25,48 +84,49 @@
           <th class="text-center">Actions</th>
         </tr>
       </thead>
-      <tbody>
+  <tbody>
         {% for user in users %}
         <tr>
           <td>{{ user.id }}</td>
           <td>
             {% if user.photo %}
-              <img src="{{ asset('uploads/photos/' ~ user.photo) }}"
-                   class="rounded-circle" width="40" height="40">
+              <img src="{{ asset('uploads/photos/' ~ user.photo) }}" class="rounded-circle" width="40" height="40">
             {% else %}
-              <span class="badge bg-secondary">N/A</span>
+              <span class="badge badge-secondary">N/A</span>
             {% endif %}
           </td>
           <td>{{ user.nomComplet }}</td>
           <td>{{ user.email }}</td>
           <td>{{ user.telephone ?? '---' }}</td>
           <td>
-            <span class="badge bg-{{ user.isActif ? 'success' : 'danger' }}">
-              {{ user.statut|capitalize }}
-            </span>
+            <span class="badge badge-{{ user.isActif ? 'success' : 'danger' }}">{{ user.statut|capitalize }}</span>
           </td>
           <td>
             {% for role in user.roles %}
-              <span class="badge bg-info">{{ role }}</span>
+              <span class="badge badge-info">{{ role }}</span>
             {% endfor %}
           </td>
           <td class="text-center">
-            <a href="{{ path('app_user_show', {id: user.id}) }}"
-               class="btn btn-sm btn-info" title="Voir">
+            {# Action: Voir (GET) -> affiche la fiche utilisateur via la route 'app_user_show' #}
+            <a href="{{ path('app_user_show', {id: user.id}) }}" class="action-btn action-view" title="Voir" aria-label="Voir {{ user.nomComplet }}">
               <i class="bi bi-eye"></i>
+              <span class="action-label">Voir</span>
             </a>
-            <a href="{{ path('app_user_edit', {id: user.id}) }}"
-               class="btn btn-sm btn-warning" title="Modifier">
+
+            {# Action: Modifier (GET/POST) -> ouvre le formulaire d'édition via 'app_user_edit' #}
+            <a href="{{ path('app_user_edit', {id: user.id}) }}" class="action-btn action-edit" title="Modifier" aria-label="Modifier {{ user.nomComplet }}">
               <i class="bi bi-pencil"></i>
+              <span class="action-label">Modifier</span>
             </a>
-            <form method="post"
-                  action="{{ path('app_user_delete', {id: user.id}) }}"
-                  style="display:inline"
-                  onsubmit="return confirm('Supprimer cet utilisateur ?')">
-              <input type="hidden" name="_token"
-                     value="{{ csrf_token('delete' ~ user.id) }}">
-              <button class="btn btn-sm btn-danger" title="Supprimer">
+
+            {# Action: Supprimer (POST) -> formulaire POST vers 'app_user_delete' avec CSRF token.
+               Le bouton envoie une requête POST et la suppression est confirmée côté serveur.
+               Nous utilisons un confirm() JS pour éviter les suppressions accidentelles. #}
+            <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}" class="action-form" onsubmit="return confirm('Supprimer cet utilisateur ?')">
+              <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+              <button class="action-btn action-delete" title="Supprimer" aria-label="Supprimer {{ user.nomComplet }}">
                 <i class="bi bi-trash"></i>
+                <span class="action-label">Supprimer</span>
               </button>
             </form>
           </td>

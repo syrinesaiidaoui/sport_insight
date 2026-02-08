@@ -18,10 +18,47 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class UserController extends AbstractController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(Request $request, UserRepository $userRepository): Response
     {
+        $q = (string) $request->query->get('q', '');
+        $sort = (string) $request->query->get('sort', 'name_asc');
+
+        $qb = $userRepository->createQueryBuilder('u');
+
+        if ($q !== '') {
+            $qb->andWhere('u.email LIKE :q OR u.nom LIKE :q OR u.prenom LIKE :q')
+               ->setParameter('q', '%'.trim($q).'%');
+        }
+
+        if ($sort === 'name_desc') {
+            $qb->orderBy('u.nom', 'DESC')->addOrderBy('u.prenom', 'DESC');
+        } else {
+            // default: name_asc
+            $qb->orderBy('u.nom', 'ASC')->addOrderBy('u.prenom', 'ASC');
+        }
+
+        $users = $qb->getQuery()->getResult();
+
+        // statistics by statut
+        $statsQb = $userRepository->createQueryBuilder('u')
+            ->select('u.statut, COUNT(u.id) as cnt')
+            ->groupBy('u.statut');
+        $statsRaw = $statsQb->getQuery()->getResult();
+        $stats = [];
+        foreach ($statsRaw as $row) {
+            // result may be array or object depending on hydration
+            if (is_array($row)) {
+                $stats[$row['statut']] = (int) $row['cnt'];
+            } elseif (is_object($row)) {
+                $stats[$row->statut] = (int) $row->cnt;
+            }
+        }
+
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $users,
+            'search_q' => $q,
+            'sort' => $sort,
+            'stats' => $stats,
         ]);
     }
 
@@ -62,16 +99,32 @@ class UserController extends AbstractController
                 }
             }
 
-            $em->persist($user);
-            $em->flush();
+            try {
+                $em->persist($user);
+                $em->flush();
 
-            $this->addFlash('success', 'Utilisateur cree avec succes !');
-            return $this->redirectToRoute('app_user_index');
+                $this->addFlash('success', 'Utilisateur cree avec succes !');
+                return $this->redirectToRoute('app_user_index');
+            } catch (\Throwable $e) {
+                // log could be added; for now show a user-friendly message
+                $this->addFlash('danger', 'Erreur lors de l\'enregistrement: ' . $e->getMessage());
+            }
+        }
+
+        // si soumis mais non valide, afficher erreurs de validation
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $errors = [];
+            foreach ($form->getErrors(true) as $err) {
+                $errors[] = $err->getMessage();
+            }
+            if (!empty($errors)) {
+                $this->addFlash('danger', implode(' - ', array_unique($errors)));
+            }
         }
 
         return $this->render('user/new.html.twig', [
             'user' => $user,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -130,7 +183,7 @@ class UserController extends AbstractController
 
         return $this->render('user/edit.html.twig', [
             'user' => $user,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 

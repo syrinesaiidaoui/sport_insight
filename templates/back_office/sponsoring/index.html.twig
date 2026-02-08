@@ -65,10 +65,16 @@
                     <td>01/07/2025</td>
                     <td>30/06/2027</td>
                     <td><span class="badge-success">Actif</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
-                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
-                    </td>
+                                        <td>
+                                                                        {# Voir: affiche les détails du sponsor (route GET) #}
+                                                                        <a href="#" class="action-btn action-view" title="Voir"><i class="lucide-eye"></i></a>
+                                                                        {# Modifier: ouvre le formulaire de modification (GET/POST) #}
+                                                                        <a href="#" class="action-btn action-edit" title="Modifier"><i class="lucide-edit-2"></i></a>
+                                                                        {# Supprimer: envoie un POST pour supprimer (CSRF protection via formulaire) #}
+                                                                        <form method="post" action="#" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+                                                                            <button class="action-btn action-delete" title="Supprimer"><i class="lucide-trash-2"></i></button>
+                                                                        </form>
+                                        </td>
                 </tr>
                 <tr>
                     <td><strong>BIAT</strong></td>
@@ -77,10 +83,13 @@
                     <td>01/01/2025</td>
                     <td>31/12/2026</td>
                     <td><span class="badge-success">Actif</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
-                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
-                    </td>
+                                        <td>
+                                                <a href="#" class="action-btn action-view" title="Voir"><i class="lucide-eye"></i></a>
+                                                <a href="#" class="action-btn action-edit" title="Modifier"><i class="lucide-edit-2"></i></a>
+                                                <form method="post" action="#" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+                                                    <button class="action-btn action-delete" title="Supprimer"><i class="lucide-trash-2"></i></button>
+                                                </form>
+                                        </td>
                 </tr>
                 <tr>
                     <td><strong>Coca-Cola</strong></td>
@@ -89,10 +98,13 @@
                     <td>01/09/2025</td>
                     <td>31/08/2026</td>
                     <td><span class="badge-warning">Expire bientot</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
-                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
-                    </td>
+                                        <td>
+                                                <a href="#" class="action-btn action-view" title="Voir"><i class="lucide-eye"></i></a>
+                                                <a href="#" class="action-btn action-edit" title="Modifier"><i class="lucide-edit-2"></i></a>
+                                                <form method="post" action="#" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+                                                    <button class="action-btn action-delete" title="Supprimer"><i class="lucide-trash-2"></i></button>
+                                                </form>
+                                        </td>
                 </tr>
             </tbody>
         </table>
