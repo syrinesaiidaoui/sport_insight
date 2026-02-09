@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class ProductType extends AbstractType
 {
@@ -22,7 +23,12 @@ class ProductType extends AbstractType
             ->add('stock', IntegerType::class)
             ->add('size', TextType::class, ['required' => false])
             ->add('brand', TextType::class, ['required' => false])
-            ->add('image', TextType::class, ['required' => false])
+            ->add('image', FileType::class, [
+                'label' => 'Product Image',
+                'required' => false,
+                'data_class' => null,
+                'attr' => ['accept' => 'image/*']
+            ])
             ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
         ;
     }

@@ -1,0 +1,41 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Checkout Success - Sport Insight{% endblock %}
+
+{% block body %}
+    <div class="page-container">
+        <div style="max-width: 600px; margin: 60px auto; text-align: center;">
+            <!-- Success Icon -->
+            <div style="color: #10b981; margin-bottom: 20px;">
+                <svg class="icon icon--lg" aria-hidden="true"><use href="#icon-check"/></svg>
+            </div>
+
+            <!-- Title -->
+            <h1 style="font-size: 32px; font-weight: 700; color: #111827; margin-bottom: 12px;">
+                Checkout Successful!
+            </h1>
+
+            <!-- Message -->
+            <p style="font-size: 16px; color: #6b7280; margin-bottom: 8px;">
+                Thank you for your purchase.
+            </p>
+            <p style="font-size: 16px; color: #6b7280; margin-bottom: 40px;">
+                A confirmation email has been sent to your email address.
+            </p>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <a href="{{ path('front_equipement_index') }}" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px;"><svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>Continue Shopping</a>
+                <a href="{{ path('front_equipement_orders') }}" class="btn btn-secondary" style="padding: 12px 24px; font-size: 16px;"><svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg>View My Orders</a>
+            </div>
+
+            <!-- Info Box -->
+            <div style="margin-top: 60px; padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px;">
+                <p style="font-size: 14px; color: #6b7280; margin: 0;">
+                    <strong style="color: #111827;">Order Confirmation:</strong><br/>
+                    Check your inbox for the official order confirmation email. If you don't see it, please check your spam folder.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

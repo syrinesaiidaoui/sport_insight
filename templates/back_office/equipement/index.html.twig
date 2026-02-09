@@ -48,6 +48,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Image</th>
                     <th>Article</th>
                     <th>Categorie</th>
                     <th>Quantite</th>
@@ -59,6 +60,15 @@
             <tbody>
                 {% for product in products %}
                     <tr>
+                        <td>
+                            {% if product.image %}
+                                <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                            {% else %}
+                                <div style="width: 50px; height: 50px; background: #e5e7eb; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="font-size: 20px; color: #9ca3af;">📦</span>
+                                </div>
+                            {% endif %}
+                        </td>
                         <td>{{ product.name }}</td>
                         <td>{{ product.category }}</td>
                         <td>{{ product.stock }}</td>
@@ -82,7 +92,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6">Aucun produit.</td>
+                        <td colspan="7">Aucun produit.</td>
                     </tr>
                 {% endfor %}
             </tbody>
