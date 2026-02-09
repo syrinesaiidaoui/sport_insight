@@ -40,7 +40,7 @@ if (!$amine) {
     $amine->setEmail('Amine.bouchnak@esprit.tn');
     $amine->setNom('Bouchnak');
     $amine->setPrenom('Amine');
-    $amine->setRoles(['ROLE_USER']);
+    $amine->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
     $amine->setPassword(password_hash('Amine123', PASSWORD_BCRYPT));
 
     $em->persist($amine);
@@ -48,7 +48,10 @@ if (!$amine) {
 
     echo "✓ Test user created: Amine.bouchnak@esprit.tn / Amine123\n";
 } else {
-    echo "Test user already exists: Amine.bouchnak@esprit.tn\n";
+    // Update existing user to have ROLE_ADMIN
+    $amine->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
+    $em->flush();
+    echo "✓ Test user already exists: Amine.bouchnak@esprit.tn (updated with ROLE_ADMIN)\n";
 }
 
 $kernel->shutdown();
