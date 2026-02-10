@@ -1,160 +1,158 @@
 {% extends 'back_office/base.html.twig' %}
 
-{% block title %}Évaluations - Admin{% endblock %}
-{% block page_title %}Gestion des évaluations{% endblock %}
+{% block title %}Evaluations - Admin{% endblock %}
+{% block page_title %}Evaluations{% endblock %}
 
 {% block header_actions %}
   <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary btn-sm">
-    + Nouvelle évaluation
+    <i class="lucide-plus" style="font-size:14px"></i>
+    Ajouter
   </a>
 {% endblock %}
 
 {% block body %}
+
 <div class="data-table">
 
-  {# ===== RECHERCHE ===== #}
-  <form method="get" class="mb-3">
-    <input type="text"
-           name="search_nom"
-           placeholder="Rechercher par nom du joueur"
-           value="{{ search_nom }}"
-           class="form-control"
-           style="max-width:300px; display:inline-block">
-    <button class="btn btn-secondary btn-sm">Rechercher</button>
+  <div class="data-table-header">
+    <h3>Liste des évaluations</h3>
+    <span class="text-muted" style="font-size:13px">
+      {{ evaluations|length }} évaluation(s)
+    </span>
+  </div>
+
+  {# ===== Recherche ===== #}
+  <form method="get" class="mb-4">
+    <div class="input-group" style="max-width:400px">
+      <input type="text"
+             name="search_nom"
+             value="{{ search_nom|default('') }}"
+             class="form-control"
+             placeholder="Recherche par nom du joueur">
+      <button type="submit" class="btn btn-outline-secondary">
+        Rechercher
+      </button>
+    </div>
   </form>
 
   {% if evaluations is not empty %}
-    <table class="table table-bordered">
+    <table class="table">
       <thead>
-<tr>
-  <th>Joueur</th>
-  <th>Entrainement</th>
-
-  {% set cols = {
-    'notePhysique': 'Physique',
-    'noteTechnique': 'Technique',
-    'noteTactique': 'Tactique'
-  } %}
-
-  {% for col, label in cols %}
-    {% set nextDir = (sort_by == col and sort_dir == 'asc') ? 'desc' : 'asc' %}
-
-    <th>
-      <a href="{{ path('back_evaluation_index', {
-          search_nom: search_nom,
-          sort_by: col,
-          sort_dir: nextDir
-      }) }}">
-        {{ label }}
-        {% if sort_by == col %}
-          {{ sort_dir == 'asc' ? '↑' : '↓' }}
-        {% endif %}
-      </a>
-    </th>
-  {% endfor %}
-
-  <th>Actions</th>
-</tr>
-</thead>
-
+        <tr>
+          <th>Joueur</th>
+          <th>Entrainement</th>
+          <th>Physique</th>
+          <th>Technique</th>
+          <th>Tactique</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
 
       <tbody>
-      {% for evaluation in evaluations %}
-        <tr>
-          <td>{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</td>
-          <td>{{ evaluation.entrainement.type }}</td>
-          <td>{{ evaluation.notePhysique }}</td>
-          <td>{{ evaluation.noteTechnique }}</td>
-          <td>{{ evaluation.noteTactique }}</td>
-          <td>
-  <a href="{{ path('back_evaluation_show', {id: evaluation.id}) }}"
-     class="btn btn-sm btn-outline-info">
-     Voir
-  </a>
+        {% for evaluation in evaluations %}
+          {% if search_nom is empty or search_nom|lower in evaluation.joueur.nom|lower %}
+            <tr>
+              <td>{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</td>
+              <td>{{ evaluation.entrainement.type }}</td>
+              <td>{{ evaluation.notePhysique }}</td>
+              <td>{{ evaluation.noteTechnique }}</td>
+              <td>{{ evaluation.noteTactique }}</td>
 
-  <a href="{{ path('back_evaluation_edit', {id: evaluation.id}) }}"
-     class="btn btn-sm btn-outline-warning">
-     Éditer
-  </a>
+              <td class="text-end">
+                <a href="{{ path('back_evaluation_show', { id: evaluation.id }) }}"
+                   class="btn btn-sm btn-outline-secondary">
+                  Voir
+                </a>
 
-  <form method="post"
-        action="{{ path('back_evaluation_delete', {id: evaluation.id}) }}"
-        style="display:inline"
-        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?');">
+                <a href="{{ path('back_evaluation_edit', { id: evaluation.id }) }}"
+                   class="btn btn-sm btn-outline-secondary">
+                  Éditer
+                </a>
 
-      <input type="hidden"
-             name="_token"
-             value="{{ csrf_token('delete' ~ evaluation.id) }}">
-
-      <button class="btn btn-sm btn-outline-danger">
-        Supprimer
-      </button>
-  </form>
-</td>
-
-        </tr>
-      {% endfor %}
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  onclick="openDeleteModal(
+                    {{ evaluation.id }},
+                    '{{ csrf_token('delete' ~ evaluation.id) }}'
+                  )"
+                >
+                  Supprimer
+                </button>
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
       </tbody>
     </table>
 
-    {# ===== STATISTIQUES ===== #}
-  <div class="card mb-4">
-  <div class="card-body">
-    <h4 class="mb-3">Statistiques moyennes des évaluations</h4>
-
-    <canvas id="evaluationChart" height="100"></canvas>
-  </div>
-</div>
-
-    
+    <div class="text-center mt-4">
+      <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary btn-sm">
+        <i class="lucide-plus" style="font-size:14px"></i>
+        Ajouter une évaluation
+      </a>
+    </div>
 
   {% else %}
     <div class="text-center p-5">
-      <p>Aucune évaluation trouvée.</p>
-      <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary">
-        Créer une évaluation
+      <p class="text-muted">Aucune évaluation pour le moment.</p>
+      <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary mt-3">
+        + Créer une évaluation
       </a>
     </div>
   {% endif %}
-</div>
-{% block javascripts %}
-{{ parent() }}
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</div>
+
+{# ===== MODAL SUPPRESSION ===== #}
+<div id="deleteModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="btn-close" onclick="closeDeleteModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer cette évaluation ?</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">
+          Annuler
+        </button>
+
+        <form id="deleteForm" method="post">
+          <input type="hidden" name="_token" id="deleteToken">
+          <button type="submit" class="btn btn-danger">
+            Supprimer
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script>
-const ctx = document.getElementById('evaluationChart');
+function openDeleteModal(id, token) {
+  const modal = document.getElementById('deleteModal');
+  const form = document.getElementById('deleteForm');
+  const tokenInput = document.getElementById('deleteToken');
 
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Physique', 'Technique', 'Tactique'],
-        datasets: [{
-            label: 'Moyenne des notes',
-            data: [
-                {{ stats.physique }},
-                {{ stats.technique }},
-                {{ stats.tactique }}
-            ],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 20
-            }
-        }
-    }
-});
+  form.action = "{{ path('back_evaluation_delete', {'id': 'ID'}) }}".replace('ID', id);
+  tokenInput.value = token;
+
+  modal.style.display = 'block';
+  modal.classList.add('show');
+}
+
+function closeDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  modal.style.display = 'none';
+  modal.classList.remove('show');
+}
 </script>
-{% endblock %}
 
 {% endblock %}

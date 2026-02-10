@@ -2,54 +2,61 @@
 <div class="space-y-6">
 
   <!-- Joueur & Entrainement -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
     <div>
-      <label class="block text-sm font-semibold text-foreground mb-2">
+      <label class="block text-lg font-semibold text-foreground mb-2">
         {{ form.joueur.vars.label }}
       </label>
       {{ form_widget(form.joueur, {
         attr: {
-          class: 'w-full px-4 py-2 bg-frontground border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition'
+          class: 'w-full px-6 py-4 bg-frontground border border-border rounded-xl text-foreground text-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition'
         }
       }) }}
       {% if form.joueur.vars.errors|length > 0 %}
-        <p class="text-red-600 text-sm mt-1">
+        <p class="text-red-600 text-base mt-1">
           {{ form.joueur.vars.errors[0].message }}
         </p>
       {% endif %}
+      <div class="text-xs mt-2">
+        <span style="color:#16a34a;font-weight:bold;">Joueur:</span>
+
+
+      </div>
     </div>
 
     <div>
-      <label class="block text-sm font-semibold text-foreground mb-2">
+      <label class="block text-lg font-semibold text-foreground mb-2">
         {{ form.entrainement.vars.label }}
       </label>
       {{ form_widget(form.entrainement, {
         attr: {
-          class: 'w-full px-4 py-2 bg-frontground border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition'
+          class: 'w-full px-6 py-4 bg-frontground border border-border rounded-xl text-foreground text-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition'
         }
       }) }}
       {% if form.entrainement.vars.errors|length > 0 %}
-        <p class="text-red-600 text-sm mt-1">
+        <p class="text-red-600 text-base mt-1">
           {{ form.entrainement.vars.errors[0].message }}
         </p>
       {% endif %}
+      <div class="text-xs mt-2">
+        <span style="color:#16a34a;font-weight:bold;">Entrainement:</span>
+<span style="color:#16a34a;font-we
+      </div>
     </div>
   </div>
 
   <!-- Présence -->
-  <div class="p-4 rounded-lg border border-border bg-muted/30">
-    <label class="block text-sm font-semibold text-foreground mb-2">
-      {{ form.presence.vars.label }}
-    </label>
-
-    <div class="flex items-center gap-3">
+  <div class="p-6 rounded-xl border border-border bg-muted/30 mt-8">
+    
+    <div class="flex items-center gap-6">
       {{ form_widget(form.presence, {
         attr: {
-          class: 'w-5 h-5 rounded border-border text-primary focus:ring-primary'
+          class: 'w-8 h-8 rounded border-border text-primary focus:ring-primary text-lg'
         }
       }) }}
-      <span class="text-sm text-muted-foreground">
-        Cochez si le joueur était présent
+      <span class="text-base text-muted-foreground">
+        Sélectionnez si le joueur était présent ou absent
       </span>
     </div>
 
@@ -61,15 +68,15 @@
   </div>
 
   <!-- Justification -->
-  <div>
-    <label class="block text-sm font-semibold text-foreground mb-2">
+  <div class="mt-8">
+    <label class="block text-lg font-semibold text-foreground mb-2">
       {{ form.justificationAbsence.vars.label }}
     </label>
     {{ form_widget(form.justificationAbsence, {
       attr: {
-        class: 'w-full px-4 py-2 bg-frontground border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition',
+        class: 'w-full px-6 py-4 bg-frontground border border-border rounded-xl text-foreground text-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition',
         placeholder: "Entrez la raison de l'absence (si applicable)",
-        rows: 3
+        rows: 4
       }
     }) }}
     {% if form.justificationAbsence.vars.errors|length > 0 %}
@@ -82,14 +89,14 @@
 </div>
 
 <!-- Actions -->
-<div class="mt-8 flex gap-4">
+<div class="mt-10 flex gap-6">
   <button type="submit"
-          class="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+          class="flex-1 px-8 py-4 bg-primary text-primary-foreground rounded-xl font-semibold text-lg hover:bg-primary/90 transition-colors">
     {{ button_label|default('Créer') }}
   </button>
 
   <a href="{{ path('front_participation_index') }}"
-     class="flex-1 px-6 py-3 bg-muted text-muted-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors text-center">
+     class="flex-1 px-8 py-4 bg-muted text-muted-foreground rounded-xl font-semibold text-lg hover:bg-muted/80 transition-colors text-center">
     Annuler
   </a>
 </div>

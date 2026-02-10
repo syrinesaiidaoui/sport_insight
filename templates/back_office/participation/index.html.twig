@@ -11,12 +11,28 @@
 {% endblock %}
 
 {% block body %}
+
+<div class="mb-4" style="text-align:right">
+  <a href="{{ path('back_participation_new') }}" class="btn btn-primary">
+    <i class="lucide-plus" style="font-size:14px"></i> Ajouter une participation
+  </a>
+</div>
 <div class="data-table">
-  <div class="data-table-header">
-    <h3>Liste des participations</h3>
-    <span class="text-muted" style="font-size:13px">
-      {{ participations|length }} participation(s)
-    </span>
+  <div class="data-table-header flex items-center justify-between mb-4">
+    <div>
+      <h3>Liste des participations</h3>
+      <span class="text-muted" style="font-size:13px">
+        {{ participations|length }} participation(s)
+      </span>
+    </div>
+    <form method="get" class="flex gap-2 items-center">
+      <label for="presence-select" style="margin-bottom:0">Filtrer par présence:</label>
+      <select name="presence" id="presence-select" onchange="this.form.submit()" class="form-select px-2 py-1 rounded border border-gray-300">
+        <option value="" {% if not presence %}selected{% endif %}>Tous</option>
+        <option value="present" {% if presence == 'present' %}selected{% endif %}>Présent</option>
+        <option value="absent" {% if presence == 'absent' %}selected{% endif %}>Absent</option>
+      </select>
+    </form>
   </div>
 
   {% if participations %}
@@ -26,55 +42,104 @@
           <th>Joueur</th>
           <th>Entrainement</th>
           <th>Présence</th>
-          <th>Justificatif</th>
-          <th style="text-align:right;">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for participation in participations %}
-          <tr>
-            <td>{{ participation.joueur.nom }} {{ participation.joueur.prenom }}</td>
-            <td>{{ participation.entrainement.type }}</td>
-            <td>
-              {% if participation.presence %}
-                <span class="badge badge-success">Présent</span>
-              {% else %}
-                <span class="badge badge-danger">Absent</span>
-              {% endif %}
-            </td>
-            <td>{{ participation.justificationAbsence|default('-') }}</td>
-            <td style="text-align:right;">
-              <a href="{{ path('back_participation_show', {id: participation.id}) }}"
-                 class="btn btn-sm btn-outline-secondary"
-                 style="padding:4px 8px;">Voir</a>
+          <table style="width:100%; font-size:1.15rem;">
+            <thead>
+              <tr style="height: 3.5rem;">
+                <th style="padding: 16px 12px;">Joueur</th>
+                <th style="padding: 16px 12px;">Entrainement</th>
+                <th style="padding: 16px 12px;">Présence</th>
+                <th style="padding: 16px 12px;">Justificatif</th>
+                <th style="text-align:right; padding: 16px 12px;">Actions</th>
+              </tr>
+            </thead>
 
-              <a href="{{ path('back_participation_edit', {id: participation.id}) }}"
-                 class="btn btn-sm btn-outline-secondary"
-                 style="padding:4px 8px;">Éditer</a>
+            <tbody>
+              {% for participation in participations %}
+                <tr style="height: 3.5rem;">
+                  <td style="padding: 16px 12px;">{{ participation.joueur.nom }} {{ participation.joueur.prenom }}</td>
+                  <td style="padding: 16px 12px;">{{ participation.entrainement.type }}</td>
+                  <td style="padding: 16px 12px;">
+                    {% if participation.presence == 'present' %}
+                      <span class="badge badge-success" style="font-size:1.1rem; padding:8px 18px;">Présent</span>
+                    {% elseif participation.presence == 'absent' %}
+                      <span class="badge badge-danger" style="font-size:1.1rem; padding:8px 18px;">Absent</span>
+                    {% else %}
+                      <span class="badge badge-secondary" style="font-size:1.1rem; padding:8px 18px;">Non défini</span>
+                    {% endif %}
+                  </td>
+                  <td style="padding: 16px 12px;">{{ participation.justificationAbsence|default('-') }}</td>
+                  <td style="text-align:right; padding: 16px 12px;">
+                    <a href="{{ path('back_participation_show', {id: participation.id}) }}"
+                       class="btn btn-sm btn-outline-secondary"
+                       style="padding:8px 16px; font-size:1rem;">Voir</a>
 
-              <form method="post"
-                    action="{{ path('back_participation_delete', {id: participation.id}) }}"
-                    style="display:inline"
-                    onsubmit="return confirm('Êtes-vous sûr ?');">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ participation.id) }}">
-                <button type="submit"
-                        class="btn btn-sm btn-outline-danger"
-                        style="padding:4px 8px;">
-                  Supprimer
-                </button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <div style="text-align:center; padding:40px;">
-      <p>Aucune participation enregistrée.</p>
-      <a href="{{ path('back_participation_new') }}"
-         class="btn btn-primary"
-         style="margin-top:16px;">
-        + Enregistrer une participation
+                    <a href="{{ path('back_participation_edit', {id: participation.id}) }}"
+                       class="btn btn-sm btn-outline-secondary"
+                       style="padding:8px 16px; font-size:1rem;">Éditer</a>
+
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      style="padding:8px 16px; font-size:1rem;"
+                      onclick="openDeleteModal({{ participation.id }}, '{{ csrf_token('delete' ~ participation.id) }}')"
+                    >
+                      Supprimer
+                    </button>
+                  {# ===== MODAL SUPPRESSION ===== #}
+                  <div id="deleteModal" class="modal fade" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+
+                        <div class="modal-header">
+                          <h5 class="modal-title">Confirmation</h5>
+                          <button type="button" class="btn-close" onclick="closeDeleteModal()"></button>
+                        </div>
+
+                        <div class="modal-body">
+                          <p>Êtes-vous sûr de vouloir supprimer cette participation ?</p>
+                        </div>
+
+                        <div class="modal-footer">
+                          <button class="btn btn-secondary" onclick="closeDeleteModal()">
+                            Annuler
+                          </button>
+
+                          <form id="deleteForm" method="post">
+                            <input type="hidden" name="_token" id="deleteToken">
+                            <button type="submit" class="btn btn-danger">
+                              Supprimer
+                            </button>
+                          </form>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <script>
+                  function openDeleteModal(id, token) {
+                    const modal = document.getElementById('deleteModal');
+                    const form = document.getElementById('deleteForm');
+                    const tokenInput = document.getElementById('deleteToken');
+
+                    form.action = "{{ path('back_participation_delete', {'id': 'ID'}) }}".replace('ID', id);
+                    tokenInput.value = token;
+
+                    modal.style.display = 'block';
+                    modal.classList.add('show');
+                  }
+
+                  function closeDeleteModal() {
+                    const modal = document.getElementById('deleteModal');
+                    modal.style.display = 'none';
+                    modal.classList.remove('show');
+                  }
+                  </script>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
       </a>
     </div>
   {% endif %}

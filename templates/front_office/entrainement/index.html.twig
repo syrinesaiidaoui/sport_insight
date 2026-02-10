@@ -1,8 +1,6 @@
 {% extends 'front_office/base.html.twig' %}
 
-
 {% block title %}Entrainements - Admin{% endblock %}
-
 {% block page_title %}Entrainements{% endblock %}
 
 {% block header_actions %}
@@ -14,13 +12,37 @@
 
 {% block body %}
 
+<div class="mb-4 text-end">
+  <a href="{{ path('front_entrainement_new') }}" class="btn btn-primary">
+    <i class="lucide-plus" style="font-size:14px"></i>
+    Ajouter un entrainement
+  </a>
+</div>
+
 <div class="data-table">
 
-  <div class="data-table-header">
-    <h3>Liste des entrainements</h3>
-    <span class="text-muted" style="font-size:13px">
-      {{ entrainements|length }} entrainement(s)
-    </span>
+  <div class="data-table-header d-flex justify-content-between mb-4">
+    <div>
+      <h3>Liste des entrainements</h3>
+      <span class="text-muted" style="font-size:13px">
+        {{ entrainements|length }} entrainement(s)
+      </span>
+    </div>
+
+    <form method="get" class="d-flex gap-2 align-items-center">
+      <input type="text" name="search_type" value="{{ search_type|default('') }}"
+             placeholder="Rechercher par type"
+             class="form-control form-control-sm">
+      <select name="sort_by" class="form-select form-select-sm">
+        <option value="">Trier par</option>
+        <option value="dateEntrainement" {% if sort_by == 'dateEntrainement' %}selected{% endif %}>Date</option>
+      </select>
+      <select name="sort_dir" class="form-select form-select-sm">
+        <option value="asc" {% if sort_dir == 'asc' %}selected{% endif %}>Ascendant</option>
+        <option value="desc" {% if sort_dir == 'desc' %}selected{% endif %}>Descendant</option>
+      </select>
+      <button type="submit" class="btn btn-sm btn-secondary">Rechercher</button>
+    </form>
   </div>
 
   {% if entrainements is not empty %}
@@ -31,79 +53,101 @@
           <th>Type</th>
           <th>Lieu</th>
           <th>Horaire</th>
-          <th style="text-align:right">Actions</th>
+          <th class="text-end">Actions</th>
         </tr>
       </thead>
-
       <tbody>
         {% for entrainement in entrainements %}
           <tr>
+            <td>{{ entrainement.dateEntrainement|date('d/m/Y') }}</td>
+            <td>{{ entrainement.type }}</td>
+            <td>{{ entrainement.lieu }}</td>
             <td>
-              {{ entrainement.dateEntrainement|date('d/m/Y') }}
-            </td>
-
-            <td>
-              {{ entrainement.type }}
-            </td>
-
-            <td>
-              {{ entrainement.lieu }}
-            </td>
-
-            <td>
-              {{ entrainement.heureDebut|date('H:i') }}
-              -
+              {{ entrainement.heureDebut|date('H:i') }} -
               {{ entrainement.heureFin|date('H:i') }}
             </td>
+            <td class="text-end">
 
-            <td style="text-align:right">
-              <a href="{{ path('front_entrainement_show', { id: entrainement.id }) }}"
-                 class="btn btn-sm btn-outline-secondary"
-                 style="padding:4px 8px">
+              <a href="{{ path('front_entrainement_show', {id: entrainement.id}) }}"
+                 class="btn btn-sm btn-outline-secondary">
                 Voir
               </a>
 
-              <a href="{{ path('front_entrainement_edit', { id: entrainement.id }) }}"
-                 class="btn btn-sm btn-outline-secondary"
-                 style="padding:4px 8px">
+              <a href="{{ path('front_entrainement_edit', {id: entrainement.id}) }}"
+                 class="btn btn-sm btn-outline-secondary">
                 Éditer
               </a>
 
-              <form method="post"
-                    action="{{ path('front_entrainement_delete', { id: entrainement.id }) }}"
-                    style="display:inline"
-                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet entrainement ?');">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entrainement.id) }}">
-                <button type="submit"
-                        class="btn btn-sm btn-outline-danger"
-                        style="padding:4px 8px">
-                  Supprimer
-                </button>
-              </form>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                onclick="openDeleteModal(
+                  {{ entrainement.id }},
+                  '{{ csrf_token('delete' ~ entrainement.id) }}'
+                )"
+              >
+                Supprimer
+              </button>
+
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
-    <div style="text-align:center; margin-top:20px">
-  <a href="{{ path('front_entrainement_new') }}" class="btn btn-primary btn-sm">
-    <i class="lucide-plus" style="font-size:14px"></i>
-    Ajouter un entrainement
-  </a>
-</div>
-
-
   {% else %}
-    <div style="text-align:center; padding:40px">
+    <div class="text-center p-5">
       <p class="text-muted">Aucun entrainement pour le moment.</p>
-      <a href="{{ path('front_entrainement_new') }}"
-         class="btn btn-primary"
-         style="margin-top:16px">
-        + Créer un entrainement
-      </a>
     </div>
   {% endif %}
-
 </div>
+
+{# ===== MODAL SUPPRESSION ===== #}
+<div id="deleteModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="btn-close" onclick="closeDeleteModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer cet entrainement ?</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+
+        <form id="deleteForm" method="post">
+          <input type="hidden" name="_token" id="deleteToken">
+          <button type="submit" class="btn btn-danger">
+            Supprimer
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function openDeleteModal(id, token) {
+  const modal = document.getElementById('deleteModal');
+  const form = document.getElementById('deleteForm');
+  const tokenInput = document.getElementById('deleteToken');
+
+  form.action = "{{ path('front_entrainement_delete', {'id': 'ID'}) }}".replace('ID', id);
+  tokenInput.value = token;
+
+  modal.style.display = 'block';
+  modal.classList.add('show');
+}
+
+function closeDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  modal.style.display = 'none';
+  modal.classList.remove('show');
+}
+</script>
 
 {% endblock %}

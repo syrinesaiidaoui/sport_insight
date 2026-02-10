@@ -3,68 +3,113 @@
 {% block title %}Participation - Admin{% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-background">
-  <div class="max-w-3xl mx-auto px-4 py-8">
-    <div class="mb-8 flex items-center justify-between">
-      <div>
-        <h1 class="text-4xl font-bold text-foreground mb-2">Participation de {{ participation.joueur.prenom }} {{ participation.joueur.nom }}</h1>
-        <p class="text-muted-foreground">{{ participation.entrainement.type }}</p>
-      </div>
+<div class="flex-1 overflow-auto">
+  <div class="max-w-3xl mx-auto p-8">
+
+    <!-- Header -->
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-foreground">
+        Participation
+      </h1>
+      <p class="text-muted-foreground mt-2">
+        {{ participation.joueur.nom }} {{ participation.joueur.prenom }} · {{ participation.entrainement.type }}
+      </p>
     </div>
 
-    <div class="bg-card rounded-lg border border-border p-6 mb-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Card -->
+    <div class="bg-card rounded-lg border border-border p-8 space-y-8">
+
+      <!-- Infos principales -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <p class="text-sm text-muted-foreground mb-2">Joueur</p>
-          <p class="text-lg font-semibold text-foreground">{{ participation.joueur.prenom }} {{ participation.joueur.nom }}</p>
+          <label class="block text-sm font-semibold text-muted-foreground mb-2">
+            Joueur
+          </label>
+          <p class="text-foreground font-medium">
+            {{ participation.joueur.nom }} {{ participation.joueur.prenom }}
+          </p>
         </div>
+
         <div>
-          <p class="text-sm text-muted-foreground mb-2">Entrainement</p>
-          <p class="text-lg font-semibold text-foreground">{{ participation.entrainement.type }}</p>
+          <label class="block text-sm font-semibold text-muted-foreground mb-2">
+            Entrainement
+          </label>
+          <p class="text-foreground font-medium">
+            {{ participation.entrainement.type }}
+          </p>
         </div>
       </div>
 
-      <div class="border-t border-border pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Séparateur -->
+      <hr class="border-border">
+
+      <!-- Présence + justification -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
         <div>
-          <p class="text-sm text-muted-foreground mb-2">Présence</p>
-          {% if participation.presence %}
-            <span class="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-600 rounded-full font-semibold">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Présent
+          <label class="block text-sm font-semibold text-muted-foreground mb-3">
+            Présence
+          </label>
+
+          {% if participation.presence == 'present' %}
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                         bg-green-100 text-green-700 font-semibold text-sm">
+              ✔ Présent
+            </span>
+          {% elseif participation.presence == 'absent' %}
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                         bg-red-100 text-red-700 font-semibold text-sm">
+              ✖ Absent
             </span>
           {% else %}
-            <span class="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-600 rounded-full font-semibold">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-              </svg>
-              Absent
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                         bg-gray-200 text-gray-700 font-semibold text-sm">
+              ? Non défini
             </span>
           {% endif %}
         </div>
+
         <div>
-          <p class="text-sm text-muted-foreground mb-2">Justificatif</p>
-          <p class="text-foreground font-semibold">{{ participation.justificationAbsence|default('Aucun') }}</p>
+          <label class="block text-sm font-semibold text-muted-foreground mb-3">
+            Justificatif d’absence
+          </label>
+          <p class="text-foreground">
+            {{ participation.justificationAbsence|default('Aucun justificatif fourni') }}
+          </p>
         </div>
+
       </div>
     </div>
 
-    <div class="flex gap-4">
-      <a href="{{ path('front_participation_edit', {id: participation.id}) }}" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center">
+    <!-- Actions -->
+    <div class="mt-10 flex flex-col md:flex-row gap-4">
+      <a href="{{ path('front_participation_edit', {id: participation.id}) }}"
+         class="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg
+                font-semibold text-center hover:bg-primary/90 transition">
         Éditer
       </a>
-      <button onclick="document.getElementById('delete-form').submit()" class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors">
+
+      <button onclick="document.getElementById('delete-form').submit()"
+              class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg
+                     font-semibold hover:bg-red-700 transition">
         Supprimer
       </button>
-      <a href="{{ path('front_participation_index') }}" class="flex-1 px-6 py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:bg-secondary/80 transition-colors text-center">
-        Retour
+
+      <a href="{{ path('front_participation_index') }}"
+         class="flex-1 px-6 py-3 bg-secondary text-secondary-foreground rounded-lg
+                font-semibold text-center hover:bg-secondary/80 transition">
+        Retour à la liste
       </a>
     </div>
 
-    <form id="delete-form" action="{{ path('front_participation_delete', {id: participation.id}) }}" method="POST" style="display:none;">
+    <!-- Delete form -->
+    <form id="delete-form"
+          action="{{ path('front_participation_delete', {id: participation.id}) }}"
+          method="POST"
+          style="display:none;">
       <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ participation.id) }}">
     </form>
+
   </div>
 </div>
 {% endblock %}

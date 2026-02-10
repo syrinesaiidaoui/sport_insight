@@ -15,10 +15,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ParticipationController extends AbstractController
 {
     #[Route('/', name: 'back_participation_index', methods: ['GET'])]
-    public function index(ParticipationRepository $participationRepository): Response
+    public function index(Request $request, ParticipationRepository $participationRepository): Response
     {
+        $presence = $request->query->get('presence');
+        if ($presence) {
+            $participations = $participationRepository->findByPresence($presence);
+        } else {
+            $participations = $participationRepository->findAll();
+        }
         return $this->render('back_office/participation/index.html.twig', [
-            'participations' => $participationRepository->findAll(),
+            'participations' => $participations,
+            'presence' => $presence,
         ]);
     }
 

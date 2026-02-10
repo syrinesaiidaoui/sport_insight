@@ -15,7 +15,15 @@ class ParticipationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('presence')
+            ->add('presence', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'choices' => [
+                    'Présent' => 'present',
+                    'Absent' => 'absent',
+                ],
+                'expanded' => false,
+                'multiple' => false,
+                'label' => 'Présence',
+            ])
             ->add('justificationAbsence')
             ->add('entrainement', EntityType::class, [
                 'class' => Entrainement::class,
