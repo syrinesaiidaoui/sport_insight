@@ -3,32 +3,106 @@
 {% block title %}Sponsoring - FC Club{% endblock %}
 
 {% block body %}
-    <h2 class="section-title">Nos Sponsors</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h2 class="section-title">Nos Sponsors</h2>
+        <div>
+            <a href="{{ path('app_sponsor_new') }}" class="btn btn-primary btn-sm" style="margin-right:8px;">Nouveau sponsor</a>
+            <a href="{{ path('app_contrat_sponsor_new') }}" class="btn btn-success btn-sm">Nouveau contrat</a>
+        </div>
+    </div>
 
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="front-card text-center">
-                <div class="card-icon" style="margin:0 auto 16px"><i class="lucide-building-2"></i></div>
-                <h3>Tunisie Telecom</h3>
-                <p>Sponsor maillot principal</p>
-                <span class="badge-success">Partenaire officiel</span>
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="front-card">
+                <div class="stat-card-label">Sponsors actifs</div>
+                <div class="stat-card-value">{{ sponsors|length }}</div>
+                <div class="stat-card-sub">Total sponsors</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="front-card text-center">
-                <div class="card-icon" style="margin:0 auto 16px"><i class="lucide-landmark"></i></div>
-                <h3>BIAT</h3>
-                <p>Sponsor stade</p>
-                <span class="badge-success">Partenaire officiel</span>
+        <div class="col-md-3">
+            <div class="front-card">
+                <div class="stat-card-label">Revenu annuel</div>
+                <div class="stat-card-value">{{ (sponsors|reduce((carry, sponsor) => carry + sponsor.budget, 0) / 1000)|round(0) }}K DT</div>
+                <div class="stat-card-sub">Budget total</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="front-card text-center">
-                <div class="card-icon" style="margin:0 auto 16px"><i class="lucide-cup-soda"></i></div>
-                <h3>Coca-Cola</h3>
-                <p>Boissons officiel</p>
-                <span class="badge-info">Partenaire</span>
+        <div class="col-md-3">
+            <div class="front-card">
+                <div class="stat-card-label">Contrats actifs</div>
+                <div class="stat-card-value">{{ contrats|length }}</div>
+                <div class="stat-card-sub">Total contrats</div>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="front-card">
+                <div class="stat-card-label">Valeur moyenne</div>
+                <div class="stat-card-value">{% if contrats|length > 0 %}{{ (contrats|reduce((carry, contrat) => carry + contrat.montant, 0) / contrats|length / 1000)|round(0) }}K{% else %}0{% endif %} DT</div>
+                <div class="stat-card-sub">Par contrat</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="front-table">
+        <div class="front-table-header">
+            <h3>Liste des contrats sponsors</h3>
+        </div>
+
+        <div style="padding: 16px 24px;">
+            <form method="GET" class="search-form-inline">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: flex-end;">
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px;">Nom Sponsor</label>
+                        <input type="text" name="sponsor_nom" placeholder="Rechercher par nom..." value="{{ sponsor_nom ?? '' }}" style="width: 100%; padding: 8px 12px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px;">Date Début</label>
+                        <input type="date" name="date_debut" value="{{ date_debut ?? '' }}" style="width: 100%; padding: 8px 12px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="submit" class="btn btn-primary">🔍 Rechercher</button>
+                        <a href="{{ path('front_sponsoring_index') }}" class="btn btn-secondary">✕ Réinitialiser</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Sponsor</th>
+                    <th>Montant</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Équipe</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if contrats|length > 0 %}
+                    {% for contrat in contrats %}
+                        <tr>
+                            <td><strong>{{ contrat.sponsor.nom }}</strong></td>
+                            <td>{{ contrat.montant }} DT</td>
+                            <td>{{ contrat.dateDebut ? contrat.dateDebut|date('d/m/Y') : '-' }}</td>
+                            <td>{{ contrat.dateFin ? contrat.dateFin|date('d/m/Y') : '-' }}</td>
+                            <td>{{ contrat.equipe.nom ?? '-' }}</td>
+                            <td>
+                                <a href="{{ path('app_contrat_sponsor_show', {'id': contrat.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+                                <a href="{{ path('app_contrat_sponsor_pdf', {'id': contrat.id}) }}" class="btn btn-sm btn-outline-info" target="_blank">PDF</a>
+                                <a href="{{ path('app_contrat_sponsor_edit', {'id': contrat.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                <form method="post" action="{{ path('app_contrat_sponsor_delete', {'id': contrat.id}) }}" onsubmit="return confirm('Êtes-vous sûr ?');" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contrat.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding: 20px;">Aucun contrat sponsor trouvé</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}

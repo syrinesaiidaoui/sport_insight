@@ -55,7 +55,10 @@ final class ContratSponsorController extends AbstractController
             $entityManager->persist($contratSponsor);
             $entityManager->flush();
 
-            return $this->redirectToRoute('back_sponsoring_index', [], Response::HTTP_SEE_OTHER);
+            $referer = $request->headers->get('referer', '');
+            $route = str_contains($referer, '/admin') ? 'back_sponsoring_index' : 'front_sponsoring_index';
+
+            return $this->redirectToRoute($route, [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('contrat_sponsor/new.html.twig', [
@@ -81,7 +84,10 @@ final class ContratSponsorController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('back_sponsoring_index', [], Response::HTTP_SEE_OTHER);
+            $referer = $request->headers->get('referer', '');
+            $route = str_contains($referer, '/admin') ? 'back_sponsoring_index' : 'front_sponsoring_index';
+
+            return $this->redirectToRoute($route, [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('contrat_sponsor/edit.html.twig', [
@@ -106,6 +112,9 @@ final class ContratSponsorController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('back_sponsoring_index', [], Response::HTTP_SEE_OTHER);
+        $referer = $request->headers->get('referer', '');
+        $route = str_contains($referer, '/admin') ? 'back_sponsoring_index' : 'front_sponsoring_index';
+
+        return $this->redirectToRoute($route, [], Response::HTTP_SEE_OTHER);
     }
 }
