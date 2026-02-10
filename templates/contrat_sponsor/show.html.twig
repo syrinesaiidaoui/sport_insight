@@ -1,0 +1,127 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Détails du contrat sponsor #{{ contrat_sponsor.id }}{% endblock %}
+
+{% block body %}
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Contrat sponsor #{{ contrat_sponsor.id }}</h1>
+        </div>
+
+        <div class="card">
+            <table class="table-details">
+                <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <td>{{ contrat_sponsor.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de début</th>
+                        <td>{{ contrat_sponsor.dateDebut ? contrat_sponsor.dateDebut|date('d/m/Y') : 'Non définie' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de fin</th>
+                        <td>{{ contrat_sponsor.dateFin ? contrat_sponsor.dateFin|date('d/m/Y') : 'Non définie' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Montant</th>
+                        <td><strong>{{ contrat_sponsor.montant }}€</strong></td>
+                    </tr>
+                    {% if contrat_sponsor.description %}
+                    <tr>
+                        <th>Description/Contraintes</th>
+                        <td style="white-space: pre-wrap;">{{ contrat_sponsor.description }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3 form-actions">
+            <a href="{{ path('app_contrat_sponsor_index') }}" class="btn btn-secondary">
+                <i class="lucide-arrow-left"></i> Retour à la liste
+            </a>
+            <a href="{{ path('app_contrat_sponsor_edit', {'id': contrat_sponsor.id}) }}" class="btn btn-warning">
+                <i class="lucide-edit"></i> Éditer
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .page-header {
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+        .table-details {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-details tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .table-details tbody tr:last-child {
+            border-bottom: none;
+        }
+        .table-details th {
+            text-align: left;
+            padding: 12px 0;
+            font-weight: 600;
+            color: var(--text-muted);
+            width: 30%;
+        }
+        .table-details td {
+            text-align: left;
+            padding: 12px 0 12px 20px;
+            color: var(--text-dark);
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--text-muted);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+            color: white;
+        }
+        .btn-warning {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        .mt-3 {
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}

@@ -6,8 +6,15 @@ use App\Repository\SponsorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: SponsorRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQUE_sponsor_nom', columns: ['nom'])]
+#[UniqueEntity(
+    fields: ['nom'],
+    message: 'Ce sponsor existe déjà dans la base de données'
+)]
 class Sponsor
 {
     #[ORM\Id]
@@ -16,15 +23,33 @@ class Sponsor
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du sponsor est obligatoire')]
+    #[Assert\Length(
+        min: 3,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        max: 255,
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'L\'email est obligatoire')]
+    #[Assert\Email(message: 'L\'email doit être valide')]
     private ?string $email = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: 'Le téléphone est obligatoire')]
+    #[Assert\Length(
+        min: 8,
+        max: 8,
+        exactMessage: 'Le téléphone doit contenir exactement {{ limit }} caractères'
+    )]
     private ?string $telephone = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le budget est obligatoire')]
+    #[Assert\Positive(message: 'Le budget doit être un nombre positif')]
+    #[Assert\Type(type: 'float', message: 'Le budget doit être un nombre')]
     private ?float $budget = null;
 
     /**
