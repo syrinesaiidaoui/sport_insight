@@ -20,8 +20,11 @@ class Commentaire
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateCommentaire = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $auteurAnonyme = null;
+
     #[ORM\ManyToOne(inversedBy: 'commentaires')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $joueur = null;
 
     #[ORM\ManyToOne]
@@ -65,6 +68,18 @@ class Commentaire
     public function setJoueur(?User $joueur): static
     {
         $this->joueur = $joueur;
+
+        return $this;
+    }
+
+    public function getAuteurAnonyme(): ?string
+    {
+        return $this->auteurAnonyme;
+    }
+
+    public function setAuteurAnonyme(?string $auteurAnonyme): static
+    {
+        $this->auteurAnonyme = $auteurAnonyme;
 
         return $this;
     }

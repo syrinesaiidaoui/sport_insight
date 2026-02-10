@@ -1,0 +1,278 @@
+{{ form_start(form, {'attr': {'class': 'form-annonce', 'novalidate': 'novalidate'}}) }}
+    <style>
+        .form-annonce .form-group { margin-bottom: 20px; }
+        .form-annonce label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: var(--text-dark); 
+            font-weight: 600; 
+            font-size: 14px; 
+        }
+        .form-annonce label .required {
+            color: #dc2626;
+        }
+        .form-annonce input[type="text"],
+        .form-annonce input[type="email"],
+        .form-annonce input[type="date"],
+        .form-annonce input[type="number"],
+        .form-annonce textarea,
+        .form-annonce select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+            background: white;
+        }
+        .form-annonce textarea { 
+            min-height: 120px; 
+            resize: vertical; 
+        }
+        .form-annonce input:focus,
+        .form-annonce textarea:focus,
+        .form-annonce select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .form-annonce .form-error { 
+            color: #dc2626; 
+            font-size: 12px; 
+            margin-top: 4px; 
+            display: block;
+        }
+        .form-annonce .form-error-list {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 4px;
+            padding-left: 0;
+            list-style: none;
+        }
+        .form-annonce .form-error-list li {
+            margin: 4px 0;
+            padding-left: 20px;
+            position: relative;
+            font-weight: 500;
+        }
+        .form-annonce .form-error-list li:before {
+            content: "⚠ ";
+            position: absolute;
+            left: 0;
+            color: #dc2626;
+        }
+        .form-annonce .form-group-error input,
+        .form-annonce .form-group-error textarea,
+        .form-annonce .form-group-error select {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+        .form-actions { 
+            margin-top: 32px; 
+            display: flex; 
+            gap: 12px; 
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+        .form-actions button { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .form-actions .btn-primary { 
+            background: var(--primary); 
+            color: white; 
+        }
+        .form-actions .btn-primary:hover { 
+            background: var(--primary-hover);
+        }
+    </style>
+    
+    <div class="form-group {% if form.titre.vars.errors|length %}form-group-error{% endif %}" data-field="titre">
+        <label for="titre">Titre de l'annonce <span class="required">*</span></label>
+        {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'id': 'titre', 'required': 'required'}}) }}
+        {% if form.titre.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.titre.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+
+    <div class="form-group {% if form.description.vars.errors|length %}form-group-error{% endif %}" data-field="description">
+        <label for="description">Description <span class="required">*</span></label>
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'id': 'description', 'rows': 5, 'required': 'required'}}) }}
+        {% if form.description.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.description.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+
+    <div class="form-group {% if form.posteRecherche.vars.errors|length %}form-group-error{% endif %}" data-field="posteRecherche">
+        <label for="posteRecherche">Poste Recherché <span class="required">*</span></label>
+        {{ form_widget(form.posteRecherche, {'attr': {'class': 'form-control', 'id': 'posteRecherche', 'required': 'required'}}) }}
+        {% if form.posteRecherche.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.posteRecherche.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+
+    <div class="form-group {% if form.niveauRequis.vars.errors|length %}form-group-error{% endif %}" data-field="niveauRequis">
+        <label for="niveauRequis">Niveau Requis <span class="required">*</span></label>
+        {{ form_widget(form.niveauRequis, {'attr': {'class': 'form-control', 'id': 'niveauRequis', 'required': 'required'}}) }}
+        {% if form.niveauRequis.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.niveauRequis.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+
+    <div class="form-group {% if form.datePublication.vars.errors|length %}form-group-error{% endif %}" data-field="datePublication">
+        <label for="datePublication">Date Publication <span class="required">*</span></label>
+        {{ form_widget(form.datePublication, {'attr': {'class': 'form-control', 'id': 'datePublication', 'required': 'required'}}) }}
+        {% if form.datePublication.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.datePublication.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+
+    <div class="form-group {% if form.statut.vars.errors|length %}form-group-error{% endif %}" data-field="statut">
+        <label for="statut">Statut <span class="required">*</span></label>
+        {{ form_widget(form.statut, {'attr': {'class': 'form-control', 'id': 'statut', 'required': 'required'}}) }}
+        {% if form.statut.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.statut.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+
+    <div class="form-group {% if form.entraineur.vars.errors|length %}form-group-error{% endif %}" data-field="entraineur">
+        <label for="entraineur">Entraîneur</label>
+        {{ form_widget(form.entraineur, {'attr': {'class': 'form-control', 'id': 'entraineur'}}) }}
+        {% if form.entraineur.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.entraineur.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn-primary">{{ button_label|default('Enregistrer') }}</button>
+        <a href="{{ path('app_annonce_index') }}" style="padding: 12px 24px; border-radius: 8px; background: var(--border-color); color: var(--text-dark); text-decoration: none; display: inline-block; font-weight: 600;">Annuler</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.form-annonce');
+            const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+
+            // Validation en temps réel
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                input.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        validateField(this);
+                    }
+                });
+            });
+
+            // Validation à la soumission
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!validateField(input)) {
+                        isValid = false;
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+
+            function validateField(field) {
+                const formGroup = field.closest('.form-group');
+                const fieldName = field.name;
+                let isValid = true;
+                let errorMsg = '';
+
+                // Vérifier si le champ est vide
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    isValid = false;
+                    errorMsg = 'Ce champ est obligatoire';
+                }
+
+                // Validation personnalisée selon le champ
+                if (isValid) {
+                    if (fieldName.includes('titre') && field.value.trim().length < 3) {
+                        isValid = false;
+                        errorMsg = 'Le titre doit contenir au moins 3 caractères';
+                    }
+                    if (fieldName.includes('description') && field.value.trim().length < 10) {
+                        isValid = false;
+                        errorMsg = 'La description doit contenir au moins 10 caractères';
+                    }
+                    if (fieldName.includes('description') && field.value.trim().length > 5000) {
+                        isValid = false;
+                        errorMsg = 'La description ne doit pas dépasser 5000 caractères';
+                    }
+                }
+
+                // Afficher/masquer les erreurs
+                if (!isValid) {
+                    formGroup.classList.add('form-group-error');
+                    let errorList = formGroup.querySelector('.form-error-list');
+                    if (!errorList.querySelector('li')) {
+                        errorList.innerHTML = `<li>${errorMsg}</li>`;
+                        errorList.style.display = '';
+                    }
+                } else {
+                    formGroup.classList.remove('form-group-error');
+                    let errorList = formGroup.querySelector('.form-error-list');
+                    errorList.innerHTML = '';
+                    errorList.style.display = 'none';
+                }
+
+                return isValid;
+            }
+        });
+    </script>
+
+{{ form_end(form) }}
+

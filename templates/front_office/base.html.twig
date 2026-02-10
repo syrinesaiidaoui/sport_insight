@@ -307,6 +307,12 @@
                     Equipement
                 </a>
             </li>
+            <li>
+                <a href="{{ path('app_annonce_index') }}"
+                   class="{{ app.request.get('_route') starts with 'app_annonce' ? 'active' : '' }}">
+                    Annonces
+                </a>
+            </li>
         </ul>
 
         <div class="nav-actions">
