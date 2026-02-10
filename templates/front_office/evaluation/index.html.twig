@@ -21,6 +21,16 @@
     </span>
   </div>
 
+  <!-- ====== Statistiques Performance Joueur ====== -->
+  {% if stats is defined %}
+    <div class="card mb-4 p-4" style="max-width: 500px; margin: 0 auto;">
+      <h4 style="font-weight:600; color:var(--primary); margin-bottom:12px;">Statistiques Moyennes des Notes</h4>
+      <span style="font-weight:500; color:#166534;">Physique:</span> {{ stats.physique }} / 20<br>
+      <span style="font-weight:500; color:#2563eb;">Technique:</span> {{ stats.technique }} / 20<br>
+      <span style="font-weight:500; color:#991b1b;">Tactique:</span> {{ stats.tactique }} / 20
+    </div>
+  {% endif %}
+
   {# ===== Recherche ===== #}
   <form method="get" class="mb-4">
     <div class="input-group" style="max-width:400px">
@@ -35,6 +45,13 @@
     </div>
   </form>
 
+  <div class="mb-3">
+    <span style="font-weight:600;">Trier par :</span>
+    <a href="{{ path('front_evaluation_index', {'sort_by': 'notePhysique', 'sort_dir': sort_dir == 'asc' and sort_by == 'notePhysique' ? 'desc' : 'asc', 'search_nom': search_nom}) }}" class="btn btn-outline-secondary btn-sm {% if sort_by == 'notePhysique' %}active{% endif %}">Physique</a>
+    <a href="{{ path('front_evaluation_index', {'sort_by': 'noteTechnique', 'sort_dir': sort_dir == 'asc' and sort_by == 'noteTechnique' ? 'desc' : 'asc', 'search_nom': search_nom}) }}" class="btn btn-outline-secondary btn-sm {% if sort_by == 'noteTechnique' %}active{% endif %}">Technique</a>
+    <a href="{{ path('front_evaluation_index', {'sort_by': 'noteTactique', 'sort_dir': sort_dir == 'asc' and sort_by == 'noteTactique' ? 'desc' : 'asc', 'search_nom': search_nom}) }}" class="btn btn-outline-secondary btn-sm {% if sort_by == 'noteTactique' %}active{% endif %}">Tactique</a>
+  </div>
+
   {% if evaluations is not empty %}
     <table class="table">
       <thead>
@@ -47,58 +64,30 @@
           <th class="text-end">Actions</th>
         </tr>
       </thead>
-
       <tbody>
         {% for evaluation in evaluations %}
-          {% if search_nom is empty or search_nom|lower in evaluation.joueur.nom|lower %}
-            <tr>
-              <td>{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</td>
-              <td>{{ evaluation.entrainement.type }}</td>
-              <td>{{ evaluation.notePhysique }}</td>
-              <td>{{ evaluation.noteTechnique }}</td>
-              <td>{{ evaluation.noteTactique }}</td>
-
-              <td class="text-end">
-                <a href="{{ path('front_evaluation_show', { id: evaluation.id }) }}"
-                   class="btn btn-sm btn-outline-secondary">
-                  Voir
-                </a>
-
-                <a href="{{ path('front_evaluation_edit', { id: evaluation.id }) }}"
-                   class="btn btn-sm btn-outline-secondary">
-                  Éditer
-                </a>
-
-                <button
-                  type="button"
-                  class="btn btn-sm btn-outline-danger"
-                  onclick="openDeleteModal(
-                    {{ evaluation.id }},
-                    '{{ csrf_token('delete' ~ evaluation.id) }}'
-                  )"
-                >
-                  Supprimer
-                </button>
-              </td>
-            </tr>
-          {% endif %}
+          <tr>
+            <td>{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</td>
+            <td>{{ evaluation.entrainement.type }}</td>
+            <td>{{ evaluation.notePhysique }}</td>
+            <td>{{ evaluation.noteTechnique }}</td>
+            <td>{{ evaluation.noteTactique }}</td>
+            <td class="text-end">
+              <a href="{{ path('front_evaluation_show', { id: evaluation.id }) }}"
+                 class="btn btn-sm btn-outline-secondary">Voir</a>
+              <a href="{{ path('front_evaluation_edit', { id: evaluation.id }) }}"
+                 class="btn btn-sm btn-outline-secondary">Éditer</a>
+              <button type="button" class="btn btn-sm btn-outline-danger"
+                onclick="openDeleteModal({{ evaluation.id }}, '{{ csrf_token('delete' ~ evaluation.id) }}')">Supprimer</button>
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
-
-    <div class="text-center mt-4">
-      <a href="{{ path('front_evaluation_new') }}" class="btn btn-primary btn-sm">
-        <i class="lucide-plus" style="font-size:14px"></i>
-        Ajouter une évaluation
-      </a>
-    </div>
-
   {% else %}
     <div class="text-center p-5">
       <p class="text-muted">Aucune évaluation pour le moment.</p>
-      <a href="{{ path('front_evaluation_new') }}" class="btn btn-primary mt-3">
-        + Créer une évaluation
-      </a>
+      <a href="{{ path('front_evaluation_new') }}" class="btn btn-primary mt-3">+ Créer une évaluation</a>
     </div>
   {% endif %}
 

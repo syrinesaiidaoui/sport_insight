@@ -19,15 +19,48 @@ final class EvaluationController extends AbstractController
     #[Route('', name: 'index', methods: ['GET'])]
 public function index(Request $request, EvaluationRepository $evaluationRepository): Response
 {
-    // Récupérer la recherche si elle existe
-    $searchNom = $request->query->get('search_nom', ''); // valeur par défaut = ''
+    $searchNom = $request->query->get('search_nom', '');
+    $sortBy = $request->query->get('sort_by', '');
+    $sortDir = $request->query->get('sort_dir', 'asc');
 
-    // Récupérer toutes les évaluations
-    $evaluations = $evaluationRepository->findAll();
+    $qb = $evaluationRepository->createQueryBuilder('e')
+        ->leftJoin('e.joueur', 'j')
+        ->addSelect('j')
+        ->leftJoin('e.entrainement', 'en')
+        ->addSelect('en');
+
+    if ($searchNom) {
+        $qb->andWhere('LOWER(j.nom) LIKE :searchNom')
+           ->setParameter('searchNom', '%' . strtolower($searchNom) . '%');
+    }
+
+    if (in_array($sortBy, ['notePhysique', 'noteTechnique', 'noteTactique'])) {
+        $qb->orderBy('e.' . $sortBy, $sortDir === 'desc' ? 'DESC' : 'ASC');
+    } else {
+        $qb->orderBy('e.id', 'DESC');
+    }
+
+    $evaluations = $qb->getQuery()->getResult();
+
+    $total = count($evaluations);
+    $sumPhysique = $sumTechnique = $sumTactique = 0;
+    foreach ($evaluations as $evaluation) {
+        $sumPhysique += $evaluation->getNotePhysique();
+        $sumTechnique += $evaluation->getNoteTechnique();
+        $sumTactique += $evaluation->getNoteTactique();
+    }
+    $stats = [
+        'physique'  => $total ? round($sumPhysique / $total, 2) : 0,
+        'technique' => $total ? round($sumTechnique / $total, 2) : 0,
+        'tactique'  => $total ? round($sumTactique / $total, 2) : 0,
+    ];
 
     return $this->render('front_office/evaluation/index.html.twig', [
         'evaluations' => $evaluations,
-        'search_nom' => $searchNom,
+        'search_nom'  => $searchNom,
+        'sort_by'     => $sortBy,
+        'sort_dir'    => $sortDir,
+        'stats'       => $stats,
     ]);
 }
 

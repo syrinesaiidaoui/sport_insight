@@ -1,76 +1,58 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Détails Évaluation{% endblock %}
+{% block title %}Évaluation - FC Club{% endblock %}
 
 {% block body %}
-<div class="flex-1 overflow-auto">
-  <div class="max-w-2xl mx-auto p-8">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <a href="{{ path('front_evaluation_index') }}" style="color: var(--primary); text-decoration: none; margin-bottom: 24px; display: inline-block;">← Retour à la liste</a>
 
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-foreground">
-        Évaluation – {{ evaluation.joueur.prenom }} {{ evaluation.joueur.nom }}
-      </h1>
-      <p class="text-muted-foreground mt-2">
-        Entrainement : {{ evaluation.entrainement.type }}
-      </p>
-    </div>
+        <div class="front-card">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px;">
+                <div>
+                    <h1 class="section-title" style="margin-bottom: 8px;">Évaluation</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">{{ evaluation.joueur.prenom }} {{ evaluation.joueur.nom }} · {{ evaluation.entrainement.type }}</p>
+                </div>
+            </div>
 
-    <!-- Card -->
-    <div class="bg-card rounded-lg border border-border p-8 space-y-6">
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);">
+                <h3 style="color: var(--text-dark); font-weight: 600; margin-bottom: 8px;">Détails</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Joueur</h4>
+                        <p style="color: var(--text-dark); font-weight: 600;">{{ evaluation.joueur.prenom }} {{ evaluation.joueur.nom }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Entrainement</h4>
+                        <p style="color: var(--text-dark); font-weight: 600;">{{ evaluation.entrainement.type }}</p>
+                    </div>
+                </div>
+                <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Physique</h4>
+                        <p style="color: var(--text-dark); font-weight: bold;">{{ evaluation.notePhysique }}/20</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Technique</h4>
+                        <p style="color: var(--text-dark); font-weight: bold;">{{ evaluation.noteTechnique }}/20</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Tactique</h4>
+                        <p style="color: var(--text-dark); font-weight: bold;">{{ evaluation.noteTactique }}/20</p>
+                    </div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Commentaire</h4>
+                    <p style="color: var(--text-dark); line-height: 1.6;">{{ evaluation.commentaire|default('Aucun commentaire') }}</p>
+                </div>
+            </div>
 
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Joueur</label>
-        <p class="text-foreground">
-          {{ evaluation.joueur.prenom }} {{ evaluation.joueur.nom }}
-        </p>
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Entrainement</label>
-        <p class="text-foreground">{{ evaluation.entrainement.type }}</p>
-      </div>
-
-      <!-- Notes -->
-      <div class="grid grid-cols-3 gap-6">
-        <div>
-          <label class="block text-sm font-semibold text-muted-foreground mb-2">Physique</label>
-          <p class="text-foreground font-bold">{{ evaluation.notePhysique }}/20</p>
+            <div style="display: flex; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <a href="{{ path('front_evaluation_edit', {'id': evaluation.id}) }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Éditer</a>
+                <form method="post" action="{{ path('front_evaluation_delete', {'id': evaluation.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous vraiment sûr?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evaluation.id) }}">
+                    <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 14px; background: #ef4444; border: none; color: white; border-radius: 8px; cursor: pointer;">Supprimer</button>
+                </form>
+            </div>
         </div>
-
-        <div>
-          <label class="block text-sm font-semibold text-muted-foreground mb-2">Technique</label>
-          <p class="text-foreground font-bold">{{ evaluation.noteTechnique }}/20</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-semibold text-muted-foreground mb-2">Tactique</label>
-          <p class="text-foreground font-bold">{{ evaluation.noteTactique }}/20</p>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Commentaire</label>
-        <p class="text-foreground">
-          {{ evaluation.commentaire|default('Aucun commentaire') }}
-        </p>
-      </div>
-
     </div>
-
-    <!-- Actions -->
-    <div class="mt-8 flex items-center gap-4">
-      <a href="{{ path('front_evaluation_edit', { id: evaluation.id }) }}"
-         class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
-        Éditer
-      </a>
-
-      <a href="{{ path('front_evaluation_index') }}"
-         class="inline-flex items-center gap-2 text-primary hover:underline">
-        Retour à la liste
-      </a>
-    </div>
-
-  </div>
-</div>
 {% endblock %}

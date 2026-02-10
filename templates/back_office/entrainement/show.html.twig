@@ -1,68 +1,52 @@
 {% extends 'back_office/base.html.twig' %}
 
-{% block title %}Détails Entrainement - Admin{% endblock %}
+{% block title %}{{ entrainement.type }} - Entrainements FC Club{% endblock %}
 
 {% block body %}
-<div class="flex-1 overflow-auto">
-  <div class="max-w-2xl mx-auto p-8">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-foreground">{{ entrainement.type }}</h1>
-      <p class="text-muted-foreground mt-2">{{ entrainement.dateEntrainement|date('d/m/Y H:i') }}</p>
-    </div>
+    <div style="max-width: 800px; margin: 0 auto;">
+        <a href="{{ path('back_entrainement_index') }}" style="color: var(--primary); text-decoration: none; margin-bottom: 24px; display: inline-block;">← Retour à la liste</a>
 
-    <div class="bg-card rounded-lg border border-border p-8 space-y-6">
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Type d'Entrainement</label>
-        <p class="text-foreground">{{ entrainement.type }}</p>
-      </div>
+        <div class="back-card">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px;">
+                <div>
+                    <h1 class="section-title" style="margin-bottom: 8px;">{{ entrainement.type }}</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Prévu le {{ entrainement.dateEntrainement ? entrainement.dateEntrainement|date('d/m/Y') : 'N/A' }}</p>
+                </div>
+            </div>
 
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Date</label>
-        <p class="text-foreground">{{ entrainement.dateEntrainement|date('d/m/Y') }}</p>
-      </div>
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);">
+                <h3 style="color: var(--text-dark); font-weight: 600; margin-bottom: 8px;">Détails</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Heure de début</h4>
+                        <p style="color: var(--text-dark); font-weight: 600;">{{ entrainement.heureDebut|date('H:i') }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Heure de fin</h4>
+                        <p style="color: var(--text-dark); font-weight: 600;">{{ entrainement.heureFin|date('H:i') }}</p>
+                    </div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Lieu</h4>
+                    <p style="color: var(--text-dark); font-weight: 600;">{{ entrainement.lieu }}</p>
+                </div>
+                <div style="margin-top: 16px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Objectif</h4>
+                    <p style="color: var(--text-dark); line-height: 1.6;">{{ entrainement.objectif }}</p>
+                </div>
+                <div style="margin-top: 16px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Notes</h4>
+                    <p style="color: var(--text-dark); line-height: 1.6;">{{ entrainement.notes|default('Aucune note') }}</p>
+                </div>
+            </div>
 
-      <div class="grid grid-cols-2 gap-6">
-        <div>
-          <label class="block text-sm font-semibold text-muted-foreground mb-2">Heure de début</label>
-          <p class="text-foreground">{{ entrainement.heureDebut|date('H:i') }}</p>
+            <div style="display: flex; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <a href="{{ path('back_entrainement_edit', {'id': entrainement.id}) }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Éditer</a>
+                <form method="post" action="{{ path('back_entrainement_delete', {'id': entrainement.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous vraiment sûr?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entrainement.id) }}">
+                    <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 14px; background: #ef4444; border: none; color: white; border-radius: 8px; cursor: pointer;">Supprimer</button>
+                </form>
+            </div>
         </div>
-        <div>
-          <label class="block text-sm font-semibold text-muted-foreground mb-2">Heure de fin</label>
-          <p class="text-foreground">{{ entrainement.heureFin|date('H:i') }}</p>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Lieu</label>
-        <p class="text-foreground">{{ entrainement.lieu }}</p>
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Objectif</label>
-        <p class="text-foreground">{{ entrainement.objectif }}</p>
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-muted-foreground mb-2">Notes</label>
-        <p class="text-foreground">{{ entrainement.notes|default('Aucune note') }}</p>
-      </div>
     </div>
-
-    <div class="mt-8 flex items-center gap-4">
-      <a href="{{ path('back_entrainement_edit', {'id': entrainement.id}) }}" 
-         class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-        </svg>
-        Éditer
-      </a>
-      <a href="{{ path('back_entrainement_index') }}" class="inline-flex items-center gap-2 text-primary hover:underline">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-        Retour à la liste
-      </a>
-    </div>
-  </div>
-</div>
 {% endblock %}
