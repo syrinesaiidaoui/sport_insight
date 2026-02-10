@@ -1,0 +1,118 @@
+{{ form_start(form, {'attr': {'class': 'form-annonce'}}) }}
+    <style>
+        .form-annonce .form-group { margin-bottom: 20px; }
+        .form-annonce label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: var(--text-dark); 
+            font-weight: 600; 
+            font-size: 14px; 
+        }
+        .form-annonce input[type="text"],
+        .form-annonce input[type="email"],
+        .form-annonce input[type="date"],
+        .form-annonce input[type="number"],
+        .form-annonce textarea,
+        .form-annonce select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+            background: white;
+        }
+        .form-annonce textarea { 
+            min-height: 120px; 
+            resize: vertical; 
+        }
+        .form-annonce input:focus,
+        .form-annonce textarea:focus,
+        .form-annonce select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .form-annonce .form-error { 
+            color: #dc2626; 
+            font-size: 12px; 
+            margin-top: 4px; 
+        }
+        .form-annonce .form-group-error input,
+        .form-annonce .form-group-error textarea,
+        .form-annonce .form-group-error select {
+            border-color: #dc2626;
+        }
+        .form-actions { 
+            margin-top: 32px; 
+            display: flex; 
+            gap: 12px; 
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+        .form-actions button { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .form-actions .btn-primary { 
+            background: var(--primary); 
+            color: white; 
+        }
+        .form-actions .btn-primary:hover { 
+            background: var(--primary-hover);
+        }
+    </style>
+    
+    <div class="form-group">
+        {{ form_label(form.titre, 'Titre de l\'annonce') }}
+        {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.titre) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.description, 'Description') }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.posteRecherche, 'Poste Recherché') }}
+        {{ form_widget(form.posteRecherche, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.posteRecherche) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.niveauRequis, 'Niveau Requis') }}
+        {{ form_widget(form.niveauRequis, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.niveauRequis) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.datePublication, 'Date Publication') }}
+        {{ form_widget(form.datePublication, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.datePublication) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.statut, 'Statut') }}
+        {{ form_widget(form.statut, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.statut) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.entraineur, 'Entraîneur') }}
+        {{ form_widget(form.entraineur, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.entraineur) }}
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn-primary">{{ button_label|default('Enregistrer') }}</button>
+        <a href="{{ path('app_annonce_index') }}" style="padding: 12px 24px; border-radius: 8px; background: var(--border-color); color: var(--text-dark); text-decoration: none; display: inline-block; font-weight: 600;">Annuler</a>
+    </div>
+{{ form_end(form) }}
+
