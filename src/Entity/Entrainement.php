@@ -44,17 +44,12 @@ class Entrainement
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'entrainements')]
     private Collection $joueurs;
 
-    /**
-     * @var Collection<int, Participation>
-     */
-    #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'entrainement')]
-    private Collection $participations;
+    #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'entrainement', orphanRemoval: true, cascade: ['remove'])]
+private Collection $participations;
 
-    /**
-     * @var Collection<int, Evaluation>
-     */
-    #[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'entrainement')]
-    private Collection $evaluations;
+#[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'entrainement', orphanRemoval: true, cascade: ['remove'])]
+private Collection $evaluations;
+
 
     public function __construct()
     {

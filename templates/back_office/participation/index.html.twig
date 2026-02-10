@@ -1,0 +1,82 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Participations - Admin{% endblock %}
+
+{% block page_title %}Participations{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('back_participation_new') }}" class="btn btn-primary btn-sm">
+    <i class="lucide-plus" style="font-size:14px"></i> Ajouter
+  </a>
+{% endblock %}
+
+{% block body %}
+<div class="data-table">
+  <div class="data-table-header">
+    <h3>Liste des participations</h3>
+    <span class="text-muted" style="font-size:13px">
+      {{ participations|length }} participation(s)
+    </span>
+  </div>
+
+  {% if participations %}
+    <table>
+      <thead>
+        <tr>
+          <th>Joueur</th>
+          <th>Entrainement</th>
+          <th>Présence</th>
+          <th>Justificatif</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for participation in participations %}
+          <tr>
+            <td>{{ participation.joueur.nom }} {{ participation.joueur.prenom }}</td>
+            <td>{{ participation.entrainement.type }}</td>
+            <td>
+              {% if participation.presence %}
+                <span class="badge badge-success">Présent</span>
+              {% else %}
+                <span class="badge badge-danger">Absent</span>
+              {% endif %}
+            </td>
+            <td>{{ participation.justificationAbsence|default('-') }}</td>
+            <td style="text-align:right;">
+              <a href="{{ path('back_participation_show', {id: participation.id}) }}"
+                 class="btn btn-sm btn-outline-secondary"
+                 style="padding:4px 8px;">Voir</a>
+
+              <a href="{{ path('back_participation_edit', {id: participation.id}) }}"
+                 class="btn btn-sm btn-outline-secondary"
+                 style="padding:4px 8px;">Éditer</a>
+
+              <form method="post"
+                    action="{{ path('back_participation_delete', {id: participation.id}) }}"
+                    style="display:inline"
+                    onsubmit="return confirm('Êtes-vous sûr ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ participation.id) }}">
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        style="padding:4px 8px;">
+                  Supprimer
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div style="text-align:center; padding:40px;">
+      <p>Aucune participation enregistrée.</p>
+      <a href="{{ path('back_participation_new') }}"
+         class="btn btn-primary"
+         style="margin-top:16px;">
+        + Enregistrer une participation
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

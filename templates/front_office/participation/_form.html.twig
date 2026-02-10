@@ -1,0 +1,96 @@
+{{ form_start(form) }}
+<div class="space-y-6">
+
+  <!-- Joueur & Entrainement -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label class="block text-sm font-semibold text-foreground mb-2">
+        {{ form.joueur.vars.label }}
+      </label>
+      {{ form_widget(form.joueur, {
+        attr: {
+          class: 'w-full px-4 py-2 bg-frontground border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition'
+        }
+      }) }}
+      {% if form.joueur.vars.errors|length > 0 %}
+        <p class="text-red-600 text-sm mt-1">
+          {{ form.joueur.vars.errors[0].message }}
+        </p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-foreground mb-2">
+        {{ form.entrainement.vars.label }}
+      </label>
+      {{ form_widget(form.entrainement, {
+        attr: {
+          class: 'w-full px-4 py-2 bg-frontground border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition'
+        }
+      }) }}
+      {% if form.entrainement.vars.errors|length > 0 %}
+        <p class="text-red-600 text-sm mt-1">
+          {{ form.entrainement.vars.errors[0].message }}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Présence -->
+  <div class="p-4 rounded-lg border border-border bg-muted/30">
+    <label class="block text-sm font-semibold text-foreground mb-2">
+      {{ form.presence.vars.label }}
+    </label>
+
+    <div class="flex items-center gap-3">
+      {{ form_widget(form.presence, {
+        attr: {
+          class: 'w-5 h-5 rounded border-border text-primary focus:ring-primary'
+        }
+      }) }}
+      <span class="text-sm text-muted-foreground">
+        Cochez si le joueur était présent
+      </span>
+    </div>
+
+    {% if form.presence.vars.errors|length > 0 %}
+      <p class="text-red-600 text-sm mt-2">
+        {{ form.presence.vars.errors[0].message }}
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Justification -->
+  <div>
+    <label class="block text-sm font-semibold text-foreground mb-2">
+      {{ form.justificationAbsence.vars.label }}
+    </label>
+    {{ form_widget(form.justificationAbsence, {
+      attr: {
+        class: 'w-full px-4 py-2 bg-frontground border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition',
+        placeholder: "Entrez la raison de l'absence (si applicable)",
+        rows: 3
+      }
+    }) }}
+    {% if form.justificationAbsence.vars.errors|length > 0 %}
+      <p class="text-red-600 text-sm mt-1">
+        {{ form.justificationAbsence.vars.errors[0].message }}
+      </p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Actions -->
+<div class="mt-8 flex gap-4">
+  <button type="submit"
+          class="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+    {{ button_label|default('Créer') }}
+  </button>
+
+  <a href="{{ path('front_participation_index') }}"
+     class="flex-1 px-6 py-3 bg-muted text-muted-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors text-center">
+    Annuler
+  </a>
+</div>
+{{ form_end(form) }}

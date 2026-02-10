@@ -1,0 +1,72 @@
+{{ form_start(form) }}
+<div class="space-y-6">
+
+    {# Type d'Entrainement #}
+    <div>
+        {{ form_label(form.type, 'Type d\'Entrainement', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+        {{ form_widget(form.type, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'}}) }}
+        {{ form_errors(form.type, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Date d'Entrainement #}
+    <div>
+        {{ form_label(form.dateEntrainement, 'Date d\'Entrainement', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+        {{ form_widget(form.dateEntrainement, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground', 'type': 'date'}}) }}
+        {{ form_errors(form.dateEntrainement, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Horaire Début / Fin #}
+    <div class="grid grid-cols-2 gap-6">
+        <div>
+            {{ form_label(form.heureDebut, 'Heure de Début', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+            {{ form_widget(form.heureDebut, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground', 'type': 'time'}}) }}
+            {{ form_errors(form.heureDebut, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+        </div>
+
+        <div>
+            {{ form_label(form.heureFin, 'Heure de Fin', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+            {{ form_widget(form.heureFin, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground', 'type': 'time'}}) }}
+            {{ form_errors(form.heureFin, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+        </div>
+    </div>
+
+    {# Lieu #}
+    <div>
+        {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+        {{ form_widget(form.lieu, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground'}}) }}
+        {{ form_errors(form.lieu, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Objectif #}
+    <div>
+        {{ form_label(form.objectif, 'Objectif', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+        {{ form_widget(form.objectif, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground', 'rows': '4'}}) }}
+        {{ form_errors(form.objectif, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Entraîneur #}
+    <div>
+        {{ form_label(form.entraineur, 'Entraîneur', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+        {{ form_widget(form.entraineur, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground'}}) }}
+        {{ form_errors(form.entraineur, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Joueurs #}
+    <div>
+        {{ form_label(form.joueurs, 'Joueurs', {'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}}) }}
+        {{ form_widget(form.joueurs, {'attr': {'class': 'w-full px-4 py-2 border border-border rounded-lg bg-frontground text-foreground'}}) }}
+        {{ form_errors(form.joueurs, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Boutons #}
+    <div class="flex gap-4 pt-4">
+        <button type="submit" class="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+            {{ button_label|default('Créer') }}
+        </button>
+        <a href="{{ path('front_entrainement_index') }}" class="flex-1 px-6 py-3 bg-muted text-muted-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors text-center">
+            Annuler
+        </a>
+    </div>
+
+</div>
+{{ form_end(form) }}

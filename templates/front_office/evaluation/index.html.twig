@@ -1,0 +1,122 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Evaluations - Admin{% endblock %}
+
+{% block page_title %}Evaluations{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('front_evaluation_new') }}" class="btn btn-primary btn-sm">
+    <i class="lucide-plus" style="font-size:14px"></i>
+    Ajouter
+  </a>
+{% endblock %}
+
+{% block body %}
+
+<div class="data-table">
+
+  <div class="data-table-header">
+    <h3>Liste des évaluations</h3>
+    <span class="text-muted" style="font-size:13px">
+      {{ evaluations|length }} évaluation(s)
+    </span>
+  </div>
+
+  <!-- Search form -->
+  <form method="get" action="" class="mb-4">
+    <div class="input-group" style="max-width:400px">
+      <input type="text" name="search_nom" value="{{ search_nom|default('') }}" class="form-control" placeholder="Recherche par nom du joueur">
+      <button type="submit" class="btn btn-outline-secondary">Rechercher</button>
+    </div>
+  </form>
+
+  {% if evaluations is not empty %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Joueur</th>
+          <th>Entrainement</th>
+          <th>Physique</th>
+          <th>Technique</th>
+          <th>Tactique</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for evaluation in evaluations %}
+    {% if search_nom is empty or search_nom|lower in evaluation.joueur.nom|lower %}
+
+          <tr>
+            <td>
+              {{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}
+            </td>
+
+            <td>
+              {{ evaluation.entrainement.type }}
+            </td>
+
+            <td>
+              {{ evaluation.notePhysique }}
+            </td>
+
+            <td>
+              {{ evaluation.noteTechnique }}
+            </td>
+
+            <td>
+              {{ evaluation.noteTactique }}
+            </td>
+
+            <td style="text-align:right">
+              <a href="{{ path('front_evaluation_show', { id: evaluation.id }) }}"
+                 class="btn btn-sm btn-outline-secondary"
+                 style="padding:4px 8px">
+                Voir
+              </a>
+
+              <a href="{{ path('front_evaluation_edit', { id: evaluation.id }) }}"
+                 class="btn btn-sm btn-outline-secondary"
+                 style="padding:4px 8px">
+                Éditer
+              </a>
+
+              <form method="post"
+                    action="{{ path('front_evaluation_delete', { id: evaluation.id }) }}"
+                    style="display:inline"
+                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evaluation.id) }}">
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        style="padding:4px 8px">
+                  Supprimer
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="text-align:center; margin-top:20px">
+  <a href="{{ path('front_evaluation_new') }}" class="btn btn-primary btn-sm">
+    <i class="lucide-plus" style="font-size:14px"></i>
+    Ajouter une évaluation
+  </a>
+</div>
+
+
+  {% else %}
+    <div style="text-align:center; padding:40px">
+      <p class="text-muted">Aucune évaluation pour le moment.</p>
+      <a href="{{ path('front_evaluation_new') }}"
+         class="btn btn-primary"
+         style="margin-top:16px">
+        + Créer une évaluation
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -277,12 +277,38 @@
         </a>
 
         <ul class="nav-links">
-            <li>
-                <a href="{{ path('front_entrainement_index') }}"
-                   class="{{ app.request.get('_route') starts with 'front_entrainement' ? 'active' : '' }}">
-                    Entrainement
-                </a>
-            </li>
+            <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle
+        {{ app.request.get('_route') starts with 'front_entrainement'
+        or app.request.get('_route') starts with 'front_participation'
+        or app.request.get('_route') starts with 'front_evaluation'
+        ? 'active' : '' }}"
+       href="#"
+       role="button"
+       data-bs-toggle="dropdown"
+       aria-expanded="false">
+        Entrainement
+    </a>
+
+    <ul class="dropdown-menu">
+        <li>
+            <a class="dropdown-item" href="{{ path('front_entrainement_index') }}">
+                🏋️ Entrainements
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="{{ path('front_participation_index') }}">
+                👥 Participations
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="{{ path('front_evaluation_index') }}">
+                ⭐ Évaluations
+            </a>
+        </li>
+    </ul>
+</li>
+
             <li>
                 <a href="{{ path('front_offre_index') }}"
                    class="{{ app.request.get('_route') starts with 'front_offre' ? 'active' : '' }}">

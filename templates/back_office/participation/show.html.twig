@@ -1,0 +1,110 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Participation - Admin{% endblock %}
+
+{% block body %}
+<div class="flex-1 overflow-auto">
+  <div class="max-w-3xl mx-auto p-8">
+
+    <!-- Header -->
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-foreground">
+        Participation
+      </h1>
+      <p class="text-muted-foreground mt-2">
+        {{ participation.joueur.nom }} {{ participation.joueur.prenom }} · {{ participation.entrainement.type }}
+      </p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-card rounded-lg border border-border p-8 space-y-8">
+
+      <!-- Infos principales -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-muted-foreground mb-2">
+            Joueur
+          </label>
+          <p class="text-foreground font-medium">
+            {{ participation.joueur.nom }} {{ participation.joueur.prenom }}
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-muted-foreground mb-2">
+            Entrainement
+          </label>
+          <p class="text-foreground font-medium">
+            {{ participation.entrainement.type }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Séparateur -->
+      <hr class="border-border">
+
+      <!-- Présence + justification -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
+        <div>
+          <label class="block text-sm font-semibold text-muted-foreground mb-3">
+            Présence
+          </label>
+
+          {% if participation.presence %}
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                         bg-green-100 text-green-700 font-semibold text-sm">
+              ✔ Présent
+            </span>
+          {% else %}
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                         bg-red-100 text-red-700 font-semibold text-sm">
+              ✖ Absent
+            </span>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-muted-foreground mb-3">
+            Justificatif d’absence
+          </label>
+          <p class="text-foreground">
+            {{ participation.justificationAbsence|default('Aucun justificatif fourni') }}
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-10 flex flex-col md:flex-row gap-4">
+      <a href="{{ path('back_participation_edit', {id: participation.id}) }}"
+         class="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg
+                font-semibold text-center hover:bg-primary/90 transition">
+        Éditer
+      </a>
+
+      <button onclick="document.getElementById('delete-form').submit()"
+              class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg
+                     font-semibold hover:bg-red-700 transition">
+        Supprimer
+      </button>
+
+      <a href="{{ path('back_participation_index') }}"
+         class="flex-1 px-6 py-3 bg-secondary text-secondary-foreground rounded-lg
+                font-semibold text-center hover:bg-secondary/80 transition">
+        Retour à la liste
+      </a>
+    </div>
+
+    <!-- Delete form -->
+    <form id="delete-form"
+          action="{{ path('back_participation_delete', {id: participation.id}) }}"
+          method="POST"
+          style="display:none;">
+      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ participation.id) }}">
+    </form>
+
+  </div>
+</div>
+{% endblock %}

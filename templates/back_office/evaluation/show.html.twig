@@ -1,0 +1,74 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Évaluation - Admin{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-10">
+  <div class="max-w-4xl mx-auto px-4">
+    
+    <!-- Header -->
+    <div class="mb-10 text-center">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">Évaluation de {{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</h1>
+      <p class="text-lg text-gray-500">{{ evaluation.entrainement.type }}</p>
+    </div>
+
+    <!-- Notes -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      {% set notes = {
+        'Physique': evaluation.notePhysique,
+        'Technique': evaluation.noteTechnique,
+        'Tactique': evaluation.noteTactique
+      } %}
+
+      {% for key, value in notes %}
+      <div class="bg-white shadow-md rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
+        <p class="text-sm text-gray-400 mb-3 font-medium">{{ 'Note ' ~ key }}</p>
+        <div class="flex items-baseline justify-center gap-2">
+          <span class="text-5xl font-extrabold {% if key == 'Physique' %}text-blue-500{% elseif key == 'Technique' %}text-purple-500{% else %}text-green-500{% endif %}">{{ value }}</span>
+          <span class="text-2xl text-gray-400">/20</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Commentaire -->
+    <div class="bg-white shadow-md rounded-xl p-6 mb-10">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Commentaire</h2>
+      <p class="text-gray-600 whitespace-pre-wrap">{{ evaluation.commentaire }}</p>
+    </div>
+
+    <!-- Détails Joueur & Entrainement -->
+    <div class="bg-white shadow-md rounded-xl p-6 mb-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm text-gray-400 mb-1">Joueur</p>
+        <p class="text-gray-800 font-semibold">{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-400 mb-1">Entrainement</p>
+        <p class="text-gray-800 font-semibold">{{ evaluation.entrainement.type }}</p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col md:flex-row gap-4">
+      <a href="{{ path('back_evaluation_edit', {id: evaluation.id}) }}" 
+         class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold text-center hover:bg-blue-700 transition">
+        Éditer
+      </a>
+      <button onclick="document.getElementById('delete-form').submit()" 
+         class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">
+        Supprimer
+      </button>
+      <a href="{{ path('back_evaluation_index') }}" 
+         class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold text-center hover:bg-gray-300 transition">
+        Retour
+      </a>
+    </div>
+
+    <form id="delete-form" action="{{ path('back_evaluation_delete', {id: evaluation.id}) }}" method="POST" style="display:none;">
+      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evaluation.id) }}">
+    </form>
+    
+  </div>
+</div>
+{% endblock %}

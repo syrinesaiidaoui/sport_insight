@@ -1,0 +1,108 @@
+{{ form_start(form) }}
+<div class="space-y-6">
+
+    {# Joueur #}
+    <div>
+        {{ form_label(form.joueur, form.joueur.vars.label, {
+            'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}
+        }) }}
+        {{ form_widget(form.joueur, {
+            'attr': {
+                'class': 'w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+            }
+        }) }}
+        {{ form_errors(form.joueur, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Entrainement #}
+    <div>
+        {{ form_label(form.entrainement, form.entrainement.vars.label, {
+            'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}
+        }) }}
+        {{ form_widget(form.entrainement, {
+            'attr': {
+                'class': 'w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+            }
+        }) }}
+        {{ form_errors(form.entrainement, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Notes #}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div>
+            {{ form_label(form.notePhysique, form.notePhysique.vars.label, {
+                'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}
+            }) }}
+            {{ form_widget(form.notePhysique, {
+                'attr': {
+                    'class': 'w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground',
+                    'type': 'number',
+                    'min': 0,
+                    'max': 20
+                }
+            }) }}
+            {{ form_errors(form.notePhysique, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+        </div>
+
+        <div>
+            {{ form_label(form.noteTechnique, form.noteTechnique.vars.label, {
+                'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}
+            }) }}
+            {{ form_widget(form.noteTechnique, {
+                'attr': {
+                    'class': 'w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground',
+                    'type': 'number',
+                    'min': 0,
+                    'max': 20
+                }
+            }) }}
+            {{ form_errors(form.noteTechnique, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+        </div>
+
+        <div>
+            {{ form_label(form.noteTactique, form.noteTactique.vars.label, {
+                'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}
+            }) }}
+            {{ form_widget(form.noteTactique, {
+                'attr': {
+                    'class': 'w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground',
+                    'type': 'number',
+                    'min': 0,
+                    'max': 20
+                }
+            }) }}
+            {{ form_errors(form.noteTactique, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+        </div>
+
+    </div>
+
+    {# Commentaire #}
+    <div>
+        {{ form_label(form.commentaire, form.commentaire.vars.label, {
+            'label_attr': {'class': 'block text-sm font-semibold text-foreground mb-2'}
+        }) }}
+        {{ form_widget(form.commentaire, {
+            'attr': {
+                'class': 'w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground',
+                'rows': 4
+            }
+        }) }}
+        {{ form_errors(form.commentaire, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+    </div>
+
+    {# Boutons #}
+    <div class="flex gap-4 pt-4">
+        <button type="submit"
+                class="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+            {{ button_label|default('Créer') }}
+        </button>
+
+        <a href="{{ path('back_evaluation_index') }}"
+           class="flex-1 px-6 py-3 bg-muted text-muted-foreground rounded-lg font-semibold hover:bg-muted/80 transition-colors text-center">
+            Annuler
+        </a>
+    </div>
+
+</div>
+{{ form_end(form) }}

@@ -1,43 +1,109 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Entrainement - FC Club{% endblock %}
+
+{% block title %}Entrainements - Admin{% endblock %}
+
+{% block page_title %}Entrainements{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('front_entrainement_new') }}" class="btn btn-primary btn-sm">
+    <i class="lucide-plus" style="font-size:14px"></i>
+    Ajouter
+  </a>
+{% endblock %}
 
 {% block body %}
-    <h2 class="section-title">Planning Entrainement</h2>
 
-    <div class="front-table">
-        <div class="front-table-header">
-            <h3>Seances a venir</h3>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Horaire</th>
-                    <th>Type</th>
-                    <th>Intensite</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>05/02/2026</td>
-                    <td>09:00 - 11:00</td>
-                    <td>Tactique</td>
-                    <td><span class="badge-warning">Moyenne</span></td>
-                </tr>
-                <tr>
-                    <td>06/02/2026</td>
-                    <td>15:00 - 17:30</td>
-                    <td>Physique</td>
-                    <td><span class="badge-danger">Haute</span></td>
-                </tr>
-                <tr>
-                    <td>07/02/2026</td>
-                    <td>10:00 - 12:00</td>
-                    <td>Technique</td>
-                    <td><span class="badge-success">Legere</span></td>
-                </tr>
-            </tbody>
-        </table>
+<div class="data-table">
+
+  <div class="data-table-header">
+    <h3>Liste des entrainements</h3>
+    <span class="text-muted" style="font-size:13px">
+      {{ entrainements|length }} entrainement(s)
+    </span>
+  </div>
+
+  {% if entrainements is not empty %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Lieu</th>
+          <th>Horaire</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for entrainement in entrainements %}
+          <tr>
+            <td>
+              {{ entrainement.dateEntrainement|date('d/m/Y') }}
+            </td>
+
+            <td>
+              {{ entrainement.type }}
+            </td>
+
+            <td>
+              {{ entrainement.lieu }}
+            </td>
+
+            <td>
+              {{ entrainement.heureDebut|date('H:i') }}
+              -
+              {{ entrainement.heureFin|date('H:i') }}
+            </td>
+
+            <td style="text-align:right">
+              <a href="{{ path('front_entrainement_show', { id: entrainement.id }) }}"
+                 class="btn btn-sm btn-outline-secondary"
+                 style="padding:4px 8px">
+                Voir
+              </a>
+
+              <a href="{{ path('front_entrainement_edit', { id: entrainement.id }) }}"
+                 class="btn btn-sm btn-outline-secondary"
+                 style="padding:4px 8px">
+                Éditer
+              </a>
+
+              <form method="post"
+                    action="{{ path('front_entrainement_delete', { id: entrainement.id }) }}"
+                    style="display:inline"
+                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet entrainement ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entrainement.id) }}">
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        style="padding:4px 8px">
+                  Supprimer
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="text-align:center; margin-top:20px">
+  <a href="{{ path('front_entrainement_new') }}" class="btn btn-primary btn-sm">
+    <i class="lucide-plus" style="font-size:14px"></i>
+    Ajouter un entrainement
+  </a>
+</div>
+
+
+  {% else %}
+    <div style="text-align:center; padding:40px">
+      <p class="text-muted">Aucun entrainement pour le moment.</p>
+      <a href="{{ path('front_entrainement_new') }}"
+         class="btn btn-primary"
+         style="margin-top:16px">
+        + Créer un entrainement
+      </a>
     </div>
+  {% endif %}
+
+</div>
+
 {% endblock %}

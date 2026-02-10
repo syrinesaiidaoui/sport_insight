@@ -1,0 +1,160 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Évaluations - Admin{% endblock %}
+{% block page_title %}Gestion des évaluations{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary btn-sm">
+    + Nouvelle évaluation
+  </a>
+{% endblock %}
+
+{% block body %}
+<div class="data-table">
+
+  {# ===== RECHERCHE ===== #}
+  <form method="get" class="mb-3">
+    <input type="text"
+           name="search_nom"
+           placeholder="Rechercher par nom du joueur"
+           value="{{ search_nom }}"
+           class="form-control"
+           style="max-width:300px; display:inline-block">
+    <button class="btn btn-secondary btn-sm">Rechercher</button>
+  </form>
+
+  {% if evaluations is not empty %}
+    <table class="table table-bordered">
+      <thead>
+<tr>
+  <th>Joueur</th>
+  <th>Entrainement</th>
+
+  {% set cols = {
+    'notePhysique': 'Physique',
+    'noteTechnique': 'Technique',
+    'noteTactique': 'Tactique'
+  } %}
+
+  {% for col, label in cols %}
+    {% set nextDir = (sort_by == col and sort_dir == 'asc') ? 'desc' : 'asc' %}
+
+    <th>
+      <a href="{{ path('back_evaluation_index', {
+          search_nom: search_nom,
+          sort_by: col,
+          sort_dir: nextDir
+      }) }}">
+        {{ label }}
+        {% if sort_by == col %}
+          {{ sort_dir == 'asc' ? '↑' : '↓' }}
+        {% endif %}
+      </a>
+    </th>
+  {% endfor %}
+
+  <th>Actions</th>
+</tr>
+</thead>
+
+
+      <tbody>
+      {% for evaluation in evaluations %}
+        <tr>
+          <td>{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</td>
+          <td>{{ evaluation.entrainement.type }}</td>
+          <td>{{ evaluation.notePhysique }}</td>
+          <td>{{ evaluation.noteTechnique }}</td>
+          <td>{{ evaluation.noteTactique }}</td>
+          <td>
+  <a href="{{ path('back_evaluation_show', {id: evaluation.id}) }}"
+     class="btn btn-sm btn-outline-info">
+     Voir
+  </a>
+
+  <a href="{{ path('back_evaluation_edit', {id: evaluation.id}) }}"
+     class="btn btn-sm btn-outline-warning">
+     Éditer
+  </a>
+
+  <form method="post"
+        action="{{ path('back_evaluation_delete', {id: evaluation.id}) }}"
+        style="display:inline"
+        onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?');">
+
+      <input type="hidden"
+             name="_token"
+             value="{{ csrf_token('delete' ~ evaluation.id) }}">
+
+      <button class="btn btn-sm btn-outline-danger">
+        Supprimer
+      </button>
+  </form>
+</td>
+
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    {# ===== STATISTIQUES ===== #}
+  <div class="card mb-4">
+  <div class="card-body">
+    <h4 class="mb-3">Statistiques moyennes des évaluations</h4>
+
+    <canvas id="evaluationChart" height="100"></canvas>
+  </div>
+</div>
+
+    
+
+  {% else %}
+    <div class="text-center p-5">
+      <p>Aucune évaluation trouvée.</p>
+      <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary">
+        Créer une évaluation
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% block javascripts %}
+{{ parent() }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('evaluationChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Physique', 'Technique', 'Tactique'],
+        datasets: [{
+            label: 'Moyenne des notes',
+            data: [
+                {{ stats.physique }},
+                {{ stats.technique }},
+                {{ stats.tactique }}
+            ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 20
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+
+{% endblock %}
