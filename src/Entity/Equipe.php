@@ -6,6 +6,7 @@ use App\Repository\EquipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
 class Equipe
@@ -15,12 +16,22 @@ class Equipe
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: 'L\'identifiant de l\'équipe est obligatoire.')]
     #[ORM\Column(length: 100)]
     private ?string $id_equipe = null;
 
+    #[Assert\NotBlank(message: 'Le nom de l\'équipe est obligatoire.')]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'Le nom de l\'équipe ne peut pas dépasser {{ limit }} caractères.'
+    )]
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'Le nom du coach ne peut pas dépasser {{ limit }} caractères.'
+    )]
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $coach = null;
 

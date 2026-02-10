@@ -1,0 +1,15 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Create new Match{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        {% block content %}
+            <h1>Create new Match</h1>
+
+            {{ include('front_office/matchs/_form.html.twig', {'button_label': 'Save'}) }}
+
+            <a href="{{ path('app_front_matchs_index') }}" class="btn btn-secondary">Back to list</a>
+        {% endblock %}
+    </div>
+{% endblock %}
