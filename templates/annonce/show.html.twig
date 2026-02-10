@@ -12,7 +12,17 @@
                     <h1 class="section-title" style="margin-bottom: 8px;">{{ annonce.titre }}</h1>
                     <p style="color: var(--text-muted); font-size: 14px;">Publié le {{ annonce.datePublication ? annonce.datePublication|date('d/m/Y') : 'N/A' }}</p>
                 </div>
-                <span class="badge-success" style="white-space: nowrap;">{{ annonce.statut }}</span>
+                <div style="white-space: nowrap;">
+                    {% if annonce.statut == 'active' %}
+                        <span class="badge-success">Actif</span>
+                    {% elseif annonce.statut == 'inactive' %}
+                        <span class="badge-warning">Inactif</span>
+                    {% elseif annonce.statut == 'archivée' %}
+                        <span class="badge-secondary">Archivée</span>
+                    {% else %}
+                        <span class="badge-warning">{{ annonce.statut }}</span>
+                    {% endif %}
+                </div>
             </div>
 
             <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);">

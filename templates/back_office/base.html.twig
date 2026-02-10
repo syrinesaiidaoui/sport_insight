@@ -368,6 +368,18 @@
                 <i class="lucide-shirt"></i>
                 Equipement
             </a>
+            
+            <a href="{{ path('back_annonce_index') }}"
+               class="sidebar-link {{ app.request.get('_route') starts with 'back_annonce' ? 'active' : '' }}">
+                <i class="lucide-message-square"></i>
+                Annonces
+            </a>
+
+            <a href="{{ path('back_commentaire_index') }}"
+               class="sidebar-link {{ app.request.get('_route') starts with 'back_commentaire' ? 'active' : '' }}">
+                <i class="lucide-message-circle"></i>
+                Commentaires
+            </a>
         </nav>
 
         <div class="sidebar-footer">
