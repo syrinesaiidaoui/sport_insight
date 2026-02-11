@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\ProductOrder;
 
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -17,15 +18,22 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du produit est obligatoire')]
+    #[Assert\Length(min: 3, max: 255, minMessage: 'Le nom doit contenir au moins 3 caractères')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $category = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
+    #[Assert\NotBlank(message: 'Le prix est obligatoire')]
+    #[Assert\PositiveOrZero(message: 'Le prix doit être positif')]
     private ?string $price = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le stock est obligatoire')]
+    #[Assert\PositiveOrZero(message: 'Le stock ne peut pas être négatif')]
     private ?int $stock = null;
 
     #[ORM\Column(length: 10, nullable: true)]

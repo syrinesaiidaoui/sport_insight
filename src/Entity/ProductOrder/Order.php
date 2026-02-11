@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\ProductOrder;
 
 use App\Repository\OrderRepository;
+use App\Entity\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -16,20 +18,27 @@ class Order
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'La quantité est obligatoire')]
+    #[Assert\Positive(message: 'La quantité doit être positive')]
     private ?int $quantity = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: 'La date de commande est obligatoire')]
     private ?\DateTime $orderDate = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: 'Le statut est obligatoire')]
+    #[Assert\Choice(choices: ['pending', 'confirmed', 'shipped', 'delivered'], message: 'Statut invalide')]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Un produit doit être sélectionné')]
     private ?Product $product = null;
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Un entraîneur doit être sélectionné')]
     private ?User $entraineur = null;
 
     public function getId(): ?int

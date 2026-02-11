@@ -3,8 +3,8 @@
 namespace App\Controller\FrontOffice;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Entity\Order;
-use App\Entity\Product;
+use App\Entity\ProductOrder\Order;
+use App\Entity\ProductOrder\Product;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -132,16 +132,24 @@ class EquipementController extends AbstractController
 
         // Send confirmation email
         $body = $this->renderView('emails/order_confirmation.html.twig', ['user' => $user, 'orders' => $orders]);
-        $email = (new Email())
-            ->from('no-reply@sport-insight.local')
-            ->to($user->getEmail())
-            ->subject('Thank you for your purchase - Sport Insight')
-            ->html($body);
+        
+        $userEmail = $user->getEmail();
+        if (!$userEmail) {
+            $userEmail = $user->getUserIdentifier();
+        }
+        
+        if ($userEmail) {
+            $email = (new Email())
+                ->from('no-reply@sport-insight.local')
+                ->to($userEmail)
+                ->subject('Thank you for your purchase - Sport Insight')
+                ->html($body);
 
-        try {
-            $mailer->send($email);
-        } catch (\Throwable $e) {
-            // Log error but continue
+            try {
+                $mailer->send($email);
+            } catch (\Throwable $e) {
+                // Log error but continue
+            }
         }
 
         // Clear cart

@@ -1,0 +1,52 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block page_title %}Order #{{ order.id }}{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px;">
+        <div class="front-card">
+            <div style="margin-bottom: 20px; padding: 20px; background: #f9fafb; border-radius: 8px;">
+                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0; font-size: 18px;">Order Details</h3>
+                        <span class="badge-{{ order.status == 'delivered' ? 'success' : (order.status == 'confirmed' ? 'success' : 'info') }}">
+                            {% if order.status == 'pending' %}
+                                Pending
+                            {% elseif order.status == 'confirmed' %}
+                                Confirmed
+                            {% elseif order.status == 'shipped' %}
+                                Shipped
+                            {% elseif order.status == 'delivered' %}
+                                Delivered
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <strong>Product:</strong> {{ order.product.name }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>User:</strong> {{ order.entraineur.email }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Quantity:</strong> {{ order.quantity }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Order Date:</strong> {{ order.orderDate|date('d/m/Y H:i') }}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>Status:</strong> {{ order.status }}
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; display: flex; gap: 12px;">
+                <a href="{{ path('app_order_edit', { id: order.id }) }}" class="btn btn-primary">Edit</a>
+                <a href="{{ path('app_order_index') }}" class="btn btn-secondary">Back</a>
+            </div>
+            
+            {{ include('order/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

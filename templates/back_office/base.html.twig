@@ -363,10 +363,16 @@
                 Sponsoring
             </a>
 
-            <a href="{{ path('back_equipement_index') }}"
-               class="sidebar-link {{ app.request.get('_route') starts with 'back_equipement' ? 'active' : '' }}">
+            <a href="{{ path('app_product_index') }}"
+               class="sidebar-link {{ app.request.get('_route') starts with 'app_product' ? 'active' : '' }}">
                 <i class="lucide-shirt"></i>
                 Equipement
+            </a>
+
+            <a href="{{ path('app_order_index') }}"
+               class="sidebar-link {{ app.request.get('_route') starts with 'app_order' ? 'active' : '' }}">
+                <i class="lucide-cart"></i>
+                Orders
             </a>
         </nav>
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\ProductOrder;
 
-use App\Entity\Product;
+use App\Entity\ProductOrder\Product;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

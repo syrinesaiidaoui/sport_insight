@@ -1,0 +1,10 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}New Product{% endblock %}
+{% block page_title %}Add New Product{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px;">
+        {{ include('product/_form.html.twig') }}
+    </div>
+{% endblock %}

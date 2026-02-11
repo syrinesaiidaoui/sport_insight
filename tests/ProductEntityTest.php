@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\Entity\Product;
+use App\Entity\ProductOrder\Product;
 use PHPUnit\Framework\TestCase;
 
 class ProductEntityTest extends TestCase
