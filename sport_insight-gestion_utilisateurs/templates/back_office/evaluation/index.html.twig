@@ -1,0 +1,116 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Evaluations - Admin{% endblock %}
+{% block page_title %}Evaluations{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary btn-sm">
+    <i class="lucide-plus" style="font-size:14px"></i>
+    Ajouter
+  </a>
+{% endblock %}
+
+{% block body %}
+
+<div class="data-table">
+
+  <div class="data-table-header">
+    <h3>Liste des évaluations</h3>
+    <span class="text-muted" style="font-size:13px">
+      {{ evaluations|length }} évaluation(s)
+    </span>
+  </div>
+
+  <!-- ====== Statistiques Performance Joueur ====== -->
+  {% if stats is defined %}
+    <div class="card mb-4 p-4" style="max-width: 500px; margin: 0 auto;">
+      <h4 style="font-weight:600; color:var(--primary); margin-bottom:12px;">Statistiques Moyennes des Notes</h4>
+      <span style="font-weight:500; color:#166534;">Physique:</span> {{ stats.physique }} / 20<br>
+      <span style="font-weight:500; color:#2563eb;">Technique:</span> {{ stats.technique }} / 20<br>
+      <span style="font-weight:500; color:#991b1b;">Tactique:</span> {{ stats.tactique }} / 20
+    </div>
+  {% endif %}
+
+  {# ===== Recherche ===== #}
+  <form method="get" class="mb-4">
+    <div class="input-group" style="max-width:400px">
+      <input type="text"
+             name="search_nom"
+             value="{{ search_nom|default('') }}"
+             class="form-control"
+             placeholder="Recherche par nom du joueur">
+      <button type="submit" class="btn btn-outline-secondary">
+        Rechercher
+      </button>
+    </div>
+  </form>
+
+  <div class="mb-3">
+    <span style="font-weight:600;">Trier par :</span>
+    <a href="{{ path('back_evaluation_index', {'sort_by': 'notePhysique', 'sort_dir': sort_dir == 'asc' and sort_by == 'notePhysique' ? 'desc' : 'asc', 'search_nom': search_nom}) }}" class="btn btn-outline-secondary btn-sm {% if sort_by == 'notePhysique' %}active{% endif %}">Physique</a>
+    <a href="{{ path('back_evaluation_index', {'sort_by': 'noteTechnique', 'sort_dir': sort_dir == 'asc' and sort_by == 'noteTechnique' ? 'desc' : 'asc', 'search_nom': search_nom}) }}" class="btn btn-outline-secondary btn-sm {% if sort_by == 'noteTechnique' %}active{% endif %}">Technique</a>
+    <a href="{{ path('back_evaluation_index', {'sort_by': 'noteTactique', 'sort_dir': sort_dir == 'asc' and sort_by == 'noteTactique' ? 'desc' : 'asc', 'search_nom': search_nom}) }}" class="btn btn-outline-secondary btn-sm {% if sort_by == 'noteTactique' %}active{% endif %}">Tactique</a>
+  </div>
+
+  {% if evaluations is not empty %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Joueur</th>
+          <th>Entrainement</th>
+          <th>Physique</th>
+          <th>Technique</th>
+          <th>Tactique</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for evaluation in evaluations %}
+          <tr>
+            <td>{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</td>
+            <td>{{ evaluation.entrainement.type }}</td>
+            <td>{{ evaluation.notePhysique }}</td>
+            <td>{{ evaluation.noteTechnique }}</td>
+            <td>{{ evaluation.noteTactique }}</td>
+            <td class="text-end">
+              <a href="{{ path('back_evaluation_show', { id: evaluation.id }) }}"
+                 class="btn btn-sm btn-outline-secondary">Voir</a>
+              <a href="{{ path('back_evaluation_edit', { id: evaluation.id }) }}"
+                 class="btn btn-sm btn-outline-secondary">Éditer</a>
+              <button type="button" class="btn btn-sm btn-outline-danger"
+                onclick="openDeleteModal({{ evaluation.id }}, '{{ csrf_token('delete' ~ evaluation.id) }}')">Supprimer</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="text-center p-5">
+      <p class="text-muted">Aucune évaluation pour le moment.</p>
+      <a href="{{ path('back_evaluation_new') }}" class="btn btn-primary mt-3">+ Créer une évaluation</a>
+    </div>
+  {% endif %}
+
+</div>
+
+<script>
+function openDeleteModal(id, token) {
+  const modal = document.getElementById('deleteModal');
+  const form = document.getElementById('deleteForm');
+  const tokenInput = document.getElementById('deleteToken');
+
+  form.action = "{{ path('back_evaluation_delete', {'id': 'ID'}) }}".replace('ID', id);
+  tokenInput.value = token;
+
+  modal.style.display = 'block';
+  modal.classList.add('show');
+}
+
+function closeDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  modal.style.display = 'none';
+  modal.classList.remove('show');
+}
+</script>
+
+{% endblock %}

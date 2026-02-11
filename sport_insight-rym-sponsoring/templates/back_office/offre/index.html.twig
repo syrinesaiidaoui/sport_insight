@@ -1,0 +1,96 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Admin - Offres{% endblock %}
+{% block page_title %}Offres{% endblock %}
+
+{% block header_actions %}
+    <button class="btn btn-primary btn-sm">
+        <i class="lucide-plus" style="font-size:14px"></i> Nouvelle offre
+    </button>
+{% endblock %}
+
+{% block body %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Offres actives</div>
+                <div class="stat-card-value">8</div>
+                <div class="stat-card-sub">3 nouvelles ce mois</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Abonnes total</div>
+                <div class="stat-card-value">1 240</div>
+                <div class="stat-card-sub">+8% ce mois</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Revenu mensuel</div>
+                <div class="stat-card-value">18 500 DT</div>
+                <div class="stat-card-sub">+15% vs dernier mois</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Taux conversion</div>
+                <div class="stat-card-value">34%</div>
+                <div class="stat-card-sub">Bon</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-table">
+        <div class="data-table-header">
+            <h3>Liste des offres</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Prix</th>
+                    <th>Duree</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Abonnement Premium</td>
+                    <td>Abonnement</td>
+                    <td>150 DT/mois</td>
+                    <td>12 mois</td>
+                    <td><span class="badge-success">Active</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pack Famille</td>
+                    <td>Abonnement</td>
+                    <td>250 DT/mois</td>
+                    <td>6 mois</td>
+                    <td><span class="badge-success">Active</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Billet Match VIP</td>
+                    <td>Billetterie</td>
+                    <td>80 DT</td>
+                    <td>Unitaire</td>
+                    <td><span class="badge-warning">Limitee</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

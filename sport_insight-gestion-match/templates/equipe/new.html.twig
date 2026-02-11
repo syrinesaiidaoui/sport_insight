@@ -1,0 +1,9 @@
+{% extends 'equipe/base.html.twig' %}
+
+{% block content %}
+    <h1>Create new Equipe</h1>
+
+    {{ include('equipe/_form.html.twig', {'button_label': 'Save'}) }}
+
+    <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">Back to list</a>
+{% endblock %}

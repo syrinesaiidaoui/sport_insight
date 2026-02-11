@@ -1,0 +1,43 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Entrainement - Sport Insight{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Planning Entrainement</h2>
+
+    <div class="front-table">
+        <div class="front-table-header">
+            <h3>Seances a venir</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Horaire</th>
+                    <th>Type</th>
+                    <th>Intensite</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>05/02/2026</td>
+                    <td>09:00 - 11:00</td>
+                    <td>Tactique</td>
+                    <td><span class="badge-warning">Moyenne</span></td>
+                </tr>
+                <tr>
+                    <td>06/02/2026</td>
+                    <td>15:00 - 17:30</td>
+                    <td>Physique</td>
+                    <td><span class="badge-danger">Haute</span></td>
+                </tr>
+                <tr>
+                    <td>07/02/2026</td>
+                    <td>10:00 - 12:00</td>
+                    <td>Technique</td>
+                    <td><span class="badge-success">Legere</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}{{ user.nomComplet }} - Admin{% endblock %}
+
+{% block page_title %}{{ user.nomComplet }}{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-warning">Modifier</a>
+  <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">Retour</a>
+{% endblock %}
+
+{% block body %}
+  <div class="page-content">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="d-flex align-items-center gap-3">
+                {% if user.photo %}
+                  <img src="{{ asset('uploads/photos/' ~ user.photo) }}" class="rounded-circle" width="140" height="140" style="object-fit:cover">
+                {% else %}
+                  <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width:140px;height:140px">
+                    <i class="bi bi-person" style="font-size:4rem"></i>
+                  </div>
+                {% endif %}
+                <div>
+                  <h3 class="mb-1">{{ user.nomComplet }}</h3>
+                  <div>
+                    <span class="badge badge-{{ user.isActif ? 'success' : 'danger' }}">{{ user.statut|capitalize }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-end">
+                <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-warning me-2">Modifier</a>
+                <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">Retour</a>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <dl class="row">
+                  <dt class="col-5">Email</dt>
+                  <dd class="col-7">{{ user.email }}</dd>
+
+                  <dt class="col-5">Telephone</dt>
+                  <dd class="col-7">{{ user.telephone ?? '---' }}</dd>
+
+                  <dt class="col-5">Date de naissance</dt>
+                  <dd class="col-7">{{ user.dateNaissance ? user.dateNaissance|date('d/m/Y') : '---' }} {% if user.age %}({{ user.age }} ans){% endif %}</dd>
+                </dl>
+              </div>
+
+              <div class="col-md-6">
+                <dl class="row">
+                  <dt class="col-5">Roles</dt>
+                  <dd class="col-7">{% for role in user.roles %}<span class="badge badge-info me-1">{{ role }}</span>{% endfor %}</dd>
+
+                  <dt class="col-5">Inscrit le</dt>
+                  <dd class="col-7">{{ user.dateInscription|date('d/m/Y H:i') }}</dd>
+
+                  <dt class="col-5">ID</dt>
+                  <dd class="col-7">{{ user.id }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

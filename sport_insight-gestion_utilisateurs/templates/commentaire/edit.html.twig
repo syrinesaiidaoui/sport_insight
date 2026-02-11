@@ -1,0 +1,52 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Éditer un commentaire - FC Club{% endblock %}
+
+{% block body %}
+    <div style="max-width: 700px; margin: 0 auto;">
+        <a href="{{ path('app_annonce_show', {'id': annonce.id}) }}" style="color: var(--primary); text-decoration: none; margin-bottom: 24px; display: inline-block;">← Retour à l'annonce</a>
+
+        <h1 class="section-title">Éditer mon commentaire</h1>
+
+        <div class="front-card">
+            <form method="post">
+                <style>
+                    .form-group { margin-bottom: 20px; }
+                    .form-group label { display: block; margin-bottom: 8px; color: var(--text-dark); font-weight: 600; font-size: 14px; }
+                    .form-group textarea {
+                        width: 100%;
+                        padding: 10px 12px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-family: inherit;
+                        min-height: 120px;
+                        resize: vertical;
+                    }
+                    .form-group textarea:focus {
+                        outline: none;
+                        border-color: var(--primary);
+                        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+                    }
+                    .form-actions { margin-top: 24px; display: flex; gap: 12px; }
+                    .form-actions button { padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+                    .form-actions .btn-primary { background: var(--primary); color: white; }
+                    .form-actions .btn-primary:hover { background: var(--primary-hover); }
+                </style>
+                
+                <div class="form-group">
+                    <label for="contenu">Votre commentaire</label>
+                    <textarea 
+                        id="contenu"
+                        name="contenu" 
+                        required>{{ commentaire.contenu }}</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Mettre à jour</button>
+                    <a href="{{ path('app_annonce_show', {'id': annonce.id}) }}" style="padding: 10px 24px; border-radius: 8px; background: var(--border-color); color: var(--text-dark); text-decoration: none; display: inline-block; font-weight: 600;">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

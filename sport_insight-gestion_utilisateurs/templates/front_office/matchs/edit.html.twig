@@ -1,0 +1,17 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Edit Match{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        {% block content %}
+            <h1>Edit Match</h1>
+
+            {{ include('front_office/matchs/_form.html.twig', {'button_label': 'Update'}) }}
+
+            {{ include('front_office/matchs/_delete_form.html.twig', {'delete_form': delete_form}) }}
+
+            <a href="{{ path('app_front_matchs_index') }}" class="btn btn-secondary">Back to list</a>
+        {% endblock %}
+    </div>
+{% endblock %}

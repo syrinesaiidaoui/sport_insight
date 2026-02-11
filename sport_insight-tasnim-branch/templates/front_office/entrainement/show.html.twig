@@ -1,0 +1,52 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}{{ entrainement.type }} - Entrainements FC Club{% endblock %}
+
+{% block body %}
+    <div style="max-width: 800px; margin: 0 auto;">
+        <a href="{{ path('front_entrainement_index') }}" style="color: var(--primary); text-decoration: none; margin-bottom: 24px; display: inline-block;">← Retour à la liste</a>
+
+        <div class="front-card">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px;">
+                <div>
+                    <h1 class="section-title" style="margin-bottom: 8px;">{{ entrainement.type }}</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Prévu le {{ entrainement.dateEntrainement ? entrainement.dateEntrainement|date('d/m/Y') : 'N/A' }}</p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);">
+                <h3 style="color: var(--text-dark); font-weight: 600; margin-bottom: 8px;">Détails</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Heure de début</h4>
+                        <p style="color: var(--text-dark); font-weight: 600;">{{ entrainement.heureDebut|date('H:i') }}</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Heure de fin</h4>
+                        <p style="color: var(--text-dark); font-weight: 600;">{{ entrainement.heureFin|date('H:i') }}</p>
+                    </div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Lieu</h4>
+                    <p style="color: var(--text-dark); font-weight: 600;">{{ entrainement.lieu }}</p>
+                </div>
+                <div style="margin-top: 16px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Objectif</h4>
+                    <p style="color: var(--text-dark); line-height: 1.6;">{{ entrainement.objectif }}</p>
+                </div>
+                <div style="margin-top: 16px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Notes</h4>
+                    <p style="color: var(--text-dark); line-height: 1.6;">{{ entrainement.notes|default('Aucune note') }}</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <a href="{{ path('front_entrainement_edit', {'id': entrainement.id}) }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Éditer</a>
+                <form method="post" action="{{ path('front_entrainement_delete', {'id': entrainement.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous vraiment sûr?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entrainement.id) }}">
+                    <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 14px; background: #ef4444; border: none; color: white; border-radius: 8px; cursor: pointer;">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

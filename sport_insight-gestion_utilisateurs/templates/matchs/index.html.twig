@@ -1,0 +1,63 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Matchs Management{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        {% block content %}
+            <h1>Matchs index</h1>
+
+            <div class="d-flex justify-content-start mb-3">
+                <form method="get" action="{{ path('app_matchs_index') }}">
+                    <button type="submit" name="order" value="asc" class="btn btn-outline-primary me-2">Sort by Id Ascending</button>
+                    <button type="submit" name="order" value="desc" class="btn btn-outline-primary">Sort by Id Descending</button>
+                </form>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Id_match</th>
+                        <th>DateMatch</th>
+                        <th>HeureDebut</th>
+                        <th>Lieu</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Lineup_domicile</th>
+                        <th>Lineup_exterieur</th>
+                        <th>actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for match in matchs %}
+                    <tr>
+                        <td>{{ match.id }}</td>
+                        <td>{{ match.idMatch }}</td>
+                        <td>{{ match.dateMatch ? match.dateMatch|date('Y-m-d') : '' }}</td>
+                        <td>{{ match.heureDebut ? match.heureDebut|date('H:i:s') : '' }}</td>
+                        <td>{{ match.lieu }}</td>
+                        <td>{{ match.type }}</td>
+                        <td>{{ match.statut }}</td>
+                        <td>{{ match.lineupDomicile }}</td>
+                        <td>{{ match.lineupExterieur }}</td>
+                        <td>
+                            <a href="{{ path('app_matchs_show', {'id': match.id}) }}" class="btn btn-info">Show</a>
+                            <a href="{{ path('app_matchs_edit', {'id': match.id}) }}" class="btn btn-primary">Edit</a>
+                            <form method="post" action="{{ path('app_matchs_delete', {'id': match.id}) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <button class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="10">No records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{{ path('app_matchs_new') }}" class="btn btn-success">Create new</a>
+        {% endblock %}
+    </div>
+{% endblock %}

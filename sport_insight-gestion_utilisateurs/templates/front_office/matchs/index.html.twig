@@ -1,0 +1,53 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Matchs List{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        {% block content %}
+            <h1>Matchs List</h1>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><a href="{{ path('app_front_matchs_index', { order: currentOrder == 'asc' ? 'desc' : 'asc' }) }}">Id</a></th>
+                        <th>Id_match</th>
+                        <th>DateMatch</th>
+                        <th>HeureDebut</th>
+                        <th>Lieu</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for match in matchs %}
+                    <tr>
+                        <td>{{ match.id }}</td>
+                        <td>{{ match.idMatch }}</td>
+                        <td>{{ match.dateMatch ? match.dateMatch|date('Y-m-d') : '' }}</td>
+                        <td>{{ match.heureDebut ? match.heureDebut|date('H:i:s') : '' }}</td>
+                        <td>{{ match.lieu }}</td>
+                        <td>{{ match.type }}</td>
+                        <td>{{ match.statut }}</td>
+                        <td>
+                            <a href="{{ path('app_front_matchs_show', {'id': match.id}) }}" class="btn btn-info">Show</a>
+                            <a href="{{ path('app_front_matchs_edit', {'id': match.id}) }}" class="btn btn-primary">Edit</a>
+                            <form method="post" action="{{ path('app_front_matchs_delete', {'id': match.id}) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ match.id) }}">
+                                <button class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8">No matchs found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{{ path('app_front_matchs_new') }}" class="btn btn-success">Create new</a>
+        {% endblock %}
+    </div>
+{% endblock %}

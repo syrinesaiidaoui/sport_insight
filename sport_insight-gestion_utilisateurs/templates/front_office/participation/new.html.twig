@@ -1,0 +1,24 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Nouvelle Participation - Admin{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-frontground">
+  <div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-foreground mb-2">Nouvelle Participation</h1>
+      <p class="text-muted-foreground">Enregistrer la participation d'un joueur à un entrainement</p>
+    </div>
+
+    <div class="bg-card rounded-lg border border-border p-8">
+      {{ include('front_office/participation/_form.html.twig') }}
+
+      <div class="mt-6 pt-6 border-t border-border">
+        <a href="{{ path('front_participation_index') }}" class="text-primary hover:text-primary/80 font-medium">
+          ← Retour à la liste
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

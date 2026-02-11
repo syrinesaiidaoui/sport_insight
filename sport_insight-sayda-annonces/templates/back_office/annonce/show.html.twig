@@ -1,0 +1,103 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}{{ annonce.titre }} - Admin{% endblock %}
+
+{% block page_title %}{{ annonce.titre }}{% endblock %}
+
+{% block body %}
+    <div style="margin-bottom: 24px;">
+        <a href="{{ path('back_annonce_index') }}" style="color: var(--primary); text-decoration: none;">← Retour aux annonces</a>
+    </div>
+
+    <div class="data-table" style="all: unset; display: block;">
+        <div style="padding: 24px; background: white; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <div>
+                    <h2 style="margin-bottom: 16px; color: var(--text-dark);">{{ annonce.titre }}</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 16px;">Publié le {{ annonce.datePublication ? annonce.datePublication|date('d/m/Y') : 'N/A' }}</p>
+                    <h4 style="color: var(--text-dark); margin-top: 16px; margin-bottom: 8px;">Description</h4>
+                    <p style="color: var(--text-dark); line-height: 1.6; white-space: pre-wrap;">{{ annonce.description }}</p>
+                </div>
+                <div style="background: #f9fafb; padding: 16px; border-radius: 8px;">
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 8px;">Statut</h4>
+                    <p style="color: var(--text-dark); font-weight: 600; margin-bottom: 16px;">
+                        {% if annonce.statut == 'active' %}
+                            <span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px;">Actif</span>
+                        {% elseif annonce.statut == 'inactive' %}
+                            <span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px;">Inactif</span>
+                        {% elseif annonce.statut == 'archivée' %}
+                            <span style="background: #e5e7eb; color: #374151; padding: 4px 8px; border-radius: 4px;">Archivée</span>
+                        {% else %}
+                            {{ annonce.statut }}
+                        {% endif %}
+                    </p>
+
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 8px;">Poste Recherché</h4>
+                    <p style="color: var(--text-dark); font-weight: 600; margin-bottom: 16px;">{{ annonce.posteRecherche }}</p>
+
+                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; margin-bottom: 8px;">Niveau Requis</h4>
+                    <p style="color: var(--text-dark); font-weight: 600;">{{ annonce.niveauRequis }}</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <a href="{{ path('back_annonce_edit', {'id': annonce.id}) }}" class="btn btn-outline-secondary">Éditer</a>
+                <form method="post" action="{{ path('back_annonce_delete', {'id': annonce.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ annonce.id) }}">
+                    <button type="submit" class="btn btn-outline-secondary" style="background: #fee2e2; color: #991b1b; border-color: #fecaca;">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION COMMENTAIRES -->
+    <div style="margin-top: 40px; padding: 24px; background: white; border: 1px solid var(--border-color); border-radius: 12px;">
+        <h3 style="margin-bottom: 24px; color: var(--text-dark);">💬 Commentaires ({{ annonce.commentaires|length }})</h3>
+
+        {% if annonce.commentaires|length > 0 %}
+            <div style="margin-bottom: 24px;">
+                {% for commentaire in annonce.commentaires %}
+                    <div style="padding: 16px; background: #f9fafb; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                            <div>
+                                <p style="font-weight: 600; color: var(--text-dark); margin: 0;">{{ commentaire.joueur ? commentaire.joueur.prenom ~ ' ' ~ commentaire.joueur.nom : commentaire.auteurAnonyme }}</p>
+                                <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0 0;">{{ commentaire.dateCommentaire ? commentaire.dateCommentaire|date('d/m/Y à H:i') : '' }}</p>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                {% if commentaire.joueur or commentaire.auteurAnonyme %}
+                                    <a href="{{ path('app_commentaire_edit', {'id': commentaire.id}) }}" class="btn btn-outline-secondary" style="font-size: 12px; padding: 4px 8px;">Éditer</a>
+                                    <form method="post" action="{{ path('app_commentaire_delete', {'id': commentaire.id}) }}" style="display: inline;" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commentaire.id) }}">
+                                        <button type="submit" class="btn btn-outline-secondary" style="font-size: 12px; padding: 4px 8px; background: #fee2e2; color: #991b1b; border-color: #fecaca;">Supprimer</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <p style="color: var(--text-dark); line-height: 1.6; margin: 8px 0 0 0; white-space: pre-wrap;">{{ commentaire.contenu }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted); text-align: center; padding: 24px;">Aucun commentaire pour cette annonce.</p>
+        {% endif %}
+    </div>
+
+    <!-- FORMULAIRE COMMENTAIRE -->
+    <div style="margin-top: 24px; padding: 24px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%); border: 2px solid var(--border-color); border-radius: 12px;">
+        <h3 style="margin-bottom: 16px; color: var(--text-dark);">✍️ Ajouter un commentaire</h3>
+        
+        <form method="post" action="{{ path('app_commentaire_new', {'annonce_id': annonce.id}) }}">
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-dark); font-weight: 600; font-size: 14px;">Votre nom</label>
+                <input type="text" name="auteur_anonyme" placeholder="Entrez votre nom ou laissez vide pour 'Anonyme'" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-dark); font-weight: 600; font-size: 14px;">Commentaire</label>
+                <textarea name="contenu" required placeholder="Écrivez votre commentaire..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; font-family: inherit; box-sizing: border-box; min-height: 100px; resize: vertical;"></textarea>
+            </div>
+
+            <button type="submit" style="padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">📤 Publier</button>
+        </form>
+    </div>
+{% endblock %}

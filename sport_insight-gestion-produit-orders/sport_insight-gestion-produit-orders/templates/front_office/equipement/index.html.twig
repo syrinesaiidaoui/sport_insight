@@ -1,0 +1,63 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Equipement - Sport Insight{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Equipement du Club</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div></div>
+        <div>
+            <a href="{{ path('front_equipement_cart') }}" class="btn btn-outline-primary">
+                <svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg>View Cart
+            </a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+        {% for product in products %}
+            <div class="front-card" style="display: flex; flex-direction: column; height: 100%;">
+                <!-- Product Image -->
+                {% if product.image %}
+                    <div style="width: 100%; height: 200px; background: #f0f0f0; border-radius: 8px; overflow: hidden; margin-bottom: 16px;">
+                        <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                {% else %}
+                    <div style="width: 100%; height: 200px; background: #e5e7eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #9ca3af;">
+                        <svg style="width: 64px; height: 64px;" aria-hidden="true"><use href="#icon-home"/></svg>
+                    </div>
+                {% endif %}
+
+                <!-- Product Details -->
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">{{ product.name }}</h3>
+                <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">{{ product.category }}</p>
+                
+                <div style="font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 12px;">
+                    {{ product.price }} USD
+                </div>
+
+                <!-- Stock Status -->
+                <div style="margin-bottom: 16px; flex-grow: 1;">
+                    {% if product.stock > 0 %}
+                        <span class="badge-success">Available ({{ product.stock }})</span>
+                    {% else %}
+                        <span class="badge-danger">Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <!-- Action Button -->
+                {% if product.stock > 0 %}
+                    <a class="btn btn-primary" href="{{ path('front_equipement_buy', {'id': product.id}) }}" style="width: 100%; text-align: center;">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg>Add to cart
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary" disabled style="width: 100%;">Out of stock</button>
+                {% endif %}
+            </div>
+        {% else %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6b7280;">
+                <p>No products found.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

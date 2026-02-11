@@ -1,0 +1,87 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Orders{% endblock %}
+{% block page_title %}Manage Orders{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('app_order_new') }}" class="btn btn-primary btn-sm">
+        <svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg> Add Order
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="front-table">
+        <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+            <form method="GET" style="display: flex; gap: 12px; flex: 1;">
+                <input type="text" name="search" class="form-control" placeholder="Search by product or user email..." value="{{ searchTerm }}" style="flex: 1;">
+                <select name="status" class="form-select" style="max-width: 150px;">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if statusFilter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if statusFilter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="shipped" {% if statusFilter == 'shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="delivered" {% if statusFilter == 'delivered' %}selected{% endif %}>Delivered</option>
+                </select>
+                <select name="sort" class="form-select" style="max-width: 150px;">
+                    <option value="orderDate" {% if sortBy == 'orderDate' %}selected{% endif %}>Sort by Date</option>
+                    <option value="id" {% if sortBy == 'id' %}selected{% endif %}>Sort by ID</option>
+                    <option value="status" {% if sortBy == 'status' %}selected{% endif %}>Sort by Status</option>
+                    <option value="quantity" {% if sortBy == 'quantity' %}selected{% endif %}>Sort by Qty</option>
+                </select>
+                <select name="order" class="form-select" style="max-width: 100px;">
+                    <option value="DESC" {% if sortOrder == 'DESC' %}selected{% endif %}>DESC</option>
+                    <option value="ASC" {% if sortOrder == 'ASC' %}selected{% endif %}>ASC</option>
+                </select>
+                <button type="submit" class="btn btn-outline-secondary">Search</button>
+                <a href="{{ path('app_order_index') }}" class="btn btn-outline-secondary">Reset</a>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>User</th>
+                    <th>Quantity</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.product.name }}</td>
+                        <td>{{ order.entraineur.email }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.orderDate|date('d/m/Y') }}</td>
+                        <td>
+                            {% if order.status == 'pending' %}
+                                <span class="badge-warning">Pending</span>
+                            {% elseif order.status == 'confirmed' %}
+                                <span class="badge-success">Confirmed</span>
+                            {% elseif order.status == 'shipped' %}
+                                <span class="badge-info">Shipped</span>
+                            {% elseif order.status == 'delivered' %}
+                                <span class="badge-success">Delivered</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_order_show', { id: order.id }) }}" class="btn btn-sm btn-info">View</a>
+                            <a href="{{ path('app_order_edit', { id: order.id }) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <form method="POST" action="{{ path('app_order_delete', { id: order.id }) }}" style="display:inline;" onsubmit="return confirm('Delete this order?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ order.id) }}">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #9ca3af;">No orders found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

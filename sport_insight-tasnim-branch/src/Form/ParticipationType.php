@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Form;
+
+use App\Entity\Entrainement;
+use App\Entity\Participation;
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class ParticipationType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('presence', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'choices' => [
+                    'Présent' => 'present',
+                    'Absent' => 'absent',
+                ],
+                'expanded' => false,
+                'multiple' => false,
+                'label' => 'Présence',
+            ])
+            ->add('justificationAbsence')
+            ->add('entrainement', EntityType::class, [
+                'class' => Entrainement::class,
+                'choice_label' => 'id',
+            ])
+            ->add('joueur', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'id',
+            ])
+        ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Participation::class,
+        ]);
+    }
+}

@@ -1,0 +1,8 @@
+<div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+    <h3 style="color: #dc2626; font-size: 16px; font-weight: 700; margin-bottom: 12px;">Zone de danger</h3>
+    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Cette action est irréversible. L'annonce sera définitivement supprimée.</p>
+    <form method="post" action="{{ path('app_annonce_delete', {'id': annonce.id}) }}" onsubmit="return confirm('Êtes-vous vraiment sûr de vouloir supprimer cette annonce?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ annonce.id) }}">
+        <button type="submit" style="padding: 10px 24px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Supprimer l'annonce</button>
+    </form>
+</div>

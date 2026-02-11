@@ -1,0 +1,47 @@
+{% extends 'equipe/base.html.twig' %}
+
+{% block content %}
+    <h1>Equipe index</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Id_equipe</th>
+                <th>Nom</th>
+                <th>Coach</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for equipe in equipes %}
+            <tr>
+                <td>{{ equipe.id }}</td>
+                <td>{{ equipe.idEquipe }}</td>
+                <td>{{ equipe.nom }}</td>
+                <td>{{ equipe.coach }}</td>
+                <td>
+                    <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-primary btn-sm">Show</a>
+                    <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-start mb-3">
+        <form method="get" action="{{ path('app_equipe_index') }}">
+            <button type="submit" name="sort" value="id" class="btn btn-outline-primary me-2">Sort by Id</button>
+            <button type="submit" name="sort" value="idEquipe" class="btn btn-outline-primary me-2">Sort by Id_equipe</button>
+            <button type="submit" name="sort" value="nom" class="btn btn-outline-primary me-2">Sort by Nom</button>
+            <button type="submit" name="sort" value="coach" class="btn btn-outline-primary">Sort by Coach</button>
+            <input type="hidden" name="order" value="{{ currentOrder == 'asc' ? 'desc' : 'asc' }}">
+        </form>
+    </div>
+
+    <a href="{{ path('app_equipe_new') }}" class="btn btn-success">Create new</a>
+{% endblock %}

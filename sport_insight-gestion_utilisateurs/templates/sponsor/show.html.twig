@@ -1,0 +1,250 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Détails du sponsor - {{ sponsor.nom }}{% endblock %}
+
+{% block body %}
+    <div class="main-content">
+        <div class="page-header">
+            <h1>{{ sponsor.nom }}</h1>
+        </div>
+
+        <div class="card">
+            <table class="table-details">
+                <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <td>{{ sponsor.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ sponsor.nom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ sponsor.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Téléphone</th>
+                        <td>{{ sponsor.telephone }}</td>
+                    </tr>
+                    <tr>
+                        <th>Budget</th>
+                        <td><strong>{{ sponsor.budget }}€</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {% if sponsor.contratSponsors|length > 0 %}
+            <div class="mt-4">
+                <h2>Contrats de sponsoring</h2>
+                <div class="card">
+                    <table class="table table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date début</th>
+                                <th>Date fin</th>
+                                <th>Montant</th>
+                                <th>Équipe</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for contrat in sponsor.contratSponsors %}
+                            <tr>
+                                <td>{{ contrat.dateDebut ? contrat.dateDebut|date('d/m/Y') : '-' }}</td>
+                                <td>{{ contrat.dateFin ? contrat.dateFin|date('d/m/Y') : '-' }}</td>
+                                <td><strong>{{ contrat.montant }}€</strong></td>
+                                <td>{{ contrat.equipe.nom ?? 'Non définie' }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{{ path('app_contrat_sponsor_show', {'id': contrat.id}) }}" class="btn btn-sm btn-info" title="Voir">
+                                            <i class="lucide-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_contrat_sponsor_edit', {'id': contrat.id}) }}" class="btn btn-sm btn-warning" title="Éditer">
+                                            <i class="lucide-edit"></i>
+                                        </a>
+                                        <a href="{{ path('app_contrat_sponsor_pdf', {'id': contrat.id}) }}" class="btn btn-sm btn-pdf" title="PDF" target="_blank">
+                                            <i class="lucide-file-pdf"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="mt-4">
+                <div class="alert alert-info">
+                    <i class="lucide-info"></i> Aucun contrat de sponsoring pour ce sponsor.
+                </div>
+            </div>
+        {% endif %}
+            <a href="{{ path('app_sponsor_index') }}" class="btn btn-secondary">
+                <i class="lucide-arrow-left"></i> Retour à la liste
+            </a>
+            <a href="{{ path('app_sponsor_edit', {'id': sponsor.id}) }}" class="btn btn-warning">
+                <i class="lucide-edit"></i> Éditer
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .page-header {
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+        .table-details {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-details tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .table-details tbody tr:last-child {
+            border-bottom: none;
+        }
+        .table-details th {
+            text-align: left;
+            padding: 12px 0;
+            font-weight: 600;
+            color: var(--text-muted);
+            width: 30%;
+        }
+        .table-details td {
+            text-align: left;
+            padding: 12px 0 12px 20px;
+            color: var(--text-dark);
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--text-muted);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+            color: white;
+        }
+        .btn-warning {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        .mt-3 {
+            margin-top: 20px;
+        }
+        .mt-4 {
+            margin-top: 30px;
+        }
+        .mt-4 h2 {
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            font-size: 20px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-striped tbody tr:nth-child(odd) {
+            background: #f9fafb;
+        }
+        .table thead th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .btn-info, .btn-warning {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        .btn-info {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-info:hover {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+            color: white;
+        }
+        .text-end {
+            text-align: right;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #93c5fd;
+        }
+        .btn-pdf {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-pdf:hover {
+            background: #dc2626;
+            color: white;
+        }
+    </style>
+{% endblock %}

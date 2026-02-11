@@ -1,0 +1,53 @@
+{{ form_start(form) }}
+    <div class="mb-3">
+        {{ form_label(form.id_match, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.id_match, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.id_match) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.dateMatch, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.dateMatch, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.dateMatch) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.heureDebut, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.heureDebut, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.heureDebut) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.lieu, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lieu) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.type, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.type) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.statut, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.statut) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.lineup_domicile, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lineup_domicile, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lineup_domicile) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.lineup_exterieur, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lineup_exterieur, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lineup_exterieur) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.equipeDomicile, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.equipeDomicile, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.equipeDomicile) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.equipeExterieur, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.equipeExterieur, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.equipeExterieur) }}
+    </div>
+    <button class="btn btn-success">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

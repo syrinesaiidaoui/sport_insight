@@ -1,0 +1,19 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Éditer une Annonce - FC Club{% endblock %}
+
+{% block body %}
+    <div style="max-width: 700px; margin: 0 auto;">
+        <a href="{{ path('app_annonce_index') }}" style="color: var(--primary); text-decoration: none; margin-bottom: 24px; display: inline-block;">← Retour aux annonces</a>
+
+        <h1 class="section-title">Éditer l'annonce</h1>
+
+        <div class="front-card">
+            {{ include('annonce/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        </div>
+
+        <div style="margin-top: 24px;">
+            {{ include('annonce/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

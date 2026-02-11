@@ -1,0 +1,61 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Sport Insight - Accueil{% endblock %}
+
+{% block hero %}
+    <section class="hero">
+        <h1>Welcome to Sport Insight</h1>
+        <p>Suivez les entrainements, matchs, offres, sponsors et equipements de votre club prefere.</p>
+    </section>
+{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Nos sections</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <a href="{{ path('front_entrainement_index') }}" style="text-decoration:none;color:inherit">
+                <div class="front-card">
+                    <div class="card-icon"><i class="lucide-dumbbell"></i></div>
+                    <h3>Entrainement</h3>
+                    <p>Consultez le planning des seances, les horaires et les types d'entrainement de l'equipe.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('front_offre_index') }}" style="text-decoration:none;color:inherit">
+                <div class="front-card">
+                    <div class="card-icon"><i class="lucide-tag"></i></div>
+                    <h3>Offres</h3>
+                    <p>Decouvrez nos abonnements, packs et billets disponibles pour les supporters.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('front_match_index') }}" style="text-decoration:none;color:inherit">
+                <div class="front-card">
+                    <div class="card-icon"><i class="lucide-trophy"></i></div>
+                    <h3>Matchs</h3>
+                    <p>Calendrier des prochains matchs et resultats des rencontres passees.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('front_sponsoring_index') }}" style="text-decoration:none;color:inherit">
+                <div class="front-card">
+                    <div class="card-icon"><i class="lucide-handshake"></i></div>
+                    <h3>Sponsoring</h3>
+                    <p>Nos partenaires et sponsors officiels qui soutiennent le club.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('front_equipement_index') }}" style="text-decoration:none;color:inherit">
+                <div class="front-card">
+                    <div class="card-icon"><i class="lucide-shirt"></i></div>
+                    <h3>Equipement</h3>
+                    <p>Les tenues, materiel et equipements utilises par notre equipe.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}

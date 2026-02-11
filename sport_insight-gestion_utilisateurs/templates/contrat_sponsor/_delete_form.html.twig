@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_contrat_sponsor_delete', {'id': contrat_sponsor.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce contrat ?');" style="display:inline;">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contrat_sponsor.id) }}">
+    <button class="btn btn-danger" type="submit">
+        <i class="lucide-trash-2"></i> Supprimer
+    </button>
+</form>
