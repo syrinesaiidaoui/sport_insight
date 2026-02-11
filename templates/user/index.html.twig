@@ -10,11 +10,167 @@
   <a href="{{ path('app_user_new') }}" class="btn btn-primary">
     <i class="bi bi-plus-lg"></i>&nbsp;Nouvel Utilisateur
   </a>
+  <a href="{{ path('app_user_export_pdf', {
+    q: search_q,
+    statut: statut_filter,
+    role: role_filter,
+    date_from: date_from,
+    date_to: date_to
+  }) }}" class="btn btn-danger" title="Exporter en PDF">
+    <i class="bi bi-file-pdf"></i>&nbsp;Exporter PDF
+  </a>
 {% endblock %}
 
 {% block stylesheets %}
   {{ parent() }}
   <style>
+    /* Advanced search container */
+    .advanced-search {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .advanced-search-toggle {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #0066cc;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .advanced-search-toggle:hover {
+      color: #0052a3;
+    }
+    
+    .advanced-search-toggle i {
+      transition: transform 0.3s;
+    }
+    
+    .advanced-search-toggle.collapsed i {
+      transform: rotate(-90deg);
+    }
+    
+    .advanced-search-content {
+      display: none;
+      margin-top: 15px;
+    }
+    
+    .advanced-search-content.show {
+      display: block;
+    }
+    
+    .search-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .search-grid .form-group {
+      margin-bottom: 0;
+    }
+    
+    .search-grid label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .search-grid input,
+    .search-grid select {
+      font-size: 13px;
+    }
+    
+    .search-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .search-actions button {
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+    
+    /* Statistics cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .stat-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .stat-card h5 {
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 13px;
+    }
+    
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      color: #0066cc;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .stat-card.active {
+      background: #e7f3ff;
+      border-color: #0066cc;
+    }
+    
+    .stat-card.blocked {
+      background: #ffe7e7;
+      border-color: #e24b5a;
+    }
+    
+    /* Data table */
+    .data-table {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .data-table-header {
+      background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .data-table-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
     /* Action buttons in table: larger, clearer, pill style */
     .action-btn {
       width: 44px;
@@ -34,42 +190,191 @@
       line-height: 1;
     }
     .action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
-    /* smaller icon-only style for delete form button */
-  .action-form { display:inline-block; }
-  /* hide labels entirely for compact icon-only actions */
-  .action-label { display: none; }
-
-  /* specific colors matching design */
-  .action-view { background: #00d2ff; color: #002b33; }
-  .action-edit { background: #ffd24d; color: #2b2b2b; }
-  .action-delete { background: #e24b5a; color: #ffffff; }
-
-  .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
+    .action-form { display:inline-block; }
+    .action-label { display: none; }
+    
+    .action-view { background: #00d2ff; color: #002b33; }
+    .action-edit { background: #ffd24d; color: #2b2b2b; }
+    .action-delete { background: #e24b5a; color: #ffffff; }
+    
+    .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
+    
+    /* Table styling */
+    table {
+      width: 100%;
+    }
+    
+    table thead {
+      background: #f8f9fa;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    table th {
+      padding: 12px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #333;
+      text-align: left;
+    }
+    
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid #dee2e6;
+      font-size: 13px;
+    }
+    
+    table tbody tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .badge-danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .badge-info {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .badge-secondary {
+      background: #e2e3e5;
+      color: #383d41;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      color: #ddd;
+    }
   </style>
 {% endblock %}
 
 {% block body %}
-<div class="data-table">
-  <div class="data-table-header">
-    <h3>Utilisateurs</h3>
-    <div>
-      <form method="get" class="d-flex" style="gap:8px;">
-        <input type="search" name="q" value="{{ search_q|e }}" placeholder="Recherche par email, nom..." class="form-control form-control-sm">
+<!-- Advanced Search Section -->
+<div class="advanced-search">
+  <div class="advanced-search-toggle" onclick="toggleAdvancedSearch()">
+    <i class="bi bi-chevron-down"></i>
+    <span>🔍 Recherche Avancée</span>
+  </div>
+  
+  <form method="get" class="advanced-search-content" id="advancedSearchForm">
+    <div class="search-grid">
+      <!-- Basic search -->
+      <div class="form-group">
+        <label>Recherche (Email/Nom/Prénom)</label>
+        <input type="text" name="q" value="{{ search_q|e }}" placeholder="Entrez un terme..." class="form-control form-control-sm">
+      </div>
+      
+      <!-- Statut filter -->
+      <div class="form-group">
+        <label>Statut</label>
+        <select name="statut" class="form-select form-select-sm">
+          <option value="">Tous les statuts</option>
+          <option value="actif" {{ statut_filter == 'actif' ? 'selected' : '' }}>Actif</option>
+          <option value="bloque" {{ statut_filter == 'bloque' ? 'selected' : '' }}>Bloqué</option>
+        </select>
+      </div>
+      
+      <!-- Role filter -->
+      <div class="form-group">
+        <label>Rôle</label>
+        <select name="role" class="form-select form-select-sm">
+          <option value="">Tous les rôles</option>
+          <option value="ROLE_ADMIN" {{ role_filter == 'ROLE_ADMIN' ? 'selected' : '' }}>Administrateur</option>
+          <option value="ROLE_USER" {{ role_filter == 'ROLE_USER' ? 'selected' : '' }}>Utilisateur</option>
+          <option value="ROLE_COACH" {{ role_filter == 'ROLE_COACH' ? 'selected' : '' }}>Coach</option>
+        </select>
+      </div>
+      
+      <!-- Date from -->
+      <div class="form-group">
+        <label>Date d'inscription (De)</label>
+        <input type="date" name="date_from" value="{{ date_from|e }}" class="form-control form-control-sm">
+      </div>
+      
+      <!-- Date to -->
+      <div class="form-group">
+        <label>Date d'inscription (À)</label>
+        <input type="date" name="date_to" value="{{ date_to|e }}" class="form-control form-control-sm">
+      </div>
+      
+      <!-- Sort -->
+      <div class="form-group">
+        <label>Trier par</label>
         <select name="sort" class="form-select form-select-sm">
           <option value="name_asc" {{ sort == 'name_asc' ? 'selected' : '' }}>Nom ↑</option>
           <option value="name_desc" {{ sort == 'name_desc' ? 'selected' : '' }}>Nom ↓</option>
+          <option value="email_asc" {{ sort == 'email_asc' ? 'selected' : '' }}>Email ↑</option>
+          <option value="email_desc" {{ sort == 'email_desc' ? 'selected' : '' }}>Email ↓</option>
+          <option value="date_newest" {{ sort == 'date_newest' ? 'selected' : '' }}>Plus récents</option>
+          <option value="date_oldest" {{ sort == 'date_oldest' ? 'selected' : '' }}>Plus anciens</option>
         </select>
-        <button class="btn btn-sm btn-primary">Filtrer</button>
-        <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
-      </form>
+      </div>
     </div>
-  </div>
-  <div class="p-3 d-flex align-items-center justify-content-between">
-    <div>
-      <span class="badge badge-success">Actifs: {{ stats.actif|default(0) }}</span>
-      <span class="badge badge-danger">Bloqués: {{ stats.bloque|default(0) }}</span>
+    
+    <div class="search-actions">
+      <button type="submit" class="btn btn-sm btn-primary">
+        <i class="bi bi-search"></i> Appliquer les filtres
+      </button>
+      <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+      </a>
     </div>
+  </form>
+</div>
+
+<!-- Statistics Section -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <h5>Total Utilisateurs</h5>
+    <div class="stat-number">{{ totalUsers }}</div>
+    <div class="stat-label">Tous les utilisateurs</div>
   </div>
+  
+  <div class="stat-card active">
+    <h5 style="color: #0066cc;">Utilisateurs Actifs</h5>
+    <div class="stat-number">{{ stats.actif|default(0) }}</div>
+    <div class="stat-label">En bon état</div>
+  </div>
+  
+  <div class="stat-card blocked">
+    <h5 style="color: #e24b5a;">Utilisateurs Bloqués</h5>
+    <div class="stat-number">{{ stats.bloque|default(0) }}</div>
+    <div class="stat-label">Compte bloqué</div>
+  </div>
+  
+  <div class="stat-card">
+    <h5>Résultats Filtrés</h5>
+    <div class="stat-number">{{ filteredCount }}</div>
+    <div class="stat-label">Après application des filtres</div>
+  </div>
+</div>
+
+<!-- Data Table -->
+<div class="data-table">
+  <div class="data-table-header">
+    <h3>📋 Liste des Utilisateurs</h3>
+  </div>
+  
   <div class="p-0">
     <table class="table mb-0">
       <thead>
@@ -80,22 +385,23 @@
           <th>Email</th>
           <th>Telephone</th>
           <th>Statut</th>
-          <th>Role</th>
+          <th>Rôle</th>
+          <th>Inscription</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
-  <tbody>
+      <tbody>
         {% for user in users %}
         <tr>
           <td>{{ user.id }}</td>
           <td>
             {% if user.photo %}
-              <img src="{{ asset('uploads/photos/' ~ user.photo) }}" class="rounded-circle" width="40" height="40">
+              <img src="{{ asset('uploads/photos/' ~ user.photo) }}" class="rounded-circle" width="40" height="40" alt="{{ user.nomComplet }}">
             {% else %}
               <span class="badge badge-secondary">N/A</span>
             {% endif %}
           </td>
-          <td>{{ user.nomComplet }}</td>
+          <td><strong>{{ user.nomComplet }}</strong></td>
           <td>{{ user.email }}</td>
           <td>{{ user.telephone ?? '---' }}</td>
           <td>
@@ -106,36 +412,31 @@
               <span class="badge badge-info">{{ role }}</span>
             {% endfor %}
           </td>
+          <td>{{ user.dateInscription|date('d/m/Y') }}</td>
           <td class="text-center">
-            {# Action: Voir (GET) -> affiche la fiche utilisateur via la route 'app_user_show' #}
             <a href="{{ path('app_user_show', {id: user.id}) }}" class="action-btn action-view" title="Voir" aria-label="Voir {{ user.nomComplet }}">
               <i class="bi bi-eye"></i>
-              <span class="action-label">Voir</span>
             </a>
 
-            {# Action: Modifier (GET/POST) -> ouvre le formulaire d'édition via 'app_user_edit' #}
             <a href="{{ path('app_user_edit', {id: user.id}) }}" class="action-btn action-edit" title="Modifier" aria-label="Modifier {{ user.nomComplet }}">
               <i class="bi bi-pencil"></i>
-              <span class="action-label">Modifier</span>
             </a>
 
-            {# Action: Supprimer (POST) -> formulaire POST vers 'app_user_delete' avec CSRF token.
-               Le bouton envoie une requête POST et la suppression est confirmée côté serveur.
-               Nous utilisons un confirm() JS pour éviter les suppressions accidentelles. #}
-            <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}" class="action-form" onsubmit="return confirm('Supprimer cet utilisateur ?')">
+            <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}" class="action-form" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
               <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
               <button class="action-btn action-delete" title="Supprimer" aria-label="Supprimer {{ user.nomComplet }}">
                 <i class="bi bi-trash"></i>
-                <span class="action-label">Supprimer</span>
               </button>
             </form>
           </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="8" class="text-center text-muted py-4">
-            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-            <p>Aucun utilisateur trouve.</p>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <p>Aucun utilisateur trouvé.</p>
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -143,4 +444,29 @@
     </table>
   </div>
 </div>
+
+<script>
+function toggleAdvancedSearch() {
+  const content = document.getElementById('advancedSearchForm');
+  const toggle = document.querySelector('.advanced-search-toggle');
+  const icon = toggle.querySelector('i');
+  
+  content.classList.toggle('show');
+  icon.parentElement.classList.toggle('collapsed');
+}
+
+// Show advanced search form if any filter is applied
+document.addEventListener('DOMContentLoaded', function() {
+  const q = '{{ search_q|e }}';
+  const statut = '{{ statut_filter|e }}';
+  const role = '{{ role_filter|e }}';
+  const dateFrom = '{{ date_from|e }}';
+  const dateTo = '{{ date_to|e }}';
+  
+  if (q || statut || role || dateFrom || dateTo) {
+    document.getElementById('advancedSearchForm').classList.add('show');
+    document.querySelector('.advanced-search-toggle').classList.remove('collapsed');
+  }
+});
+</script>
 {% endblock %}

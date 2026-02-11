@@ -20,8 +20,112 @@ class UserController extends AbstractController
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(Request $request, UserRepository $userRepository): Response
     {
+        // Basic search
         $q = (string) $request->query->get('q', '');
+        
+        // Advanced filters
+        $statut = (string) $request->query->get('statut', '');
+        $role = (string) $request->query->get('role', '');
+        $dateFrom = (string) $request->query->get('date_from', '');
+        $dateTo = (string) $request->query->get('date_to', '');
+        
+        // Sort options
         $sort = (string) $request->query->get('sort', 'name_asc');
+
+        $qb = $userRepository->createQueryBuilder('u');
+
+        // Search by email/name
+        if ($q !== '') {
+            $qb->andWhere('u.email LIKE :q OR u.nom LIKE :q OR u.prenom LIKE :q')
+               ->setParameter('q', '%'.trim($q).'%');
+        }
+
+        // Filter by statut
+        if ($statut !== '') {
+            $qb->andWhere('u.statut = :statut')
+               ->setParameter('statut', $statut);
+        }
+
+        // Filter by role
+        if ($role !== '') {
+            $qb->andWhere('JSON_CONTAINS(u.roles, JSON_QUOTE(:role)) = true')
+               ->setParameter('role', $role);
+        }
+
+        // Filter by date range
+        if ($dateFrom !== '') {
+            $qb->andWhere('u.dateInscription >= :dateFrom')
+               ->setParameter('dateFrom', new \DateTime($dateFrom));
+        }
+        if ($dateTo !== '') {
+            $qb->andWhere('u.dateInscription <= :dateTo')
+               ->setParameter('dateTo', new \DateTime($dateTo . ' 23:59:59'));
+        }
+
+        // Sort options
+        match($sort) {
+            'name_desc' => $qb->orderBy('u.nom', 'DESC')->addOrderBy('u.prenom', 'DESC'),
+            'email_asc' => $qb->orderBy('u.email', 'ASC'),
+            'email_desc' => $qb->orderBy('u.email', 'DESC'),
+            'date_newest' => $qb->orderBy('u.dateInscription', 'DESC'),
+            'date_oldest' => $qb->orderBy('u.dateInscription', 'ASC'),
+            default => $qb->orderBy('u.nom', 'ASC')->addOrderBy('u.prenom', 'ASC'),
+        };
+
+        $users = $qb->getQuery()->getResult();
+
+        // Global statistics
+        $statsQb = $userRepository->createQueryBuilder('u')
+            ->select('u.statut, COUNT(u.id) as cnt')
+            ->groupBy('u.statut');
+        $statsRaw = $statsQb->getQuery()->getResult();
+        $stats = [];
+        $totalUsers = 0;
+        foreach ($statsRaw as $row) {
+            if (is_array($row)) {
+                $stats[$row['statut']] = (int) $row['cnt'];
+                $totalUsers += (int) $row['cnt'];
+            } elseif (is_object($row)) {
+                $stats[$row->statut] = (int) $row->cnt;
+                $totalUsers += (int) $row->cnt;
+            }
+        }
+
+        // Role statistics
+        $roleStats = [];
+        foreach ($users as $user) {
+            foreach ($user->getRoles() as $role_name) {
+                $roleStats[$role_name] = ($roleStats[$role_name] ?? 0) + 1;
+            }
+        }
+
+        // Count filtered results
+        $filteredCount = count($users);
+
+        return $this->render('user/index.html.twig', [
+            'users' => $users,
+            'search_q' => $q,
+            'statut_filter' => $statut,
+            'role_filter' => $role,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+            'sort' => $sort,
+            'stats' => $stats,
+            'roleStats' => $roleStats,
+            'totalUsers' => $totalUsers,
+            'filteredCount' => $filteredCount,
+        ]);
+    }
+
+    #[Route('/export/pdf', name: 'app_user_export_pdf', methods: ['GET'])]
+    public function exportPdf(Request $request, UserRepository $userRepository): Response
+    {
+        // Get all users with applied filters
+        $q = (string) $request->query->get('q', '');
+        $statut = (string) $request->query->get('statut', '');
+        $role = (string) $request->query->get('role', '');
+        $dateFrom = (string) $request->query->get('date_from', '');
+        $dateTo = (string) $request->query->get('date_to', '');
 
         $qb = $userRepository->createQueryBuilder('u');
 
@@ -30,36 +134,50 @@ class UserController extends AbstractController
                ->setParameter('q', '%'.trim($q).'%');
         }
 
-        if ($sort === 'name_desc') {
-            $qb->orderBy('u.nom', 'DESC')->addOrderBy('u.prenom', 'DESC');
-        } else {
-            // default: name_asc
-            $qb->orderBy('u.nom', 'ASC')->addOrderBy('u.prenom', 'ASC');
+        if ($statut !== '') {
+            $qb->andWhere('u.statut = :statut')
+               ->setParameter('statut', $statut);
         }
 
-        $users = $qb->getQuery()->getResult();
-
-        // statistics by statut
-        $statsQb = $userRepository->createQueryBuilder('u')
-            ->select('u.statut, COUNT(u.id) as cnt')
-            ->groupBy('u.statut');
-        $statsRaw = $statsQb->getQuery()->getResult();
-        $stats = [];
-        foreach ($statsRaw as $row) {
-            // result may be array or object depending on hydration
-            if (is_array($row)) {
-                $stats[$row['statut']] = (int) $row['cnt'];
-            } elseif (is_object($row)) {
-                $stats[$row->statut] = (int) $row->cnt;
-            }
+        if ($role !== '') {
+            $qb->andWhere('JSON_CONTAINS(u.roles, JSON_QUOTE(:role)) = true')
+               ->setParameter('role', $role);
         }
 
-        return $this->render('user/index.html.twig', [
+        if ($dateFrom !== '') {
+            $qb->andWhere('u.dateInscription >= :dateFrom')
+               ->setParameter('dateFrom', new \DateTime($dateFrom));
+        }
+        if ($dateTo !== '') {
+            $qb->andWhere('u.dateInscription <= :dateTo')
+               ->setParameter('dateTo', new \DateTime($dateTo . ' 23:59:59'));
+        }
+
+        $users = $qb->orderBy('u.nom', 'ASC')->addOrderBy('u.prenom', 'ASC')->getQuery()->getResult();
+
+        // Render HTML to PDF content
+        $html = $this->renderView('user/export_pdf.html.twig', [
             'users' => $users,
-            'search_q' => $q,
-            'sort' => $sort,
-            'stats' => $stats,
+            'exportDate' => new \DateTime(),
+            'filteredCount' => count($users),
         ]);
+
+        // Try to generate PDF with knp-snappy
+        try {
+            $pdf = $this->container->get('knp_snappy.pdf');
+            $pdfContent = $pdf->getOutputFromHtml($html);
+
+            $response = new Response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="utilisateurs_' . date('Y-m-d_H-i-s') . '.pdf"'
+            ]);
+            return $response;
+        } catch (\Exception $e) {
+            // Fallback: Return HTML with print-friendly styles
+            $response = new Response($html, 200, ['Content-Type' => 'text/html; charset=utf-8']);
+            $response->headers->set('Content-Disposition', 'inline; filename="utilisateurs_' . date('Y-m-d_H-i-s') . '.html"');
+            return $response;
+        }
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
