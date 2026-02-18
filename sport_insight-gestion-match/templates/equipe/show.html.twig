@@ -1,17 +1,19 @@
 {% extends 'equipe/base.html.twig' %}
 
 {% block content %}
-    <h1>Equipe</h1>
+    <h1>{{ equipe.nom }}</h1>
+
+    {% if equipe.image %}
+        <div class="mb-4">
+            <img src="{{ asset('uploads/equipes/' ~ equipe.image) }}" alt="{{ equipe.nom }}" style="max-height: 200px; max-width: 300px;">
+        </div>
+    {% endif %}
 
     <table class="table">
         <tbody>
             <tr>
                 <th>Id</th>
                 <td>{{ equipe.id }}</td>
-            </tr>
-            <tr>
-                <th>Id_equipe</th>
-                <td>{{ equipe.idEquipe }}</td>
             </tr>
             <tr>
                 <th>Nom</th>

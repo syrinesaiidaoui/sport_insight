@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 #[Route('/equipe')]
 final class EquipeController extends AbstractController
@@ -33,13 +35,27 @@ final class EquipeController extends AbstractController
     }
 
     #[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $equipe = new Equipe();
         $form = $this->createForm(EquipeType::class, $equipe);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move('uploads/equipes', $newFilename);
+                    $equipe->setImage($newFilename);
+                } catch (FileException $e) {
+                    // Handle file upload error
+                }
+            }
+            
             $entityManager->persist($equipe);
             $entityManager->flush();
 
@@ -61,7 +77,7 @@ final class EquipeController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_equipe_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Equipe $equipe, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(EquipeType::class, $equipe);
         $form->handleRequest($request);
@@ -72,6 +88,20 @@ final class EquipeController extends AbstractController
             ->getForm();
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move('uploads/equipes', $newFilename);
+                    $equipe->setImage($newFilename);
+                } catch (FileException $e) {
+                    // Handle file upload error
+                }
+            }
+            
             $entityManager->flush();
 
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);

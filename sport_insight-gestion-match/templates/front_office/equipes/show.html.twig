@@ -1,0 +1,254 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}{{ equipe.nom }} - Sport Insight{% endblock %}
+
+{% block body %}
+    <style>
+        .equipe-detail-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-muted);
+        }
+
+        .equipe-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+            margin-bottom: 40px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .equipe-logo-large {
+            background: linear-gradient(135deg, var(--body-bg) 0%, #f0f9ff 100%);
+            padding: 60px 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .equipe-logo-container {
+            width: 280px;
+            height: 280px;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .equipe-logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .equipe-logo-placeholder {
+            font-size: 100px;
+            opacity: 0.4;
+        }
+
+        .equipe-details {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .detail-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .equipe-name {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .detail-item {
+            padding: 16px;
+            background: var(--body-bg);
+            border-radius: 8px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .detail-icon {
+            font-size: 24px;
+            min-width: 30px;
+        }
+
+        .detail-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: var(--card-bg);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.15s;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+
+        .back-link:hover {
+            background: var(--body-bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .equipe-header {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .equipe-name {
+                font-size: 28px;
+            }
+
+            .equipe-logo-large {
+                padding: 40px 20px;
+            }
+
+            .equipe-logo-container {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+
+    <div class="equipe-detail-section">
+        <div class="breadcrumb">
+            <a href="{{ path('app_front_equipes_index') }}">👥 Équipes</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>{{ equipe.nom }}</span>
+        </div>
+
+        <div class="equipe-header">
+            <div class="equipe-logo-large">
+                <div class="equipe-logo-container">
+                    {% if equipe.image %}
+                        <img src="{{ asset('uploads/equipes/' ~ equipe.image) }}" alt="{{ equipe.nom }}">
+                    {% else %}
+                        <span class="equipe-logo-placeholder">🏆</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="equipe-details">
+                <div>
+                    <div class="detail-title">Équipe</div>
+                    <h1 class="equipe-name">{{ equipe.nom }}</h1>
+                </div>
+
+                {% if equipe.coach %}
+                    <div class="detail-item">
+                        <span class="detail-icon">👨‍💼</span>
+                        <div class="detail-content">
+                            <span class="detail-label">Coach</span>
+                            <span class="detail-value">{{ equipe.coach }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="detail-item">
+                    <span class="detail-icon">📊</span>
+                    <div class="detail-content">
+                        <span class="detail-label">ID Interne</span>
+                        <span class="detail-value">#{{ equipe.id }}</span>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-icon">⚽</span>
+                    <div class="detail-content">
+                        <span class="detail-label">Matchs joués</span>
+                        <span class="detail-value">{{ equipe.matchs|length }} matchs</span>
+                    </div>
+                </div>
+
+                <a href="{{ path('app_front_equipes_index') }}" class="back-link">
+                    ← Retour aux équipes
+                </a>
+            </div>
+        </div>
+
+        {% if equipe.matchs %}
+            <div style="background: var(--card-bg); padding: 32px; border-radius: 16px; border: 1px solid var(--border-color);">
+                <h2 style="font-size: 24px; font-weight: 700; color: var(--text-dark); margin: 0 0 24px 0;">Matchs impliquant cette équipe</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                    {% for match in equipe.matchs %}
+                        <div style="background: var(--body-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">
+                                {{ match.dateMatch ? match.dateMatch|date('d/m/Y à H:i') : 'N/A' }}
+                            </div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">
+                                {{ match.equipeDomicile.nom }} vs {{ match.equipeExterieur.nom }}
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-muted);">
+                                📍 {{ match.lieu }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

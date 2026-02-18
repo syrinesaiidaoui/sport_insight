@@ -1,147 +1,641 @@
 {% extends 'front_office/base.html.twig' %}
 
 {% block title %}Participations - Admin{% endblock %}
-
 {% block page_title %}Participations{% endblock %}
 
+{% block stylesheets %}
+{{ parent() }}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ─── TOKENS ─────────────────────────────────────────────── */
+  :root {
+    --bg:        #f0f7f2;
+    --surface:   #ffffff;
+    --card:      #f8fdf9;
+    --border:    #d1e8d8;
+    --accent:    #16a34a;
+    --accent-lt: #22c55e;
+    --accent-dk: #14532d;
+    --accent2:   #ef4444;
+    --gold:      #f59e0b;
+    --text:      #1a2e22;
+    --muted:     #6b8f77;
+    --radius:    12px;
+  }
+
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; margin: 0; }
+
+  /* ─── HERO BANNER ────────────────────────────────────────── */
+  .hero-banner {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+    border-radius: 0 0 24px 24px;
+    margin-bottom: 32px;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1400&auto=format&fit=crop&q=80');
+    background-size: cover;
+    background-position: center 40%;
+    filter: brightness(0.42) saturate(1.2);
+    transform: scale(1.04);
+    transition: transform 8s ease;
+  }
+  .hero-banner:hover .hero-bg { transform: scale(1); }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(20, 83, 45, 0.78) 0%,
+      rgba(22, 163, 74, 0.28) 60%,
+      rgba(0,0,0,0.05) 100%
+    );
+  }
+
+  .hero-dots {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 28px 40px;
+  }
+
+  .page-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 96px);
+    letter-spacing: 4px;
+    line-height: .9;
+    color: #ffffff;
+    text-shadow: 0 4px 24px rgba(0,0,0,.4);
+  }
+
+  .page-heading small {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #86efac;
+    margin-bottom: 6px;
+  }
+
+  .hero-stats { display: flex; gap: 16px; align-items: flex-end; }
+
+  .stat-pill {
+    text-align: center;
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 14px;
+    padding: 12px 22px;
+    color: white;
+  }
+
+  .stat-pill .num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    line-height: 1;
+    color: #4ade80;
+  }
+
+  .stat-pill .lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,.55);
+    margin-top: 3px;
+  }
+
+  /* ─── BUTTONS ────────────────────────────────────────────── */
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    background: var(--accent);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    border-radius: var(--radius);
+    text-decoration: none;
+    letter-spacing: .3px;
+    transition: transform .15s, box-shadow .2s, background .15s;
+    box-shadow: 0 4px 16px rgba(22,163,74,.3);
+    cursor: pointer;
+  }
+  .btn-add:hover { background: var(--accent-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,.4); color: white; }
+  .btn-add svg { width: 15px; height: 15px; }
+
+  /* ─── PAGE BODY ──────────────────────────────────────────── */
+  .page-inner { padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; }
+
+  .action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  /* ─── FILTER BAR ─────────────────────────────────────────── */
+  .filter-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 12px rgba(22,163,74,.06);
+    margin-bottom: 20px;
+  }
+
+  .filter-wrap label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .filter-wrap select {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    min-width: 160px;
+    cursor: pointer;
+  }
+  .filter-wrap select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
+
+  /* ─── TABLE CARD ─────────────────────────────────────────── */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(22,163,74,.07);
+  }
+
+  .table-card-header {
+    padding: 18px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+  }
+
+  .sport-icons { margin-left: auto; display: flex; gap: 6px; }
+  .sport-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+
+  .table-card-header h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  .count-badge {
+    padding: 3px 10px;
+    background: rgba(22,163,74,.12);
+    color: var(--accent);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(22,163,74,.2);
+  }
+
+  /* ─── DATA TABLE ─────────────────────────────────────────── */
+  .data-table { width: 100%; border-collapse: collapse; }
+
+  .data-table thead tr { background: linear-gradient(135deg, #f0fdf4, #f8fdf9); }
+
+  .data-table th {
+    padding: 11px 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .data-table th.text-end { text-align: right; }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid #eaf5ec;
+    transition: background .15s;
+    animation: rowIn .35s ease both;
+  }
+
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .data-table tbody tr:nth-child(1)  { animation-delay:.04s }
+  .data-table tbody tr:nth-child(2)  { animation-delay:.08s }
+  .data-table tbody tr:nth-child(3)  { animation-delay:.12s }
+  .data-table tbody tr:nth-child(4)  { animation-delay:.16s }
+  .data-table tbody tr:nth-child(5)  { animation-delay:.20s }
+  .data-table tbody tr:nth-child(6)  { animation-delay:.24s }
+  .data-table tbody tr:nth-child(7)  { animation-delay:.28s }
+  .data-table tbody tr:nth-child(8)  { animation-delay:.32s }
+  .data-table tbody tr:nth-child(9)  { animation-delay:.36s }
+  .data-table tbody tr:nth-child(10) { animation-delay:.40s }
+
+  .data-table tbody tr:hover { background: #f0fdf4; }
+  .data-table tbody tr:last-child { border-bottom: none; }
+
+  .data-table td {
+    padding: 14px 20px;
+    font-size: 14px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+  .data-table td.text-end { text-align: right; }
+
+  /* Player name */
+  .player-name {
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .player-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    border: 1px solid #86efac;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-dk);
+    flex-shrink: 0;
+  }
+
+  /* Type badge */
+  .type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    background: rgba(245,158,11,.1);
+    color: #b45309;
+    border: 1px solid rgba(245,158,11,.25);
+  }
+
+  /* Presence badges */
+  .badge-present {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(22,163,74,.1);
+    color: var(--accent);
+    border: 1px solid rgba(22,163,74,.25);
+  }
+  .badge-present::before { content: '✓'; font-size: 11px; }
+
+  .badge-absent {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(239,68,68,.08);
+    color: var(--accent2);
+    border: 1px solid rgba(239,68,68,.2);
+  }
+  .badge-absent::before { content: '✕'; font-size: 11px; }
+
+  .badge-undefined {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(107,143,119,.08);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* Justificatif */
+  .justif-text {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ─── ACTION BUTTONS ─────────────────────────────────────── */
+  .actions-cell { display: flex; gap: 6px; justify-content: flex-end; }
+
+  .btn-action {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+    white-space: nowrap;
+    background: transparent;
+  }
+
+  .btn-view   { border-color: var(--border); color: var(--muted); }
+  .btn-view:hover   { border-color: var(--accent); color: var(--accent); background: #f0fdf4; }
+  .btn-edit   { border-color: var(--border); color: var(--muted); }
+  .btn-edit:hover   { border-color: var(--gold); color: #92400e; background: #fffbeb; }
+  .btn-delete { border-color: var(--border); color: var(--muted); }
+  .btn-delete:hover { border-color: var(--accent2); color: var(--accent2); background: #fef2f2; }
+
+  /* ─── EMPTY STATE ────────────────────────────────────────── */
+  .empty-state { padding: 72px 20px; text-align: center; }
+  .empty-icon {
+    width: 72px; height: 72px;
+    margin: 0 auto 20px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+  }
+  .empty-state p { color: var(--muted); font-size: 15px; }
+
+  /* ─── MODAL ──────────────────────────────────────────────── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,83,45,.2);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent2);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.12);
+    animation: modalIn .2s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(.95) translateY(12px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .modal-box h5 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; margin-bottom: 10px; color: var(--accent2); }
+  .modal-box p { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 28px; }
+  .modal-footer-btns { display: flex; gap: 10px; justify-content: flex-end; }
+
+  .btn-cancel { padding: 10px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: border-color .15s, color .15s; }
+  .btn-cancel:hover { border-color: var(--text); color: var(--text); }
+
+  .btn-confirm-delete { padding: 10px 24px; background: var(--accent2); border: none; color: white; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 16px rgba(239,68,68,.25); transition: box-shadow .15s, transform .15s; }
+  .btn-confirm-delete:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(239,68,68,.4); }
+
+  @media (max-width: 700px) {
+    .hero-content { flex-direction: column; align-items: flex-start; padding: 20px; }
+    .hero-stats { display: none; }
+    .page-inner { padding: 0 16px 40px; }
+    .filter-wrap { flex-direction: column; align-items: stretch; }
+    .actions-cell { flex-wrap: wrap; }
+    .justif-text { max-width: 100px; }
+  }
+</style>
+{% endblock %}
+
 {% block header_actions %}
-  <a href="{{ path('front_participation_new') }}" class="btn btn-primary btn-sm">
-    <i class="lucide-plus" style="font-size:14px"></i> Ajouter
+  <a href="{{ path('front_participation_new') }}" class="btn-add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Ajouter
   </a>
 {% endblock %}
 
 {% block body %}
 
-<div class="mb-4" style="text-align:right">
-  <a href="{{ path('front_participation_new') }}" class="btn btn-primary">
-    <i class="lucide-plus" style="font-size:14px"></i> Ajouter une participation
-  </a>
-</div>
-<div class="data-table">
-  <div class="data-table-header flex items-center justify-between mb-4">
-    <div>
-      <h3>Liste des participations</h3>
-      <span class="text-muted" style="font-size:13px">
-        {{ participations|length }} participation(s)
-      </span>
+{# ── HERO BANNER ── #}
+<div class="hero-banner">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+
+  <svg class="hero-dots" width="200" height="200" viewBox="0 0 200 200" fill="none">
+    <circle cx="10" cy="10" r="3" fill="white"/><circle cx="40" cy="10" r="3" fill="white"/><circle cx="70" cy="10" r="3" fill="white"/><circle cx="100" cy="10" r="3" fill="white"/><circle cx="130" cy="10" r="3" fill="white"/><circle cx="160" cy="10" r="3" fill="white"/>
+    <circle cx="10" cy="40" r="3" fill="white"/><circle cx="40" cy="40" r="3" fill="white"/><circle cx="70" cy="40" r="3" fill="white"/><circle cx="100" cy="40" r="3" fill="white"/><circle cx="130" cy="40" r="3" fill="white"/><circle cx="160" cy="40" r="3" fill="white"/>
+    <circle cx="10" cy="70" r="3" fill="white"/><circle cx="40" cy="70" r="3" fill="white"/><circle cx="70" cy="70" r="3" fill="white"/><circle cx="100" cy="70" r="3" fill="white"/><circle cx="130" cy="70" r="3" fill="white"/><circle cx="160" cy="70" r="3" fill="white"/>
+    <circle cx="10" cy="100" r="3" fill="white"/><circle cx="40" cy="100" r="3" fill="white"/><circle cx="70" cy="100" r="3" fill="white"/><circle cx="100" cy="100" r="3" fill="white"/><circle cx="130" cy="100" r="3" fill="white"/><circle cx="160" cy="100" r="3" fill="white"/>
+    <circle cx="10" cy="130" r="3" fill="white"/><circle cx="40" cy="130" r="3" fill="white"/><circle cx="70" cy="130" r="3" fill="white"/><circle cx="100" cy="130" r="3" fill="white"/><circle cx="130" cy="130" r="3" fill="white"/><circle cx="160" cy="130" r="3" fill="white"/>
+  </svg>
+
+  <div class="hero-content">
+    <div class="page-heading">
+      <small>/ Suivi des joueurs</small>
+      Participations
     </div>
-    <form method="get" class="flex gap-2 items-center">
-      <label for="presence-select" style="margin-bottom:0">Filtrer par présence:</label>
-      <select name="presence" id="presence-select" onchange="this.form.submit()" class="form-select px-2 py-1 rounded border border-gray-300">
-        <option value="" {% if not presence %}selected{% endif %}>Tous</option>
-        <option value="present" {% if presence == 'present' %}selected{% endif %}>Présent</option>
-        <option value="absent" {% if presence == 'absent' %}selected{% endif %}>Absent</option>
-      </select>
-    </form>
+    <div class="hero-stats">
+      <div class="stat-pill">
+        <div class="num">{{ participations|length }}</div>
+        <div class="lbl">Total</div>
+      </div>
+      <div class="stat-pill">
+        <div class="num">👥</div>
+        <div class="lbl">Joueurs</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-inner">
+
+  {# ── ACTION ROW ── #}
+  <div class="action-row">
+    <div style="font-size:14px; color:var(--muted)">
+      <strong style="color:var(--text)">{{ participations|length }}</strong> participation(s) au total
+    </div>
+    <a href="{{ path('front_participation_new') }}" class="btn-add">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Ajouter une participation
+    </a>
   </div>
 
-  {% if participations %}
-    <table>
-      <thead>
-        <tr>
-          <th>Joueur</th>
-          <th>Entrainement</th>
-          <th>Présence</th>
-          <table style="width:100%; font-size:1.15rem;">
-            <thead>
-              <tr style="height: 3.5rem;">
-                <th style="padding: 16px 12px;">Joueur</th>
-                <th style="padding: 16px 12px;">Entrainement</th>
-                <th style="padding: 16px 12px;">Présence</th>
-                <th style="padding: 16px 12px;">Justificatif</th>
-                <th style="text-align:right; padding: 16px 12px;">Actions</th>
-              </tr>
-            </thead>
+  {# ── FILTER FORM ── #}
+  <form method="get" class="filter-wrap">
+    <label for="presence-select">Filtrer par présence :</label>
+    <select name="presence" id="presence-select" onchange="this.form.submit()">
+      <option value="" {% if not presence %}selected{% endif %}>Tous</option>
+      <option value="present" {% if presence == 'present' %}selected{% endif %}>Présent</option>
+      <option value="absent"  {% if presence == 'absent'  %}selected{% endif %}>Absent</option>
+    </select>
+  </form>
 
-            <tbody>
-              {% for participation in participations %}
-                <tr style="height: 3.5rem;">
-                  <td style="padding: 16px 12px;">{{ participation.joueur.nom }} {{ participation.joueur.prenom }}</td>
-                  <td style="padding: 16px 12px;">{{ participation.entrainement.type }}</td>
-                  <td style="padding: 16px 12px;">
-                    {% if participation.presence == 'present' %}
-                      <span class="badge badge-success" style="font-size:1.1rem; padding:8px 18px;">Présent</span>
-                    {% elseif participation.presence == 'absent' %}
-                      <span class="badge badge-danger" style="font-size:1.1rem; padding:8px 18px;">Absent</span>
-                    {% else %}
-                      <span class="badge badge-secondary" style="font-size:1.1rem; padding:8px 18px;">Non défini</span>
-                    {% endif %}
-                  </td>
-                  <td style="padding: 16px 12px;">{{ participation.justificationAbsence|default('-') }}</td>
-                  <td style="text-align:right; padding: 16px 12px;">
-                    <a href="{{ path('front_participation_show', {id: participation.id}) }}"
-                       class="btn btn-sm btn-outline-secondary"
-                       style="padding:8px 16px; font-size:1rem;">Voir</a>
-
-                    <a href="{{ path('front_participation_edit', {id: participation.id}) }}"
-                       class="btn btn-sm btn-outline-secondary"
-                       style="padding:8px 16px; font-size:1rem;">Éditer</a>
-
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-danger"
-                      style="padding:8px 16px; font-size:1rem;"
-                      onclick="openDeleteModal({{ participation.id }}, '{{ csrf_token('delete' ~ participation.id) }}')"
-                    >
-                      Supprimer
-                    </button>
-                  {# ===== MODAL SUPPRESSION ===== #}
-                  <div id="deleteModal" class="modal fade" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-
-                        <div class="modal-header">
-                          <h5 class="modal-title">Confirmation</h5>
-                          <button type="button" class="btn-close" onclick="closeDeleteModal()"></button>
-                        </div>
-
-                        <div class="modal-body">
-                          <p>Êtes-vous sûr de vouloir supprimer cette participation ?</p>
-                        </div>
-
-                        <div class="modal-footer">
-                          <button class="btn btn-secondary" onclick="closeDeleteModal()">
-                            Annuler
-                          </button>
-
-                          <form id="deleteForm" method="post">
-                            <input type="hidden" name="_token" id="deleteToken">
-                            <button type="submit" class="btn btn-danger">
-                              Supprimer
-                            </button>
-                          </form>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-
-                  <script>
-                  function openDeleteModal(id, token) {
-                    const modal = document.getElementById('deleteModal');
-                    const form = document.getElementById('deleteForm');
-                    const tokenInput = document.getElementById('deleteToken');
-
-                    form.action = "{{ path('front_participation_delete', {'id': 'ID'}) }}".replace('ID', id);
-                    tokenInput.value = token;
-
-                    modal.style.display = 'block';
-                    modal.classList.add('show');
-                  }
-
-                  function closeDeleteModal() {
-                    const modal = document.getElementById('deleteModal');
-                    modal.style.display = 'none';
-                    modal.classList.remove('show');
-                  }
-                  </script>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-      </a>
+  {# ── TABLE CARD ── #}
+  <div class="table-card">
+    <div class="table-card-header">
+      <h3>Liste des Participations</h3>
+      <span class="count-badge">{{ participations|length }}</span>
+      <div class="sport-icons">
+        <span class="sport-icon">👤</span>
+        <span class="sport-icon">📋</span>
+        <span class="sport-icon">✅</span>
+      </div>
     </div>
-  {% endif %}
+
+    {% if participations %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Joueur</th>
+            <th>Entrainement</th>
+            <th>Présence</th>
+            <th>Justificatif</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for participation in participations %}
+            <tr>
+              <td>
+                <div class="player-name">
+                  <div class="player-avatar">
+                    {{ participation.joueur.nom|slice(0,1)|upper }}
+                  </div>
+                  {{ participation.joueur.nom }} {{ participation.joueur.prenom }}
+                </div>
+              </td>
+
+              <td>
+                <span class="type-badge">{{ participation.entrainement.type }}</span>
+              </td>
+
+              <td>
+                {% if participation.presence == 'present' %}
+                  <span class="badge-present">Présent</span>
+                {% elseif participation.presence == 'absent' %}
+                  <span class="badge-absent">Absent</span>
+                {% else %}
+                  <span class="badge-undefined">Non défini</span>
+                {% endif %}
+              </td>
+
+              <td>
+                <span class="justif-text">{{ participation.justificationAbsence|default('—') }}</span>
+              </td>
+
+              <td class="text-end">
+                <div class="actions-cell">
+                  <a href="{{ path('front_participation_show', {id: participation.id}) }}"
+                     class="btn-action btn-view">Voir</a>
+
+                  <a href="{{ path('front_participation_edit', {id: participation.id}) }}"
+                     class="btn-action btn-edit">Éditer</a>
+
+                  <button type="button" class="btn-action btn-delete"
+                    onclick="openDeleteModal({{ participation.id }}, '{{ csrf_token('delete' ~ participation.id) }}')">
+                    Supprimer
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <p>Aucune participation pour le moment.</p>
+      </div>
+    {% endif %}
+  </div>
+
 </div>
+
+{# ===== MODAL SUPPRESSION ===== #}
+<div id="deleteModal" class="modal-overlay">
+  <div class="modal-box">
+    <h5>⚠ Confirmation</h5>
+    <p>Êtes-vous sûr de vouloir supprimer cette participation ?<br>Cette action est irréversible.</p>
+    <div class="modal-footer-btns">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Annuler</button>
+      <form id="deleteForm" method="post" style="margin:0">
+        <input type="hidden" name="_token" id="deleteToken">
+        <button type="submit" class="btn-confirm-delete">Supprimer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function openDeleteModal(id, token) {
+  const modal = document.getElementById('deleteModal');
+  const form  = document.getElementById('deleteForm');
+  document.getElementById('deleteToken').value = token;
+  form.action = "{{ path('front_participation_delete', {'id': 'ID'}) }}".replace('ID', id);
+  modal.classList.add('show');
+}
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('show');
+}
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal();
+});
+</script>
+
 {% endblock %}

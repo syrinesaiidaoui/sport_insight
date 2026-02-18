@@ -284,14 +284,20 @@
                 </a>
             </li>
             <li>
+                <a href="{{ path('app_front_equipes_index') }}"
+                   class="{{ app.request.get('_route') starts with 'app_front_equipes' ? 'active' : '' }}">
+                    Équipes
+                </a>
+            </li>
+            <li>
                 <a href="{{ path('front_offre_index') }}"
                    class="{{ app.request.get('_route') starts with 'front_offre' ? 'active' : '' }}">
                     Offres
                 </a>
             </li>
             <li>
-                <a href="{{ path('front_match_index') }}"
-                   class="{{ app.request.get('_route') starts with 'front_match' ? 'active' : '' }}">
+                <a href="{{ path('app_front_matchs_index') }}"
+                   class="{{ app.request.get('_route') starts with 'app_front_matchs' ? 'active' : '' }}">
                     Matchs
                 </a>
             </li>

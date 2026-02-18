@@ -6,8 +6,8 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Logo</th>
                 <th>Id</th>
-                <th>Id_equipe</th>
                 <th>Nom</th>
                 <th>Coach</th>
                 <th>actions</th>
@@ -16,8 +16,14 @@
         <tbody>
         {% for equipe in equipes %}
             <tr>
+                <td>
+                    {% if equipe.image %}
+                        <img src="{{ asset('uploads/equipes/' ~ equipe.image) }}" alt="{{ equipe.nom }}" style="max-height: 40px; max-width: 40px;">
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
                 <td>{{ equipe.id }}</td>
-                <td>{{ equipe.idEquipe }}</td>
                 <td>{{ equipe.nom }}</td>
                 <td>{{ equipe.coach }}</td>
                 <td>
@@ -36,7 +42,6 @@
     <div class="d-flex justify-content-start mb-3">
         <form method="get" action="{{ path('app_equipe_index') }}">
             <button type="submit" name="sort" value="id" class="btn btn-outline-primary me-2">Sort by Id</button>
-            <button type="submit" name="sort" value="idEquipe" class="btn btn-outline-primary me-2">Sort by Id_equipe</button>
             <button type="submit" name="sort" value="nom" class="btn btn-outline-primary me-2">Sort by Nom</button>
             <button type="submit" name="sort" value="coach" class="btn btn-outline-primary">Sort by Coach</button>
             <input type="hidden" name="order" value="{{ currentOrder == 'asc' ? 'desc' : 'asc' }}">
