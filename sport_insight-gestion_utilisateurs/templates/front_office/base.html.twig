@@ -365,12 +365,7 @@
                     Annonces
                 </a>
             </li>
-            <li>
-                <a href="{{ path('app_commentaire_index') }}"
-                   class="{{ app.request.get('_route') starts with 'front_equipement' ? 'active' : '' }}">
-                    commentaires
-                </a>
-            </li>
+            
             <li>
                 <a href="{{ path('app_front_matchs_index') }}"
                    class="{{ app.request.get('_route') starts with 'app_front_matchs' ? 'active' : '' }}">
@@ -382,13 +377,9 @@
                    class="{{ app.request.get('_route') starts with 'front_sponsoring' ? 'active' : '' }}">
                     Sponsor
                 </a>
-                <a href="{{ path('app_contrat_sponsor_index') }}"
-                   class="{{ app.request.get('_route') starts with 'front_sponsoring' ? 'active' : '' }}">
-                    contract Sponsor
-                </a>
             </li>
             <li>
-                <a href="{{ path('app_product_index') }}"
+                <a href="{{ path('front_equipement_index') }}"
                    class="{{ app.request.get('_route') starts with 'front_equipement' ? 'active' : '' }}">
                     Produits
                 </a>
