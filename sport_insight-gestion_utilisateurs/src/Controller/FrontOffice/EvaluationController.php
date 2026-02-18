@@ -3,7 +3,7 @@
 namespace App\Controller\FrontOffice;
 
 use App\Entity\Evaluation;
-use App\Form\Evaluation1Type;
+use App\Form\EvaluationType;
 use App\Repository\EvaluationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -70,7 +70,7 @@ public function index(Request $request, EvaluationRepository $evaluationReposito
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $evaluation = new Evaluation();
-        $form = $this->createForm(Evaluation1Type::class, $evaluation);
+        $form = $this->createForm(EvaluationType::class, $evaluation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -99,7 +99,7 @@ public function index(Request $request, EvaluationRepository $evaluationReposito
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Evaluation $evaluation, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(Evaluation1Type::class, $evaluation);
+        $form = $this->createForm(EvaluationType::class, $evaluation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
