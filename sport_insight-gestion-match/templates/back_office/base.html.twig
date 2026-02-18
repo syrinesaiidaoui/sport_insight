@@ -345,16 +345,22 @@
                 Entrainement
             </a>
 
+            <a href="{{ path('app_equipe_index') }}"
+               class="sidebar-link {{ app.request.get('_route') starts with 'app_equipe' ? 'active' : '' }}">
+                <i class="lucide-users"></i>
+                Équipes
+            </a>
+
+            <a href="{{ path('app_matchs_index') }}"
+               class="sidebar-link {{ app.request.get('_route') starts with 'app_matchs' ? 'active' : '' }}">
+                <i class="lucide-trophy"></i>
+                Matchs
+            </a>
+
             <a href="{{ path('back_offre_index') }}"
                class="sidebar-link {{ app.request.get('_route') starts with 'back_offre' ? 'active' : '' }}">
                 <i class="lucide-tag"></i>
                 Offres
-            </a>
-
-            <a href="{{ path('back_match_index') }}"
-               class="sidebar-link {{ app.request.get('_route') starts with 'back_match' ? 'active' : '' }}">
-                <i class="lucide-trophy"></i>
-                Matchs
             </a>
 
             <a href="{{ path('back_sponsoring_index') }}"

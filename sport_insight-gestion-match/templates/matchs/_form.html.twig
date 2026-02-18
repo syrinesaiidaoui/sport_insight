@@ -1,10 +1,5 @@
 {{ form_start(form) }}
     <div class="mb-3">
-        {{ form_label(form.id_match, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.id_match, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.id_match) }}
-    </div>
-    <div class="mb-3">
         {{ form_label(form.dateMatch, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.dateMatch, {'attr': {'class': 'form-control'}}) }}
         {{ form_errors(form.dateMatch) }}
@@ -30,16 +25,6 @@
         {{ form_errors(form.statut) }}
     </div>
     <div class="mb-3">
-        {{ form_label(form.lineup_domicile, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.lineup_domicile, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.lineup_domicile) }}
-    </div>
-    <div class="mb-3">
-        {{ form_label(form.lineup_exterieur, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.lineup_exterieur, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.lineup_exterieur) }}
-    </div>
-    <div class="mb-3">
         {{ form_label(form.equipeDomicile, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.equipeDomicile, {'attr': {'class': 'form-control'}}) }}
         {{ form_errors(form.equipeDomicile) }}
@@ -48,6 +33,32 @@
         {{ form_label(form.equipeExterieur, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.equipeExterieur, {'attr': {'class': 'form-control'}}) }}
         {{ form_errors(form.equipeExterieur) }}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form_label(form.scoreEquipeDomicile, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.scoreEquipeDomicile, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.scoreEquipeDomicile) }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form_label(form.scoreEquipeExterieur, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.scoreEquipeExterieur, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.scoreEquipeExterieur) }}
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.lineup_domicile, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lineup_domicile, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lineup_domicile) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.lineup_exterieur, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lineup_exterieur, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lineup_exterieur) }}
     </div>
     <button class="btn btn-success">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

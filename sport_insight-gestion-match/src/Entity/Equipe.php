@@ -16,10 +16,6 @@ class Equipe
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank(message: 'L\'identifiant de l\'équipe est obligatoire.')]
-    #[ORM\Column(length: 100)]
-    private ?string $id_equipe = null;
-
     #[Assert\NotBlank(message: 'Le nom de l\'équipe est obligatoire.')]
     #[Assert\Length(
         max: 100,
@@ -34,6 +30,9 @@ class Equipe
     )]
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $coach = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     /**
      * @var Collection<int, Matchs>
@@ -58,18 +57,6 @@ class Equipe
         return $this->id;
     }
 
-    public function getIdEquipe(): ?string
-    {
-        return $this->id_equipe;
-    }
-
-    public function setIdEquipe(string $id_equipe): static
-    {
-        $this->id_equipe = $id_equipe;
-
-        return $this;
-    }
-
     public function getNom(): ?string
     {
         return $this->nom;
@@ -90,6 +77,18 @@ class Equipe
     public function setCoach(?string $coach): static
     {
         $this->coach = $coach;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }

@@ -3,54 +3,314 @@
 {% block title %}Match Details{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        {% block content %}
-            <h1>Match</h1>
+    <style>
+        .match-details {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
 
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <th>Id</th>
-                        <td>{{ match.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Id_match</th>
-                        <td>{{ match.idMatch }}</td>
-                    </tr>
-                    <tr>
-                        <th>DateMatch</th>
-                        <td>{{ match.dateMatch ? match.dateMatch|date('Y-m-d') : '' }}</td>
-                    </tr>
-                    <tr>
-                        <th>HeureDebut</th>
-                        <td>{{ match.heureDebut ? match.heureDebut|date('H:i:s') : '' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Lieu</th>
-                        <td>{{ match.lieu }}</td>
-                    </tr>
-                    <tr>
-                        <th>Type</th>
-                        <td>{{ match.type }}</td>
-                    </tr>
-                    <tr>
-                        <th>Statut</th>
-                        <td>{{ match.statut }}</td>
-                    </tr>
-                    <tr>
-                        <th>Lineup_domicile</th>
-                        <td>{{ match.lineupDomicile }}</td>
-                    </tr>
-                    <tr>
-                        <th>Lineup_exterieur</th>
-                        <td>{{ match.lineupExterieur }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        .details-header {
+            margin-bottom: 40px;
+        }
 
-            <a href="{{ path('app_matchs_index') }}" class="btn btn-secondary">Back to list</a>
-            <a href="{{ path('app_matchs_edit', {'id': match.id}) }}" class="btn btn-primary">Edit</a>
-            {{ include('matchs/_delete_form.html.twig', {'delete_form': delete_form}) }}
-        {% endblock %}
+        .details-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 32px;
+        }
+
+        .match-header {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: white;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .match-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .match-id-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .detail-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            background: #f9fafb;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            word-break: break-word;
+        }
+
+        .teams-section {
+            padding: 32px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .teams-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+
+        .teams-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .team-box {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9fafb;
+        }
+
+        .team-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .team-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .team-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .lineup-section {
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            margin-top: 12px;
+            border-left: 4px solid #10b981;
+        }
+
+        .lineup-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .lineup-text {
+            font-size: 14px;
+            color: #1f2937;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            padding: 24px 32px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-edit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn-edit:hover {
+            background: #bfdbfe;
+        }
+
+        .btn-back {
+            background: #f3f4f6;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-delete:hover {
+            background: #fecaca;
+        }
+    </style>
+
+    <div class="match-details">
+        <div class="details-header">
+            <h1>⚽ Détails du Match</h1>
+        </div>
+
+        <div class="match-card">
+            <div class="match-header">
+                <div class="match-title">
+                    {{ match.equipeDomicile.nom }} vs {{ match.equipeExterieur.nom }}
+                </div>
+                <div class="match-id-badge">#{{ match.id }}</div>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">📅 Date</span>
+                    <span class="detail-value">{{ match.dateMatch ? match.dateMatch|date('d/m/Y') : 'N/A' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">🕐 Heure</span>
+                    <span class="detail-value">{{ match.heureDebut ? match.heureDebut|date('H:i') : 'N/A' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">📍 Lieu</span>
+                    <span class="detail-value">{{ match.lieu ?? 'N/A' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">🎯 Type</span>
+                    <span class="detail-value">{{ match.type ?? 'N/A' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">🔔 Statut</span>
+                    <span class="detail-value">{{ match.statut ?? 'N/A' }}</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">⚽ Score</span>
+                    <span class="detail-value">{{ match.scoreEquipeDomicile ?? 0 }} - {{ match.scoreEquipeExterieur ?? 0 }}</span>
+                </div>
+            </div>
+
+            <div class="teams-section">
+                <h3>Équipes</h3>
+                <div class="teams-grid">
+                    <div class="team-box">
+                        <div class="team-title">Équipe Domicile</div>
+                        <div class="team-name">
+                            {% if match.equipeDomicile.image %}
+                                <div class="team-logo">
+                                    <img src="{{ asset('uploads/equipes/' ~ match.equipeDomicile.image) }}" alt="{{ match.equipeDomicile.nom }}">
+                                </div>
+                            {% endif %}
+                            {{ match.equipeDomicile.nom }}
+                        </div>
+                        {% if match.lineupDomicile %}
+                            <div class="lineup-section">
+                                <div class="lineup-label">Composition</div>
+                                <div class="lineup-text">{{ match.lineupDomicile }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="team-box">
+                        <div class="team-title">Équipe Extérieure</div>
+                        <div class="team-name">
+                            {% if match.equipeExterieur.image %}
+                                <div class="team-logo">
+                                    <img src="{{ asset('uploads/equipes/' ~ match.equipeExterieur.image) }}" alt="{{ match.equipeExterieur.nom }}">
+                                </div>
+                            {% endif %}
+                            {{ match.equipeExterieur.nom }}
+                        </div>
+                        {% if match.lineupExterieur %}
+                            <div class="lineup-section">
+                                <div class="lineup-label">Composition</div>
+                                <div class="lineup-text">{{ match.lineupExterieur }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ path('app_matchs_index') }}" class="action-btn btn-back">← Retour à la liste</a>
+                <a href="{{ path('app_matchs_edit', {'id': match.id}) }}" class="action-btn btn-edit">✏️ Éditer</a>
+                {{ include('matchs/_delete_form.html.twig', {'delete_form': delete_form}) }}
+            </div>
+        </div>
     </div>
 {% endblock %}

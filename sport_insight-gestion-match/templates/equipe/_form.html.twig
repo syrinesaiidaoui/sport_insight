@@ -1,9 +1,4 @@
-{{ form_start(form) }}
-    <div class="mb-3">
-        {{ form_label(form.id_equipe, null, {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.id_equipe, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.id_equipe) }}
-    </div>
+{{ form_start(form, { 'attr': { 'enctype': 'multipart/form-data' } }) }}
     <div class="mb-3">
         {{ form_label(form.nom, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
@@ -13,6 +8,11 @@
         {{ form_label(form.coach, null, {'label_attr': {'class': 'form-label'}}) }}
         {{ form_widget(form.coach, {'attr': {'class': 'form-control'}}) }}
         {{ form_errors(form.coach) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.image, null, {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.image) }}
     </div>
     <button class="btn btn-success">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

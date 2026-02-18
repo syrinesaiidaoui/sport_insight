@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MatchsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MatchsRepository::class)]
 class Matchs
@@ -14,9 +15,6 @@ class Matchs
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $id_match = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateMatch = null;
 
@@ -24,18 +22,27 @@ class Matchs
     private ?\DateTime $heureDebut = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Le lieu du match est obligatoire')]
+    #[Assert\Length(min: 3, max: 100, minMessage: 'Le lieu doit contenir au moins 3 caractères', maxMessage: 'Le lieu ne peut pas dépasser 100 caractères')]
     private ?string $lieu = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le type de match est obligatoire')]
+    #[Assert\Length(min: 3, max: 50, minMessage: 'Le type doit contenir au moins 3 caractères', maxMessage: 'Le type ne peut pas dépasser 50 caractères')]
     private ?string $type = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le statut du match est obligatoire')]
+    #[Assert\Length(min: 3, max: 50, minMessage: 'Le statut doit contenir au moins 3 caractères', maxMessage: 'Le statut ne peut pas dépasser 50 caractères')]
     private ?string $statut = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'La composition de l\'équipe domicile est obligatoire')]
+    #[Assert\Length(min: 3, minMessage: 'La composition doit contenir au moins 3 caractères')]
     private ?string $lineup_domicile = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(min: 3, minMessage: 'La composition doit contenir au moins 3 caractères')]
     private ?string $lineup_exterieur = null;
 
     #[ORM\ManyToOne(inversedBy: 'matchs')]
@@ -46,21 +53,17 @@ class Matchs
     #[ORM\JoinColumn(nullable: false)]
     private ?Equipe $equipeExterieur = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Assert\GreaterThanOrEqual(0, message: 'Le score doit être un nombre positif')]
+    private ?int $scoreEquipeDomicile = 0;
+
+    #[ORM\Column(nullable: true)]
+    #[Assert\GreaterThanOrEqual(0, message: 'Le score doit être un nombre positif')]
+    private ?int $scoreEquipeExterieur = 0;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdMatch(): ?string
-    {
-        return $this->id_match;
-    }
-
-    public function setIdMatch(string $id_match): static
-    {
-        $this->id_match = $id_match;
-
-        return $this;
     }
 
     public function getDateMatch(): ?\DateTime
@@ -167,6 +170,30 @@ class Matchs
     public function setEquipeExterieur(?Equipe $equipeExterieur): static
     {
         $this->equipeExterieur = $equipeExterieur;
+
+        return $this;
+    }
+
+    public function getScoreEquipeDomicile(): ?int
+    {
+        return $this->scoreEquipeDomicile;
+    }
+
+    public function setScoreEquipeDomicile(?int $scoreEquipeDomicile): static
+    {
+        $this->scoreEquipeDomicile = $scoreEquipeDomicile;
+
+        return $this;
+    }
+
+    public function getScoreEquipeExterieur(): ?int
+    {
+        return $this->scoreEquipeExterieur;
+    }
+
+    public function setScoreEquipeExterieur(?int $scoreEquipeExterieur): static
+    {
+        $this->scoreEquipeExterieur = $scoreEquipeExterieur;
 
         return $this;
     }
