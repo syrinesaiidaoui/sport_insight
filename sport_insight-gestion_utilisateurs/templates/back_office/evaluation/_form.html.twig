@@ -106,19 +106,21 @@
     {% endif %}
 </div>
 
-<div class="form-group {% if form.entrainement.vars.errors|length %}form-group-error{% endif %}" data-field="entrainement">
-    <label for="entrainement">Entrainement <span class="required">*</span></label>
-    {{ form_widget(form.entrainement, {'attr': {'class': 'form-control', 'id': 'entrainement', 'required': 'required'}}) }}
-    {% if form.entrainement.vars.errors %}
-        <ul class="form-error-list">
-            {% for error in form.entrainement.vars.errors %}
-                <li>{{ error.message }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <span class="form-error-list" style="display:none;"></span>
-    {% endif %}
-</div>
+{% if form.entrainement is defined %}
+    <div class="form-group {% if form.entrainement.vars.errors|length %}form-group-error{% endif %}" data-field="entrainement">
+        <label for="entrainement">Entrainement <span class="required">*</span></label>
+        {{ form_widget(form.entrainement, {'attr': {'class': 'form-control', 'id': 'entrainement', 'required': 'required'}}) }}
+        {% if form.entrainement.vars.errors %}
+            <ul class="form-error-list">
+                {% for error in form.entrainement.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="form-error-list" style="display:none;"></span>
+        {% endif %}
+    </div>
+{% endif %}
 
 <div class="form-group {% if form.notePhysique.vars.errors|length %}form-group-error{% endif %}" data-field="notePhysique">
     <label for="notePhysique">Note Physique <span class="required">*</span></label>

@@ -1,0 +1,42 @@
+{% if entrainements is not empty %}
+  <div class="cards-grid">
+    {% for entrainement in entrainements %}
+      {% set status = participation_map is defined ? (participation_map[entrainement.id]|default(null)) : null %}
+      <div class="train-card {% if status == 'present' %}present{% elseif status == 'absent' %}absent{% endif %}">
+        <div class="train-card-img">
+          <div class="train-card-img-overlay"></div>
+          <span class="train-card-type">{{ entrainement.type }}</span>
+          <span class="train-card-date">📅 {{ entrainement.dateEntrainement|date('d/m/Y') }}</span>
+        </div>
+        <div class="train-card-body">
+          <div class="train-card-location">{{ entrainement.lieu }}</div>
+          <div class="train-card-time">
+            <span class="time-icon">⏱️</span>
+            <span class="time-txt">
+              {{ entrainement.heureDebut|date('H:i') }}
+              <span class="time-sep">→</span>
+              {{ entrainement.heureFin|date('H:i') }}
+            </span>
+          </div>
+          {% set myEval = evaluation_map is defined ? (evaluation_map[entrainement.id]|default(null)) : null %}
+          {% if myEval %}
+            <div class="train-card-notes" style="margin-top:8px;font-size:13px;display:flex;gap:8px;align-items:center;">
+              <span style="background:#e6fffa;padding:4px 8px;border-radius:6px;color:#065f46;font-weight:600;">P: {{ myEval.notePhysique }}</span>
+              <span style="background:#eff6ff;padding:4px 8px;border-radius:6px;color:#1e3a8a;font-weight:600;">T: {{ myEval.noteTechnique }}</span>
+              <span style="background:#fff7ed;padding:4px 8px;border-radius:6px;color:#92400e;font-weight:600;">Ta: {{ myEval.noteTactique }}</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="train-card-footer">
+          <a href="{{ path('front_entrainement_show', {id: entrainement.id}) }}" class="btn-action btn-view">Voir</a>
+          <button type="button" class="btn-action btn-delete" onclick="openDeleteModal({{ entrainement.id }}, '{{ csrf_token('delete' ~ entrainement.id) }}')">Supprimer</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🏋️</div>
+    <p>Aucun entrainement pour le moment.</p>
+  </div>
+{% endif %}

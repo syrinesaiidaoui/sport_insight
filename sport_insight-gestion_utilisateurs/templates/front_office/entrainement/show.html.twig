@@ -47,6 +47,72 @@
                     <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 14px; background: #ef4444; border: none; color: white; border-radius: 8px; cursor: pointer;">Supprimer</button>
                 </form>
             </div>
+            
+            {# ── Participation quick actions for current user ── #}
+            <div style="margin-top:18px; padding-top:18px; border-top:1px dashed var(--border-color);">
+                <h3 style="margin-bottom:8px;">Ma participation</h3>
+                {% if app.user %}
+                    {% if user_participation is defined and user_participation %}
+                        <div style="margin-bottom:8px;">Statut actuel: <strong>{{ user_participation.presence == 'present' ? 'Présent' : 'Absent' }}</strong></div>
+                        {% if user_participation.justificationAbsence %}
+                            <div style="margin-bottom:8px;">Justificatif: {{ user_participation.justificationAbsence }}</div>
+                        {% endif %}
+
+                        <form method="post" action="{{ path('front_participation_create_for_entrainement', {'id': entrainement.id}) }}" style="display:flex; gap:8px; flex-direction:column; max-width:480px;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('participation' ~ entrainement.id) }}">
+                            <label>Présence:
+                                <select name="presence">
+                                    <option value="present" {% if user_participation.presence == 'present' %}selected{% endif %}>Présent</option>
+                                    <option value="absent" {% if user_participation.presence == 'absent' %}selected{% endif %}>Absent</option>
+                                </select>
+                            </label>
+                            <label>Justificatif (si absent):
+                                <textarea name="justificationAbsence" rows="3">{{ user_participation.justificationAbsence }}</textarea>
+                            </label>
+                            <div style="display:flex; gap:8px;">
+                                <button type="submit" class="btn btn-primary" style="padding:8px 12px;">Mettre à jour</button>
+                            </div>
+                        </form>
+                        <form method="post" action="{{ path('front_participation_remove_for_entrainement', {'id': entrainement.id}) }}" onsubmit="return confirm('Annuler votre participation ?');" style="display:inline-block; margin-top:8px;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('participation' ~ entrainement.id) }}">
+                            <button type="submit" class="btn btn-danger" style="padding:8px 12px;">Annuler ma participation</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{{ path('front_participation_create_for_entrainement', {'id': entrainement.id}) }}" style="display:flex; gap:8px; flex-direction:column; max-width:480px;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('participation' ~ entrainement.id) }}">
+                            <label>Je participe
+                                <select name="presence">
+                                    <option value="present">Présent</option>
+                                    <option value="absent">Absent</option>
+                                </select>
+                            </label>
+                            <label>Justificatif (si absent)
+                                <textarea name="justificationAbsence" rows="3"></textarea>
+                            </label>
+                            <button type="submit" class="btn btn-primary" style="padding:8px 12px;">Enregistrer ma participation</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <div>Veuillez vous connecter pour indiquer votre participation.</div>
+                {% endif %}
+            </div>
+
+            {# ── All participations list ── #}
+            <div style="margin-top:18px; padding-top:18px; border-top:1px dashed var(--border-color);">
+                <h3 style="margin-bottom:8px;">Liste des participations</h3>
+                {% if entrainement.participations|length > 0 %}
+                    <ul style="list-style:none; padding:0; display:grid; gap:8px;">
+                        {% for part in entrainement.participations %}
+                            <li style="padding:8px; background:var(--card); border:1px solid var(--border); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>{{ part.joueur.nom }} {{ part.joueur.prenom }}</div>
+                                <div style="font-weight:600;">{{ part.presence == 'present' ? 'Présent' : 'Absent' }}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div>Aucune participation pour le moment.</div>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

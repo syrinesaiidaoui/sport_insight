@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Entrainement;
 use App\Entity\Evaluation;
 use App\Entity\User;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,13 +20,35 @@ class EvaluationType extends AbstractType
             ->add('noteTechnique')
             ->add('noteTactique')
             ->add('commentaire')
-            ->add('entrainement', EntityType::class, [
+        ;
+
+        // only show entrainement selector when no entrainement was provided to the form
+        if (empty($options['entrainement']) || !$options['entrainement'] instanceof Entrainement) {
+            $builder->add('entrainement', EntityType::class, [
                 'class' => Entrainement::class,
                 'choice_label' => 'id',
-            ])
-            ->add('joueur', EntityType::class, [
+            ]);
+        }
+
+        $builder->add('joueur', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nomComplet',
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    $qb = $er->createQueryBuilder('u')
+                        ->orderBy('u.nom', 'ASC');
+
+                    if (!empty($options['entrainement']) && $options['entrainement'] instanceof Entrainement) {
+                        $qb = $er->createQueryBuilder('u')
+                            ->innerJoin('u.participations', 'p')
+                            ->andWhere('p.entrainement = :en')
+                            ->andWhere('p.presence = :pres')
+                            ->setParameter('en', $options['entrainement'])
+                            ->setParameter('pres', 'present')
+                            ->orderBy('u.nom', 'ASC');
+                    }
+
+                    return $qb;
+                },
             ])
         ;
     }
@@ -34,6 +57,7 @@ class EvaluationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Evaluation::class,
+            'entrainement' => null,
         ]);
     }
 }

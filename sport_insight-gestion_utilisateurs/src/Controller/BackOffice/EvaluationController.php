@@ -3,6 +3,7 @@
 namespace App\Controller\BackOffice;
 
 use App\Entity\Evaluation;
+use App\Entity\Entrainement;
 use App\Form\EvaluationType;
 use App\Repository\EvaluationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -72,7 +73,17 @@ public function index(Request $request, EvaluationRepository $evaluationReposito
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $evaluation = new Evaluation();
-        $form = $this->createForm(EvaluationType::class, $evaluation);
+        $entrainement = null;
+        $entrainementId = $request->query->get('entrainement');
+        if ($entrainementId) {
+            $entrainement = $em->getRepository(Entrainement::class)->find($entrainementId);
+        }
+
+        if ($entrainement) {
+            $evaluation->setEntrainement($entrainement);
+        }
+
+        $form = $this->createForm(EvaluationType::class, $evaluation, ['entrainement' => $entrainement]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -98,7 +109,8 @@ public function index(Request $request, EvaluationRepository $evaluationReposito
     #[Route('/{id}/edit', name: 'back_evaluation_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Evaluation $evaluation, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(EvaluationType::class, $evaluation);
+        $entrainement = $evaluation->getEntrainement();
+        $form = $this->createForm(EvaluationType::class, $evaluation, ['entrainement' => $entrainement]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

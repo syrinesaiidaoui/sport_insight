@@ -41,6 +41,7 @@
             </div>
 
             <div style="display: flex; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <a href="{{ path('back_evaluation_new', {'entrainement': entrainement.id}) }}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; background: #0ea5a6; color: white; border-radius: 8px;">Créer une évaluation</a>
                 <a href="{{ path('back_entrainement_edit', {'id': entrainement.id}) }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">Éditer</a>
                 <form method="post" action="{{ path('back_entrainement_delete', {'id': entrainement.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous vraiment sûr?');">
                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entrainement.id) }}">

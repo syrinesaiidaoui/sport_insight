@@ -1,0 +1,40 @@
+{% if participations %}
+  <div class="cards-grid">
+    {% for participation in participations %}
+      {% set presence = participation.presence %}
+      {% set bandClass = presence == 'present' ? 'band-present' : (presence == 'absent' ? 'band-absent' : 'band-undefined') %}
+      {% set avClass   = presence == 'present' ? 'av-present'   : (presence == 'absent' ? 'av-absent'   : 'av-undefined') %}
+      {% set presClass = presence == 'present' ? 'pres-present'  : (presence == 'absent' ? 'pres-absent'  : 'pres-undefined') %}
+      {% set presLabel = presence == 'present' ? '✓ Présent'     : (presence == 'absent' ? '✕ Absent'     : '— Non défini') %}
+
+      <div class="part-card">
+        <div class="card-band {{ bandClass }}"></div>
+        <div class="part-card-header">
+          <div class="part-avatar {{ avClass }}">{{ participation.joueur.nom|slice(0,1)|upper }}{{ participation.joueur.prenom|slice(0,1)|upper }}</div>
+          <div class="part-name-wrap">
+            <div class="part-name">{{ participation.joueur.nom }} {{ participation.joueur.prenom }}</div>
+            <div class="part-training">🏋️ {{ participation.entrainement.type }}</div>
+          </div>
+          <span class="presence-badge {{ presClass }}">{{ presLabel }}</span>
+        </div>
+        <div class="part-card-body">
+          {% if participation.justificationAbsence is not empty and participation.justificationAbsence != null %}
+            <div class="justif-block"><span class="justif-icon">📝</span><span>{{ participation.justificationAbsence }}</span></div>
+          {% else %}
+            <div style="font-size:12px; color:var(--muted); font-style:italic; padding: 4px 0;">Aucun justificatif renseigné</div>
+          {% endif %}
+        </div>
+        <div class="part-card-footer">
+          <a href="{{ path('front_participation_show', {id: participation.id}) }}" class="btn-action btn-view">Voir</a>
+          <a href="{{ path('front_participation_edit', {id: participation.id}) }}" class="btn-action btn-edit">Éditer</a>
+          <button type="button" class="btn-action btn-delete" onclick="openDeleteModal({{ participation.id }}, '{{ csrf_token('delete' ~ participation.id) }}')">Supprimer</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">👥</div>
+    <p>Aucune participation pour le moment.</p>
+  </div>
+{% endif %}

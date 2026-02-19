@@ -1,0 +1,41 @@
+{% if evaluations is not empty %}
+  <div class="report-list">
+    {% for evaluation in evaluations %}
+      <div class="report-card">
+        <div class="rc-player">
+          <div class="rc-avatar">{{ evaluation.joueur.nom|slice(0,1)|upper }}{{ evaluation.joueur.prenom|slice(0,1)|upper }}</div>
+          <div class="rc-name">{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</div>
+          <span class="rc-training">🏋️ {{ evaluation.entrainement.type }}</span>
+        </div>
+        <div class="rc-scores">
+          <div class="score-row">
+            <div class="score-row-label lbl-green">💪 Physique</div>
+            <div class="score-track"><div class="score-fill fill-green" style="width:{{ (evaluation.notePhysique / 20 * 100)|round }}%"></div></div>
+            <div class="score-value val-green">{{ evaluation.notePhysique }}<span style="font-size:12px;opacity:.5">/20</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label lbl-blue">⚽ Technique</div>
+            <div class="score-track"><div class="score-fill fill-blue" style="width:{{ (evaluation.noteTechnique / 20 * 100)|round }}%"></div></div>
+            <div class="score-value val-blue">{{ evaluation.noteTechnique }}<span style="font-size:12px;opacity:.5">/20</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-row-label lbl-orange">🧠 Tactique</div>
+            <div class="score-track"><div class="score-fill fill-orange" style="width:{{ (evaluation.noteTactique / 20 * 100)|round }}%"></div></div>
+            <div class="score-value val-orange">{{ evaluation.noteTactique }}<span style="font-size:12px;opacity:.5">/20</span></div>
+          </div>
+        </div>
+        <div class="rc-actions">
+          <a href="{{ path('front_evaluation_show', {id: evaluation.id}) }}" class="btn-action btn-view">Voir</a>
+          <a href="{{ path('front_evaluation_edit', {id: evaluation.id}) }}" class="btn-action btn-edit">Éditer</a>
+          <button type="button" class="btn-action btn-delete" onclick="openDeleteModal({{ evaluation.id }}, '{{ csrf_token('delete' ~ evaluation.id) }}')">Supprimer</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📊</div>
+    <p>Aucune évaluation pour le moment.</p>
+    <a href="{{ path('front_evaluation_new') }}" class="btn-add" style="margin-top:16px">Créer une évaluation</a>
+  </div>
+{% endif %}

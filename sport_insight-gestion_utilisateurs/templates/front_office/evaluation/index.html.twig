@@ -7,7 +7,6 @@
 {{ parent() }}
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ─── TOKENS ─────────────────────────────────────────────── */
   :root {
     --bg:        #f0f7f2;
     --surface:   #ffffff;
@@ -21,56 +20,28 @@
     --text:      #1a2e22;
     --muted:     #6b8f77;
     --radius:    12px;
+    --blue:      #1d4ed8;
+    --orange:    #c2410c;
   }
 
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; margin: 0; }
 
-  /* ─── HERO BANNER ────────────────────────────────────────── */
-  .hero-banner {
-    position: relative;
-    height: 240px;
-    overflow: hidden;
-    border-radius: 0 0 24px 24px;
-    margin-bottom: 32px;
-  }
+  /* ─── HERO ───────────────────────────────────────────────── */
+  .hero-banner { position: relative; height: 240px; overflow: hidden; border-radius: 0 0 24px 24px; margin-bottom: 32px; }
   .hero-bg {
     position: absolute; inset: 0;
     background-image: url('https://images.unsplash.com/photo-1551958219-acbc630e2914?w=1400&auto=format&fit=crop&q=80');
-    background-size: cover;
-    background-position: center 35%;
-    filter: brightness(0.42) saturate(1.2);
-    transform: scale(1.04);
-    transition: transform 8s ease;
+    background-size: cover; background-position: center 35%;
+    filter: brightness(.42) saturate(1.2); transform: scale(1.04); transition: transform 8s ease;
   }
   .hero-banner:hover .hero-bg { transform: scale(1); }
-  .hero-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(20,83,45,.78) 0%, rgba(22,163,74,.28) 60%, rgba(0,0,0,.05) 100%);
-  }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(20,83,45,.78) 0%, rgba(22,163,74,.28) 60%, rgba(0,0,0,.05) 100%); }
   .hero-dots { position: absolute; right: 60px; top: 50%; transform: translateY(-50%); opacity: .12; pointer-events: none; }
-  .hero-content {
-    position: relative; z-index: 2; height: 100%;
-    display: flex; align-items: flex-end; justify-content: space-between;
-    padding: 28px 40px;
-  }
-  .page-heading {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 8vw, 96px);
-    letter-spacing: 4px; line-height: .9;
-    color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,.4);
-  }
-  .page-heading small {
-    display: block; font-family: 'DM Sans', sans-serif;
-    font-size: 12px; font-weight: 500; letter-spacing: 4px;
-    text-transform: uppercase; color: #86efac; margin-bottom: 6px;
-  }
+  .hero-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 40px; }
+  .page-heading { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 8vw, 96px); letter-spacing: 4px; line-height: .9; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,.4); }
+  .page-heading small { display: block; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: #86efac; margin-bottom: 6px; }
   .hero-stats { display: flex; gap: 16px; align-items: flex-end; }
-  .stat-pill {
-    text-align: center;
-    background: rgba(255,255,255,.12); backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,.22); border-radius: 14px;
-    padding: 12px 22px; color: white;
-  }
+  .stat-pill { text-align: center; background: rgba(255,255,255,.12); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.22); border-radius: 14px; padding: 12px 22px; color: white; }
   .stat-pill .num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; line-height: 1; color: #4ade80; }
   .stat-pill .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,.55); margin-top: 3px; }
 
@@ -80,234 +51,228 @@
     padding: 11px 22px; background: var(--accent); color: white;
     font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
     border: none; border-radius: var(--radius); text-decoration: none;
-    letter-spacing: .3px; transition: transform .15s, box-shadow .2s, background .15s;
+    transition: transform .15s, box-shadow .2s, background .15s;
     box-shadow: 0 4px 16px rgba(22,163,74,.3); cursor: pointer;
   }
   .btn-add:hover { background: var(--accent-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,.4); color: white; }
   .btn-add svg { width: 15px; height: 15px; }
 
-  /* ─── PAGE BODY ──────────────────────────────────────────── */
+  /* ─── PAGE ───────────────────────────────────────────────── */
   .page-inner { padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; }
+  .action-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
 
-  .action-row {
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
-  }
-
-  /* ─── STATS CARDS ────────────────────────────────────────── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .stat-card {
-    position: relative;
-    border-radius: var(--radius);
-    overflow: hidden;
-    padding: 24px 22px 20px;
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    transition: transform .2s, box-shadow .2s;
-    cursor: default;
-  }
+  /* ─── STATS GRID ─────────────────────────────────────────── */
+  .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card { position: relative; border-radius: var(--radius); overflow: hidden; padding: 24px 22px 20px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,.06); transition: transform .2s, box-shadow .2s; }
   .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,.1); }
-
-  /* Card-specific backgrounds */
-  .stat-card.physique {
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border-color: #86efac;
-  }
-  .stat-card.technique {
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    border-color: #93c5fd;
-  }
-  .stat-card.tactique {
-    background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
-    border-color: #fdba74;
-  }
-
-  /* Big background sport image */
-  .stat-card-img {
-    position: absolute;
-    right: -10px; bottom: -10px;
-    width: 110px; height: 110px;
-    opacity: .13;
-    border-radius: 50%;
-    object-fit: cover;
-    pointer-events: none;
-    filter: saturate(0);
-  }
-
-  /* Big emoji icon */
-  .stat-card-icon {
-    font-size: 36px;
-    margin-bottom: 10px;
-    display: block;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,.12));
-  }
-
-  .stat-card-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 6px;
-  }
-  .physique  .stat-card-label { color: #15803d; }
+  .stat-card.physique  { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: #86efac; }
+  .stat-card.technique { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #93c5fd; }
+  .stat-card.tactique  { background: linear-gradient(135deg, #fff7ed, #fed7aa); border-color: #fdba74; }
+  .stat-card-img { position: absolute; right: -10px; bottom: -10px; width: 110px; height: 110px; opacity: .13; border-radius: 50%; object-fit: cover; pointer-events: none; filter: saturate(0); }
+  .stat-card-icon { font-size: 36px; margin-bottom: 10px; display: block; }
+  .stat-card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+  .physique .stat-card-label  { color: #15803d; }
   .technique .stat-card-label { color: #1d4ed8; }
-  .tactique  .stat-card-label { color: #c2410c; }
-
-  .stat-card-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 52px;
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-  .physique  .stat-card-value { color: #15803d; }
+  .tactique .stat-card-label  { color: #c2410c; }
+  .stat-card-value { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 2px; line-height: 1; }
+  .physique .stat-card-value  { color: #15803d; }
   .technique .stat-card-value { color: #1d4ed8; }
-  .tactique  .stat-card-value { color: #c2410c; }
-
+  .tactique .stat-card-value  { color: #c2410c; }
   .stat-card-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
-
-  /* Progress bar */
   .stat-bar-wrap { margin-top: 14px; }
   .stat-bar-bg { background: rgba(0,0,0,.08); border-radius: 99px; height: 6px; overflow: hidden; }
-  .stat-bar-fill { height: 100%; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
-  .physique  .stat-bar-fill { background: linear-gradient(90deg, #16a34a, #4ade80); }
+  .stat-bar-fill { height: 100%; border-radius: 99px; }
+  .physique .stat-bar-fill  { background: linear-gradient(90deg, #16a34a, #4ade80); }
   .technique .stat-bar-fill { background: linear-gradient(90deg, #1d4ed8, #60a5fa); }
-  .tactique  .stat-bar-fill { background: linear-gradient(90deg, #c2410c, #fb923c); }
+  .tactique .stat-bar-fill  { background: linear-gradient(90deg, #c2410c, #fb923c); }
 
   /* ─── TOOLBAR ────────────────────────────────────────────── */
   .toolbar {
     display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-    padding: 14px 18px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: 0 2px 12px rgba(22,163,74,.06);
-    margin-bottom: 20px;
+    padding: 14px 18px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: 0 2px 12px rgba(22,163,74,.06); margin-bottom: 28px;
   }
-
   .toolbar input {
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; padding: 8px 14px; border-radius: 8px;
-    outline: none; transition: border-color .2s, box-shadow .2s;
-    min-width: 220px;
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 14px;
+    border-radius: 8px; outline: none; transition: border-color .2s, box-shadow .2s; min-width: 220px;
   }
   .toolbar input::placeholder { color: var(--muted); }
   .toolbar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
-
-  .btn-search {
-    padding: 8px 20px; background: var(--accent); border: none; color: white;
-    border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 600;
-    font-size: 13px; cursor: pointer; transition: background .2s, transform .15s;
-  }
+  .btn-search { padding: 8px 20px; background: var(--accent); border: none; color: white; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: background .2s, transform .15s; }
   .btn-search:hover { background: var(--accent-lt); transform: translateY(-1px); }
-
   .sort-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-left: 8px; }
-
-  .btn-sort {
-    padding: 7px 14px; font-size: 12px; font-weight: 600;
-    border-radius: 8px; text-decoration: none;
-    border: 1px solid var(--border); color: var(--muted);
-    cursor: pointer; font-family: 'DM Sans', sans-serif;
-    transition: all .15s; white-space: nowrap; background: transparent;
-  }
+  .btn-sort { padding: 7px 14px; font-size: 12px; font-weight: 600; border-radius: 8px; text-decoration: none; border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap; background: transparent; }
   .btn-sort:hover { border-color: var(--accent); color: var(--accent); background: #f0fdf4; }
-  .btn-sort.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 2px 8px rgba(22,163,74,.3); }
+  .btn-sort.active { background: var(--accent); color: white; border-color: var(--accent); }
 
-  /* ─── TABLE CARD ─────────────────────────────────────────── */
-  .table-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden;
-    box-shadow: 0 4px 24px rgba(22,163,74,.07);
-  }
-  .table-card-header {
-    padding: 18px 24px 16px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
-    background: linear-gradient(135deg, #f0fdf4, #ffffff);
-  }
-  .sport-icons { margin-left: auto; display: flex; gap: 6px; }
-  .sport-icon {
-    width: 30px; height: 30px; border-radius: 8px;
-    background: var(--card); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center; font-size: 15px;
-  }
-  .table-card-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); }
-  .count-badge {
-    padding: 3px 10px; background: rgba(22,163,74,.12); color: var(--accent);
-    border-radius: 20px; font-size: 12px; font-weight: 700;
-    border: 1px solid rgba(22,163,74,.2);
-  }
+  /* ═══════════════════════════════════════════════════════════
+     REPORT CARDS — the main creative element
+  ══════════════════════════════════════════════════════════════ */
+  .report-list { display: flex; flex-direction: column; gap: 16px; }
 
-  /* ─── DATA TABLE ─────────────────────────────────────────── */
-  .data-table { width: 100%; border-collapse: collapse; }
-  .data-table thead tr { background: linear-gradient(135deg, #f0fdf4, #f8fdf9); }
-  .data-table th {
-    padding: 11px 20px; font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 2px; color: var(--muted);
-    text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap;
+  .report-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 220px 1fr auto;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    animation: slideIn .4s ease both;
   }
-  .data-table th.text-end { text-align: right; }
-  .data-table tbody tr {
-    border-bottom: 1px solid #eaf5ec; transition: background .15s;
-    animation: rowIn .35s ease both;
-  }
-  @keyframes rowIn {
-    from { opacity: 0; transform: translateY(6px); }
+  .report-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(22,163,74,.1); border-color: #86efac; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-12px); }
     to   { opacity: 1; transform: none; }
   }
-  .data-table tbody tr:nth-child(1)  { animation-delay:.04s }
-  .data-table tbody tr:nth-child(2)  { animation-delay:.08s }
-  .data-table tbody tr:nth-child(3)  { animation-delay:.12s }
-  .data-table tbody tr:nth-child(4)  { animation-delay:.16s }
-  .data-table tbody tr:nth-child(5)  { animation-delay:.20s }
-  .data-table tbody tr:nth-child(6)  { animation-delay:.24s }
-  .data-table tbody tr:nth-child(7)  { animation-delay:.28s }
-  .data-table tbody tr:nth-child(8)  { animation-delay:.32s }
-  .data-table tbody tr:nth-child(9)  { animation-delay:.36s }
-  .data-table tbody tr:nth-child(10) { animation-delay:.40s }
-  .data-table tbody tr:hover { background: #f0fdf4; }
-  .data-table tbody tr:last-child { border-bottom: none; }
-  .data-table td { padding: 14px 20px; font-size: 14px; color: var(--text); vertical-align: middle; }
-  .data-table td.text-end { text-align: right; }
+  .report-list .report-card:nth-child(1) { animation-delay:.04s }
+  .report-list .report-card:nth-child(2) { animation-delay:.09s }
+  .report-list .report-card:nth-child(3) { animation-delay:.14s }
+  .report-list .report-card:nth-child(4) { animation-delay:.19s }
+  .report-list .report-card:nth-child(5) { animation-delay:.24s }
+  .report-list .report-card:nth-child(6) { animation-delay:.29s }
 
-  /* Player name */
-  .player-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
-  .player-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-    border: 1px solid #86efac;
+  /* Left panel — player identity */
+  .rc-player {
+    background: linear-gradient(160deg, #0b1a12 0%, #14532d 100%);
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative circle bg */
+  .rc-player::before {
+    content: '';
+    position: absolute;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 1px solid rgba(74,222,128,.12);
+    top: -40px; right: -40px;
+  }
+  .rc-player::after {
+    content: '';
+    position: absolute;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 1px solid rgba(74,222,128,.08);
+    bottom: -20px; left: -20px;
+  }
+
+  .rc-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #16a34a, #4ade80);
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: var(--accent-dk); flex-shrink: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 1px;
+    color: white;
+    border: 2px solid rgba(255,255,255,.2);
+    position: relative; z-index: 1;
+    flex-shrink: 0;
   }
 
-  /* Type badge */
-  .type-badge {
-    display: inline-block; padding: 4px 12px; border-radius: 6px;
-    font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
-    background: rgba(245,158,11,.1); color: #b45309; border: 1px solid rgba(245,158,11,.25);
+  .rc-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 2px;
+    color: white; line-height: 1;
+    position: relative; z-index: 1;
   }
 
-  /* Score chip */
-  .score-chip {
+  .rc-training {
     display: inline-flex; align-items: center; gap: 5px;
-    padding: 4px 10px; border-radius: 8px;
-    font-weight: 700; font-size: 13px;
+    padding: 4px 10px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 99px;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,.7);
+    position: relative; z-index: 1;
+    width: fit-content;
   }
-  .score-chip.green { background: rgba(22,163,74,.1); color: #15803d; border: 1px solid rgba(22,163,74,.2); }
-  .score-chip.blue  { background: rgba(29,78,216,.1);  color: #1d4ed8; border: 1px solid rgba(29,78,216,.2); }
-  .score-chip.orange{ background: rgba(194,65,12,.1);  color: #c2410c; border: 1px solid rgba(194,65,12,.2); }
 
-  /* ─── ACTION BUTTONS ─────────────────────────────────────── */
-  .actions-cell { display: flex; gap: 6px; justify-content: flex-end; }
+  /* Middle panel — scores with visual bars */
+  .rc-scores {
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  .score-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 52px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .score-row-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .score-row-label.lbl-green  { color: #15803d; }
+  .score-row-label.lbl-blue   { color: #1d4ed8; }
+  .score-row-label.lbl-orange { color: #c2410c; }
+
+  .score-track {
+    height: 8px;
+    background: #e8f5ec;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+    position: relative;
+  }
+  .score-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 60%, rgba(255,255,255,.35));
+  }
+  .fill-green  { background: linear-gradient(90deg, #16a34a, #4ade80); }
+  .fill-blue   { background: linear-gradient(90deg, #1d4ed8, #60a5fa); }
+  .fill-orange { background: linear-gradient(90deg, #c2410c, #fb923c); }
+
+  .score-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 1px; line-height: 1;
+    text-align: right;
+  }
+  .val-green  { color: #15803d; }
+  .val-blue   { color: #1d4ed8; }
+  .val-orange { color: #c2410c; }
+
+  /* Right panel — actions */
+  .rc-actions {
+    padding: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 110px;
+  }
+
   .btn-action {
-    padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 8px;
-    text-decoration: none; border: 1px solid transparent; cursor: pointer;
-    font-family: 'DM Sans', sans-serif; transition: all .15s;
-    white-space: nowrap; background: transparent;
+    width: 100%;
+    padding: 8px 14px; font-size: 12px; font-weight: 600;
+    border-radius: 8px; text-decoration: none; border: 1px solid transparent;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all .15s; white-space: nowrap; background: transparent;
+    text-align: center; display: block;
   }
   .btn-view   { border-color: var(--border); color: var(--muted); }
   .btn-view:hover   { border-color: var(--accent); color: var(--accent); background: #f0fdf4; }
@@ -317,33 +282,15 @@
   .btn-delete:hover { border-color: var(--accent2); color: var(--accent2); background: #fef2f2; }
 
   /* ─── EMPTY STATE ────────────────────────────────────────── */
-  .empty-state { padding: 72px 20px; text-align: center; }
-  .empty-icon {
-    width: 72px; height: 72px; margin: 0 auto 20px; border-radius: 20px;
-    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-    border: 1px solid #bbf7d0;
-    display: flex; align-items: center; justify-content: center; font-size: 32px;
-  }
+  .empty-state { text-align: center; padding: 80px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+  .empty-icon { width: 72px; height: 72px; margin: 0 auto 20px; border-radius: 20px; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; font-size: 32px; }
   .empty-state p { color: var(--muted); font-size: 15px; }
-  .empty-state a { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; }
 
   /* ─── MODAL ──────────────────────────────────────────────── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(20,83,45,.2); backdrop-filter: blur(6px);
-    z-index: 1000; align-items: center; justify-content: center;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(20,83,45,.2); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; }
   .modal-overlay.show { display: flex; }
-  .modal-box {
-    background: var(--surface); border: 1px solid var(--border);
-    border-top: 3px solid var(--accent2); border-radius: var(--radius);
-    width: 100%; max-width: 420px; padding: 32px;
-    box-shadow: 0 24px 64px rgba(0,0,0,.12); animation: modalIn .2s ease;
-  }
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(.95) translateY(12px); }
-    to   { opacity: 1; transform: none; }
-  }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent2); border-radius: var(--radius); width: 100%; max-width: 420px; padding: 32px; box-shadow: 0 24px 64px rgba(0,0,0,.12); animation: modalIn .2s ease; }
+  @keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(12px); } to { opacity: 1; transform: none; } }
   .modal-box h5 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; margin-bottom: 10px; color: var(--accent2); }
   .modal-box p  { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 28px; }
   .modal-footer-btns { display: flex; gap: 10px; justify-content: flex-end; }
@@ -353,6 +300,10 @@
   .btn-confirm-delete:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(239,68,68,.4); }
 
   @media (max-width: 900px) {
+    .report-card { grid-template-columns: 1fr; }
+    .rc-scores { border-left: none; border-right: none; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .rc-actions { flex-direction: row; justify-content: flex-end; }
+    .btn-action { width: auto; }
     .stats-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 700px) {
@@ -360,7 +311,6 @@
     .hero-stats { display: none; }
     .page-inner { padding: 0 16px 40px; }
     .toolbar { flex-direction: column; align-items: stretch; }
-    .actions-cell { flex-wrap: wrap; }
   }
 </style>
 {% endblock %}
@@ -374,7 +324,7 @@
 
 {% block body %}
 
-{# ── HERO BANNER ── #}
+{# ── HERO ── #}
 <div class="hero-banner">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
@@ -404,177 +354,133 @@
 
 <div class="page-inner">
 
-  {# ── ACTION ROW ── #}
   <div class="action-row">
     <div style="font-size:14px; color:var(--muted)">
       <strong style="color:var(--text)">{{ evaluations|length }}</strong> évaluation(s) au total
     </div>
-    <a href="{{ path('front_evaluation_new') }}" class="btn-add">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Ajouter une évaluation
-    </a>
+    
   </div>
 
-  {# ── STATS CARDS ── #}
+  {# ── STATS MOYENNES ── #}
   {% if stats is defined %}
   <div class="stats-grid">
-
-    {# PHYSIQUE #}
     <div class="stat-card physique">
-      <img class="stat-card-img"
-           src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=200&auto=format&fit=crop&q=60"
-           alt="">
+      <img class="stat-card-img" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=200&auto=format&fit=crop&q=60" alt="">
       <span class="stat-card-icon">💪</span>
       <div class="stat-card-label">Physique</div>
       <div class="stat-card-value">{{ stats.physique }}</div>
       <div class="stat-card-sub">moyenne sur 20</div>
-      <div class="stat-bar-wrap">
-        <div class="stat-bar-bg">
-          <div class="stat-bar-fill" style="width: {{ (stats.physique / 20 * 100)|round }}%"></div>
-        </div>
-      </div>
+      <div class="stat-bar-wrap"><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:{{ (stats.physique/20*100)|round }}%"></div></div></div>
     </div>
-
-    {# TECHNIQUE #}
     <div class="stat-card technique">
-      <img class="stat-card-img"
-           src="https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=200&auto=format&fit=crop&q=60"
-           alt="">
+      <img class="stat-card-img" src="https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=200&auto=format&fit=crop&q=60" alt="">
       <span class="stat-card-icon">⚽</span>
       <div class="stat-card-label">Technique</div>
       <div class="stat-card-value">{{ stats.technique }}</div>
       <div class="stat-card-sub">moyenne sur 20</div>
-      <div class="stat-bar-wrap">
-        <div class="stat-bar-bg">
-          <div class="stat-bar-fill" style="width: {{ (stats.technique / 20 * 100)|round }}%"></div>
-        </div>
-      </div>
+      <div class="stat-bar-wrap"><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:{{ (stats.technique/20*100)|round }}%"></div></div></div>
     </div>
-
-    {# TACTIQUE #}
     <div class="stat-card tactique">
-      <img class="stat-card-img"
-           src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&auto=format&fit=crop&q=60"
-           alt="">
+      <img class="stat-card-img" src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&auto=format&fit=crop&q=60" alt="">
       <span class="stat-card-icon">🧠</span>
       <div class="stat-card-label">Tactique</div>
       <div class="stat-card-value">{{ stats.tactique }}</div>
       <div class="stat-card-sub">moyenne sur 20</div>
-      <div class="stat-bar-wrap">
-        <div class="stat-bar-bg">
-          <div class="stat-bar-fill" style="width: {{ (stats.tactique / 20 * 100)|round }}%"></div>
-        </div>
-      </div>
+      <div class="stat-bar-wrap"><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:{{ (stats.tactique/20*100)|round }}%"></div></div></div>
     </div>
-
   </div>
   {% endif %}
 
-  {# ── TOOLBAR : search + sort ── #}
+  {# ── TOOLBAR ── #}
   <form method="get" class="toolbar">
-    <input type="text" name="search_nom"
-           value="{{ search_nom|default('') }}"
-           placeholder="🔍  Rechercher par nom du joueur…">
+    <input type="text" name="search_nom" value="{{ search_nom|default('') }}" placeholder="🔍  Rechercher par nom du joueur…">
     <button type="submit" class="btn-search">Rechercher</button>
-
     <span class="sort-label">Trier :</span>
-
-    <a href="{{ path('front_evaluation_index', {
-         'sort_by': 'notePhysique',
-         'sort_dir': sort_dir == 'asc' and sort_by == 'notePhysique' ? 'desc' : 'asc',
-         'search_nom': search_nom
-       }) }}"
-       class="btn-sort {% if sort_by == 'notePhysique' %}active{% endif %}">
-      💪 Physique {% if sort_by == 'notePhysique' %}{{ sort_dir == 'asc' ? '↑' : '↓' }}{% endif %}
+    <a href="{{ path('front_evaluation_index', {'sort_by':'notePhysique','sort_dir': sort_dir=='asc' and sort_by=='notePhysique' ? 'desc':'asc','search_nom':search_nom}) }}"
+       class="btn-sort {% if sort_by=='notePhysique' %}active{% endif %}">
+      💪 Physique {% if sort_by=='notePhysique' %}{{ sort_dir=='asc'?'↑':'↓' }}{% endif %}
     </a>
-
-    <a href="{{ path('front_evaluation_index', {
-         'sort_by': 'noteTechnique',
-         'sort_dir': sort_dir == 'asc' and sort_by == 'noteTechnique' ? 'desc' : 'asc',
-         'search_nom': search_nom
-       }) }}"
-       class="btn-sort {% if sort_by == 'noteTechnique' %}active{% endif %}">
-      ⚽ Technique {% if sort_by == 'noteTechnique' %}{{ sort_dir == 'asc' ? '↑' : '↓' }}{% endif %}
+    <a href="{{ path('front_evaluation_index', {'sort_by':'noteTechnique','sort_dir': sort_dir=='asc' and sort_by=='noteTechnique' ? 'desc':'asc','search_nom':search_nom}) }}"
+       class="btn-sort {% if sort_by=='noteTechnique' %}active{% endif %}">
+      ⚽ Technique {% if sort_by=='noteTechnique' %}{{ sort_dir=='asc'?'↑':'↓' }}{% endif %}
     </a>
-
-    <a href="{{ path('front_evaluation_index', {
-         'sort_by': 'noteTactique',
-         'sort_dir': sort_dir == 'asc' and sort_by == 'noteTactique' ? 'desc' : 'asc',
-         'search_nom': search_nom
-       }) }}"
-       class="btn-sort {% if sort_by == 'noteTactique' %}active{% endif %}">
-      🧠 Tactique {% if sort_by == 'noteTactique' %}{{ sort_dir == 'asc' ? '↑' : '↓' }}{% endif %}
+    <a href="{{ path('front_evaluation_index', {'sort_by':'noteTactique','sort_dir': sort_dir=='asc' and sort_by=='noteTactique' ? 'desc':'asc','search_nom':search_nom}) }}"
+       class="btn-sort {% if sort_by=='noteTactique' %}active{% endif %}">
+      🧠 Tactique {% if sort_by=='noteTactique' %}{{ sort_dir=='asc'?'↑':'↓' }}{% endif %}
     </a>
   </form>
 
-  {# ── TABLE CARD ── #}
-  <div class="table-card">
-    <div class="table-card-header">
-      <h3>Liste des Évaluations</h3>
-      <span class="count-badge">{{ evaluations|length }}</span>
-      <div class="sport-icons">
-        <span class="sport-icon">💪</span>
-        <span class="sport-icon">⚽</span>
-        <span class="sport-icon">🧠</span>
-      </div>
+  {# ══════════════════════════════════════════
+     REPORT CARDS LIST
+  ══════════════════════════════════════════ #}
+  {% if evaluations is not empty %}
+    <div class="report-list">
+      {% for evaluation in evaluations %}
+        <div class="report-card">
+
+          {# ── LEFT: player identity ── #}
+          <div class="rc-player">
+            <div class="rc-avatar">
+              {{ evaluation.joueur.nom|slice(0,1)|upper }}{{ evaluation.joueur.prenom|slice(0,1)|upper }}
+            </div>
+            <div class="rc-name">{{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}</div>
+            <span class="rc-training">🏋️ {{ evaluation.entrainement.type }}</span>
+          </div>
+
+          {# ── MIDDLE: score bars ── #}
+          <div class="rc-scores">
+
+            <div class="score-row">
+              <div class="score-row-label lbl-green">💪 Physique</div>
+              <div class="score-track">
+                <div class="score-fill fill-green" style="width:{{ (evaluation.notePhysique / 20 * 100)|round }}%"></div>
+              </div>
+              <div class="score-value val-green">{{ evaluation.notePhysique }}<span style="font-size:12px;opacity:.5">/20</span></div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-row-label lbl-blue">⚽ Technique</div>
+              <div class="score-track">
+                <div class="score-fill fill-blue" style="width:{{ (evaluation.noteTechnique / 20 * 100)|round }}%"></div>
+              </div>
+              <div class="score-value val-blue">{{ evaluation.noteTechnique }}<span style="font-size:12px;opacity:.5">/20</span></div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-row-label lbl-orange">🧠 Tactique</div>
+              <div class="score-track">
+                <div class="score-fill fill-orange" style="width:{{ (evaluation.noteTactique / 20 * 100)|round }}%"></div>
+              </div>
+              <div class="score-value val-orange">{{ evaluation.noteTactique }}<span style="font-size:12px;opacity:.5">/20</span></div>
+            </div>
+
+          </div>
+
+          {# ── RIGHT: actions ── #}
+          <div class="rc-actions">
+            <a href="{{ path('front_evaluation_show', {id: evaluation.id}) }}" class="btn-action btn-view">Voir</a>
+            <a href="{{ path('front_evaluation_edit', {id: evaluation.id}) }}" class="btn-action btn-edit">Éditer</a>
+            <button type="button" class="btn-action btn-delete"
+              onclick="openDeleteModal({{ evaluation.id }}, '{{ csrf_token('delete' ~ evaluation.id) }}')">
+              Supprimer
+            </button>
+          </div>
+
+        </div>
+      {% endfor %}
     </div>
 
-    {% if evaluations is not empty %}
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Joueur</th>
-            <th>Entrainement</th>
-            <th>💪 Physique</th>
-            <th>⚽ Technique</th>
-            <th>🧠 Tactique</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for evaluation in evaluations %}
-            <tr>
-              <td>
-                <div class="player-name">
-                  <div class="player-avatar">{{ evaluation.joueur.nom|slice(0,1)|upper }}</div>
-                  {{ evaluation.joueur.nom }} {{ evaluation.joueur.prenom }}
-                </div>
-              </td>
-              <td><span class="type-badge">{{ evaluation.entrainement.type }}</span></td>
-              <td><span class="score-chip green">{{ evaluation.notePhysique }} / 20</span></td>
-              <td><span class="score-chip blue">{{ evaluation.noteTechnique }} / 20</span></td>
-              <td><span class="score-chip orange">{{ evaluation.noteTactique }} / 20</span></td>
-              <td class="text-end">
-                <div class="actions-cell">
-                  <a href="{{ path('front_evaluation_show', {id: evaluation.id}) }}"
-                     class="btn-action btn-view">Voir</a>
-                  <a href="{{ path('front_evaluation_edit', {id: evaluation.id}) }}"
-                     class="btn-action btn-edit">Éditer</a>
-                  <button type="button" class="btn-action btn-delete"
-                    onclick="openDeleteModal({{ evaluation.id }}, '{{ csrf_token('delete' ~ evaluation.id) }}')">
-                    Supprimer
-                  </button>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <div class="empty-state">
-        <div class="empty-icon">📊</div>
-        <p>Aucune évaluation pour le moment.</p>
-        <a href="{{ path('front_evaluation_new') }}" class="btn-add">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Créer une évaluation
-        </a>
-      </div>
-    {% endif %}
-  </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <p>Aucune évaluation pour le moment.</p>
+      
+    </div>
+  {% endif %}
 
 </div>
 
-{# ===== MODAL SUPPRESSION ===== #}
+{# ── MODAL ── #}
 <div id="deleteModal" class="modal-overlay">
   <div class="modal-box">
     <h5>⚠ Confirmation</h5>
@@ -591,11 +497,9 @@
 
 <script>
 function openDeleteModal(id, token) {
-  const modal = document.getElementById('deleteModal');
-  const form  = document.getElementById('deleteForm');
   document.getElementById('deleteToken').value = token;
-  form.action = "{{ path('front_evaluation_delete', {'id': 'ID'}) }}".replace('ID', id);
-  modal.classList.add('show');
+  document.getElementById('deleteForm').action = "{{ path('front_evaluation_delete', {'id': 'ID'}) }}".replace('ID', id);
+  document.getElementById('deleteModal').classList.add('show');
 }
 function closeDeleteModal() {
   document.getElementById('deleteModal').classList.remove('show');
