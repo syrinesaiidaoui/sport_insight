@@ -7,7 +7,6 @@
 {{ parent() }}
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ─── TOKENS ─────────────────────────────────────────────── */
   :root {
     --bg:        #f0f7f2;
     --surface:   #ffffff;
@@ -27,388 +26,271 @@
 
   /* ─── HERO BANNER ────────────────────────────────────────── */
   .hero-banner {
-    position: relative;
-    height: 240px;
-    overflow: hidden;
-    border-radius: 0 0 24px 24px;
-    margin-bottom: 32px;
+    position: relative; height: 240px; overflow: hidden;
+    border-radius: 0 0 24px 24px; margin-bottom: 32px;
   }
-
   .hero-bg {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&auto=format&fit=crop&q=80');
-    background-size: cover;
-    background-position: center 30%;
+    background-size: cover; background-position: center 30%;
     filter: brightness(0.45) saturate(1.2);
-    transform: scale(1.04);
-    transition: transform 8s ease;
+    transform: scale(1.04); transition: transform 8s ease;
   }
   .hero-banner:hover .hero-bg { transform: scale(1); }
-
   .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      135deg,
-      rgba(20, 83, 45, 0.78) 0%,
-      rgba(22, 163, 74, 0.28) 60%,
-      rgba(0,0,0,0.05) 100%
-    );
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(20,83,45,.78) 0%, rgba(22,163,74,.28) 60%, rgba(0,0,0,.05) 100%);
   }
-
-  .hero-dots {
-    position: absolute;
-    right: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.12;
-    pointer-events: none;
-  }
-
+  .hero-dots { position: absolute; right: 60px; top: 50%; transform: translateY(-50%); opacity: .12; pointer-events: none; }
   .hero-content {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding: 28px 40px;
+    position: relative; z-index: 2; height: 100%;
+    display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 40px;
   }
-
   .page-heading {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 8vw, 96px);
-    letter-spacing: 4px;
-    line-height: .9;
-    color: #ffffff;
-    text-shadow: 0 4px 24px rgba(0,0,0,.4);
+    font-size: clamp(52px, 8vw, 96px); letter-spacing: 4px; line-height: .9;
+    color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,.4);
   }
-
   .page-heading small {
-    display: block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: #86efac;
-    margin-bottom: 6px;
+    display: block; font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 500; letter-spacing: 4px;
+    text-transform: uppercase; color: #86efac; margin-bottom: 6px;
   }
-
   .hero-stats { display: flex; gap: 16px; align-items: flex-end; }
-
   .stat-pill {
-    text-align: center;
-    background: rgba(255,255,255,.12);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,.22);
-    border-radius: 14px;
-    padding: 12px 22px;
-    color: white;
+    text-align: center; background: rgba(255,255,255,.12); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.22); border-radius: 14px; padding: 12px 22px; color: white;
   }
+  .stat-pill .num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; line-height: 1; color: #4ade80; }
+  .stat-pill .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,.55); margin-top: 3px; }
 
-  .stat-pill .num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    letter-spacing: 2px;
-    line-height: 1;
-    color: #4ade80;
-  }
-
-  .stat-pill .lbl {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,.55);
-    margin-top: 3px;
-  }
-
-  /* ─── ADD BUTTON ─────────────────────────────────────────── */
+  /* ─── BUTTONS ────────────────────────────────────────────── */
   .btn-add {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 22px;
-    background: var(--accent);
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    border: none;
-    border-radius: var(--radius);
-    text-decoration: none;
-    letter-spacing: .3px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; background: var(--accent); color: white;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
+    border: none; border-radius: var(--radius); text-decoration: none;
     transition: transform .15s, box-shadow .2s, background .15s;
-    box-shadow: 0 4px 16px rgba(22,163,74,.3);
-    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(22,163,74,.3); cursor: pointer;
   }
   .btn-add:hover { background: var(--accent-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,.4); color: white; }
   .btn-add svg { width: 15px; height: 15px; }
 
-  /* ─── PAGE BODY ──────────────────────────────────────────── */
-  .page-inner { padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; }
+  /* ─── PAGE INNER ─────────────────────────────────────────── */
+  .page-inner { padding: 0 40px 60px; max-width: 1280px; margin: 0 auto; }
 
   .action-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
   }
 
   /* ─── SEARCH BAR ─────────────────────────────────────────── */
   .search-wrap {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 14px 18px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: 0 2px 12px rgba(22,163,74,.06);
-    margin-bottom: 20px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    padding: 14px 18px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: 0 2px 12px rgba(22,163,74,.06); margin-bottom: 28px;
   }
-
-  .search-wrap input,
-  .search-wrap select {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-    min-width: 160px;
+  .search-wrap input, .search-wrap select {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 14px;
+    border-radius: 8px; outline: none; transition: border-color .2s, box-shadow .2s; min-width: 160px;
   }
   .search-wrap input::placeholder { color: var(--muted); }
-  .search-wrap input:focus,
-  .search-wrap select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
-
+  .search-wrap input:focus, .search-wrap select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
   .btn-search {
-    padding: 8px 20px;
-    background: var(--accent);
-    border: none;
-    color: white;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background .2s, transform .15s;
+    padding: 8px 20px; background: var(--accent); border: none; color: white;
+    border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 600;
+    font-size: 13px; cursor: pointer; transition: background .2s, transform .15s;
   }
   .btn-search:hover { background: var(--accent-lt); transform: translateY(-1px); }
 
-  /* ─── TABLE CARD ─────────────────────────────────────────── */
-  .table-card {
+  /* ─── CARDS GRID ─────────────────────────────────────────── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  /* Each training card */
+  .train-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 24px rgba(22,163,74,.07);
-  }
-
-  .table-card-header {
-    padding: 18px 24px 16px;
-    border-bottom: 1px solid var(--border);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    animation: cardIn .4s ease both;
     display: flex;
-    align-items: center;
-    gap: 12px;
-    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+    flex-direction: column;
+  }
+  .train-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(22,163,74,.12);
+    border-color: #86efac;
   }
 
-  .sport-icons { margin-left: auto; display: flex; gap: 6px; }
-  .sport-icon {
-    width: 30px; height: 30px;
-    border-radius: 8px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
-  }
-
-  .table-card-header h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: var(--text);
-  }
-
-  .count-badge {
-    padding: 3px 10px;
-    background: rgba(22,163,74,.12);
-    color: var(--accent);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    border: 1px solid rgba(22,163,74,.2);
-  }
-
-  /* ─── DATA TABLE ─────────────────────────────────────────── */
-  .data-table { width: 100%; border-collapse: collapse; }
-
-  .data-table thead tr { background: linear-gradient(135deg, #f0fdf4, #f8fdf9); }
-
-  .data-table th {
-    padding: 11px 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  .data-table th.text-end { text-align: right; }
-
-  .data-table tbody tr {
-    border-bottom: 1px solid #eaf5ec;
-    transition: background .15s;
-    animation: rowIn .35s ease both;
-  }
-
-  @keyframes rowIn {
-    from { opacity: 0; transform: translateY(6px); }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: none; }
   }
+  .cards-grid .train-card:nth-child(1)  { animation-delay:.04s }
+  .cards-grid .train-card:nth-child(2)  { animation-delay:.08s }
+  .cards-grid .train-card:nth-child(3)  { animation-delay:.12s }
+  .cards-grid .train-card:nth-child(4)  { animation-delay:.16s }
+  .cards-grid .train-card:nth-child(5)  { animation-delay:.20s }
+  .cards-grid .train-card:nth-child(6)  { animation-delay:.24s }
+  .cards-grid .train-card:nth-child(7)  { animation-delay:.28s }
+  .cards-grid .train-card:nth-child(8)  { animation-delay:.32s }
 
-  .data-table tbody tr:nth-child(1)  { animation-delay:.04s }
-  .data-table tbody tr:nth-child(2)  { animation-delay:.08s }
-  .data-table tbody tr:nth-child(3)  { animation-delay:.12s }
-  .data-table tbody tr:nth-child(4)  { animation-delay:.16s }
-  .data-table tbody tr:nth-child(5)  { animation-delay:.20s }
-  .data-table tbody tr:nth-child(6)  { animation-delay:.24s }
-  .data-table tbody tr:nth-child(7)  { animation-delay:.28s }
-  .data-table tbody tr:nth-child(8)  { animation-delay:.32s }
-  .data-table tbody tr:nth-child(9)  { animation-delay:.36s }
-  .data-table tbody tr:nth-child(10) { animation-delay:.40s }
-
-  .data-table tbody tr:hover { background: #f0fdf4; }
-  .data-table tbody tr:last-child { border-bottom: none; }
-
-  .data-table td {
-    padding: 14px 20px;
-    font-size: 14px;
-    color: var(--text);
-    vertical-align: middle;
-  }
-  .data-table td.text-end { text-align: right; }
-
-  .date-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 11px;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    color: var(--accent-dk);
+  /* Card image strip */
+  .train-card-img {
+    height: 130px;
+    background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=70');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    flex-shrink: 0;
   }
 
-  .type-badge {
-    display: inline-block;
+  .train-card-img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(20,83,45,.65) 0%, rgba(0,0,0,.1) 100%);
+  }
+
+  /* Type badge floated on image */
+  .train-card-type {
+    position: absolute;
+    top: 12px; left: 14px;
     padding: 4px 12px;
-    border-radius: 6px;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 99px;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: .8px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    background: rgba(245,158,11,.1);
-    color: #b45309;
-    border: 1px solid rgba(245,158,11,.25);
+    color: white;
   }
 
-  .lieu-text {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .lieu-text::before { content: '📍 '; }
-
-  .horaire { font-size: 13px; color: var(--muted); white-space: nowrap; }
-  .horaire strong { color: var(--text); font-weight: 600; }
-  .horaire .arrow { color: var(--accent); font-weight: 700; margin: 0 3px; }
-
-  /* ─── ACTION BUTTONS ─────────────────────────────────────── */
-  .actions-cell { display: flex; gap: 6px; justify-content: flex-end; }
-
-  .btn-action {
-    padding: 6px 14px;
+  /* Date badge on image */
+  .train-card-date {
+    position: absolute;
+    bottom: 12px; right: 14px;
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 11px;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
-    border-radius: 8px;
-    text-decoration: none;
-    border: 1px solid transparent;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: all .15s;
-    white-space: nowrap;
-    background: transparent;
+    color: white;
   }
 
-  .btn-view  { border-color: var(--border); color: var(--muted); }
-  .btn-view:hover  { border-color: var(--accent); color: var(--accent); background: #f0fdf4; }
-  .btn-edit  { border-color: var(--border); color: var(--muted); }
-  .btn-edit:hover  { border-color: var(--gold); color: #92400e; background: #fffbeb; }
+  /* Card body */
+  .train-card-body {
+    padding: 18px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Location row */
+  .train-card-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .train-card-location::before { content: '📍'; font-size: 13px; }
+
+  /* Horaire row */
+  .train-card-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+  }
+  .train-card-time .time-icon { font-size: 15px; }
+  .train-card-time .time-txt {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-dk);
+    letter-spacing: .5px;
+  }
+  .train-card-time .time-sep { color: var(--accent); font-weight: 800; }
+  .train-card-time .time-duration {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* Card footer actions */
+  .train-card-footer {
+    padding: 12px 20px 16px;
+    border-top: 1px solid #eaf5ec;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .btn-action {
+    padding: 6px 14px; font-size: 12px; font-weight: 600;
+    border-radius: 8px; text-decoration: none; border: 1px solid transparent;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all .15s; white-space: nowrap; background: transparent;
+  }
+  .btn-view   { border-color: var(--border); color: var(--muted); }
+  .btn-view:hover   { border-color: var(--accent); color: var(--accent); background: #f0fdf4; }
+  .btn-edit   { border-color: var(--border); color: var(--muted); }
+  .btn-edit:hover   { border-color: var(--gold); color: #92400e; background: #fffbeb; }
   .btn-delete { border-color: var(--border); color: var(--muted); }
   .btn-delete:hover { border-color: var(--accent2); color: var(--accent2); background: #fef2f2; }
 
   /* ─── EMPTY STATE ────────────────────────────────────────── */
-  .empty-state { padding: 72px 20px; text-align: center; }
+  .empty-state {
+    text-align: center; padding: 80px 20px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px;
+  }
   .empty-icon {
-    width: 72px; height: 72px;
-    margin: 0 auto 20px;
-    border-radius: 20px;
+    width: 72px; height: 72px; margin: 0 auto 20px; border-radius: 20px;
     background: linear-gradient(135deg, #f0fdf4, #dcfce7);
     border: 1px solid #bbf7d0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px;
+    display: flex; align-items: center; justify-content: center; font-size: 32px;
   }
   .empty-state p { color: var(--muted); font-size: 15px; }
 
   /* ─── MODAL ──────────────────────────────────────────────── */
   .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(20,83,45,.2);
-    backdrop-filter: blur(6px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; inset: 0;
+    background: rgba(20,83,45,.2); backdrop-filter: blur(6px);
+    z-index: 1000; align-items: center; justify-content: center;
   }
   .modal-overlay.show { display: flex; }
-
   .modal-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: 3px solid var(--accent2);
-    border-radius: var(--radius);
-    width: 100%;
-    max-width: 420px;
-    padding: 32px;
-    box-shadow: 0 24px 64px rgba(0,0,0,.12);
-    animation: modalIn .2s ease;
+    background: var(--surface); border: 1px solid var(--border);
+    border-top: 3px solid var(--accent2); border-radius: var(--radius);
+    width: 100%; max-width: 420px; padding: 32px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.12); animation: modalIn .2s ease;
   }
   @keyframes modalIn {
     from { opacity: 0; transform: scale(.95) translateY(12px); }
     to   { opacity: 1; transform: none; }
   }
-
   .modal-box h5 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; margin-bottom: 10px; color: var(--accent2); }
-  .modal-box p { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 28px; }
+  .modal-box p  { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 28px; }
   .modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
-
   .btn-cancel { padding: 10px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: border-color .15s, color .15s; }
   .btn-cancel:hover { border-color: var(--text); color: var(--text); }
-
   .btn-confirm-delete { padding: 10px 24px; background: var(--accent2); border: none; color: white; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 16px rgba(239,68,68,.25); transition: box-shadow .15s, transform .15s; }
   .btn-confirm-delete:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(239,68,68,.4); }
 
@@ -418,7 +300,7 @@
     .page-inner { padding: 0 16px 40px; }
     .search-wrap { flex-direction: column; align-items: stretch; }
     .search-wrap input, .search-wrap select { min-width: 0; width: 100%; }
-    .actions-cell { flex-wrap: wrap; }
+    .cards-grid { grid-template-columns: 1fr; }
   }
 </style>
 {% endblock %}
@@ -436,7 +318,6 @@
 <div class="hero-banner">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
-
   <svg class="hero-dots" width="200" height="200" viewBox="0 0 200 200" fill="none">
     <circle cx="10" cy="10" r="3" fill="white"/><circle cx="40" cy="10" r="3" fill="white"/><circle cx="70" cy="10" r="3" fill="white"/><circle cx="100" cy="10" r="3" fill="white"/><circle cx="130" cy="10" r="3" fill="white"/><circle cx="160" cy="10" r="3" fill="white"/>
     <circle cx="10" cy="40" r="3" fill="white"/><circle cx="40" cy="40" r="3" fill="white"/><circle cx="70" cy="40" r="3" fill="white"/><circle cx="100" cy="40" r="3" fill="white"/><circle cx="130" cy="40" r="3" fill="white"/><circle cx="160" cy="40" r="3" fill="white"/>
@@ -444,7 +325,6 @@
     <circle cx="10" cy="100" r="3" fill="white"/><circle cx="40" cy="100" r="3" fill="white"/><circle cx="70" cy="100" r="3" fill="white"/><circle cx="100" cy="100" r="3" fill="white"/><circle cx="130" cy="100" r="3" fill="white"/><circle cx="160" cy="100" r="3" fill="white"/>
     <circle cx="10" cy="130" r="3" fill="white"/><circle cx="40" cy="130" r="3" fill="white"/><circle cx="70" cy="130" r="3" fill="white"/><circle cx="100" cy="130" r="3" fill="white"/><circle cx="130" cy="130" r="3" fill="white"/><circle cx="160" cy="130" r="3" fill="white"/>
   </svg>
-
   <div class="hero-content">
     <div class="page-heading">
       <small>/ Gestion &amp; Suivi</small>
@@ -476,8 +356,7 @@
   </div>
 
   <form method="get" class="search-wrap">
-    <input type="text" name="search_type" value="{{ search_type|default('') }}"
-           placeholder="🔍  Rechercher par type…">
+    <input type="text" name="search_type" value="{{ search_type|default('') }}" placeholder="🔍  Rechercher par type…">
     <select name="sort_by">
       <option value="">Trier par</option>
       <option value="dateEntrainement" {% if sort_by == 'dateEntrainement' %}selected{% endif %}>Date</option>
@@ -489,70 +368,59 @@
     <button type="submit" class="btn-search">Rechercher</button>
   </form>
 
-  <div class="table-card">
-    <div class="table-card-header">
-      <h3>Liste des Entrainements</h3>
-      <span class="count-badge">{{ entrainements|length }}</span>
-      <div class="sport-icons">
-        <span class="sport-icon">🏋️</span>
-        <span class="sport-icon">🤸</span>
-        <span class="sport-icon">🏃</span>
-      </div>
+  {# ── CARDS GRID ── #}
+  {% if entrainements is not empty %}
+    <div class="cards-grid">
+      {% for entrainement in entrainements %}
+        <div class="train-card">
+
+          {# Image strip with type + date overlaid #}
+          <div class="train-card-img">
+            <div class="train-card-img-overlay"></div>
+            <span class="train-card-type">{{ entrainement.type }}</span>
+            <span class="train-card-date">📅 {{ entrainement.dateEntrainement|date('d/m/Y') }}</span>
+          </div>
+
+          <div class="train-card-body">
+
+            {# Location #}
+            <div class="train-card-location">{{ entrainement.lieu }}</div>
+
+            {# Time slot #}
+            <div class="train-card-time">
+              <span class="time-icon">⏱️</span>
+              <span class="time-txt">
+                {{ entrainement.heureDebut|date('H:i') }}
+                <span class="time-sep">→</span>
+                {{ entrainement.heureFin|date('H:i') }}
+              </span>
+            </div>
+
+          </div>
+
+          <div class="train-card-footer">
+            <a href="{{ path('front_entrainement_show', {id: entrainement.id}) }}" class="btn-action btn-view">Voir</a>
+            <a href="{{ path('front_entrainement_edit', {id: entrainement.id}) }}" class="btn-action btn-edit">Éditer</a>
+            <button type="button" class="btn-action btn-delete"
+              onclick="openDeleteModal({{ entrainement.id }}, '{{ csrf_token('delete' ~ entrainement.id) }}')">
+              Supprimer
+            </button>
+          </div>
+
+        </div>
+      {% endfor %}
     </div>
 
-    {% if entrainements is not empty %}
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Lieu</th>
-            <th>Horaire</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for entrainement in entrainements %}
-            <tr>
-              <td>
-                <span class="date-pill">📅 {{ entrainement.dateEntrainement|date('d/m/Y') }}</span>
-              </td>
-              <td><span class="type-badge">{{ entrainement.type }}</span></td>
-              <td><span class="lieu-text">{{ entrainement.lieu }}</span></td>
-              <td>
-                <span class="horaire">
-                  <strong>{{ entrainement.heureDebut|date('H:i') }}</strong>
-                  <span class="arrow">→</span>
-                  <strong>{{ entrainement.heureFin|date('H:i') }}</strong>
-                </span>
-              </td>
-              <td class="text-end">
-                <div class="actions-cell">
-                  <a href="{{ path('front_entrainement_show', {id: entrainement.id}) }}"
-                     class="btn-action btn-view">Voir</a>
-                  <a href="{{ path('front_entrainement_edit', {id: entrainement.id}) }}"
-                     class="btn-action btn-edit">Éditer</a>
-                  <button type="button" class="btn-action btn-delete"
-                    onclick="openDeleteModal({{ entrainement.id }}, '{{ csrf_token('delete' ~ entrainement.id) }}')">
-                    Supprimer
-                  </button>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <div class="empty-state">
-        <div class="empty-icon">🏋️</div>
-        <p>Aucun entrainement pour le moment.</p>
-      </div>
-    {% endif %}
-  </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🏋️</div>
+      <p>Aucun entrainement pour le moment.</p>
+    </div>
+  {% endif %}
 
 </div>
 
-{# ===== MODAL SUPPRESSION ===== #}
+{# ── MODAL SUPPRESSION ── #}
 <div id="deleteModal" class="modal-overlay">
   <div class="modal-box">
     <h5>⚠ Confirmation</h5>
@@ -569,11 +437,9 @@
 
 <script>
 function openDeleteModal(id, token) {
-  const modal = document.getElementById('deleteModal');
-  const form  = document.getElementById('deleteForm');
   document.getElementById('deleteToken').value = token;
-  form.action = "{{ path('front_entrainement_delete', {'id': 'ID'}) }}".replace('ID', id);
-  modal.classList.add('show');
+  document.getElementById('deleteForm').action = "{{ path('front_entrainement_delete', {'id': 'ID'}) }}".replace('ID', id);
+  document.getElementById('deleteModal').classList.add('show');
 }
 function closeDeleteModal() {
   document.getElementById('deleteModal').classList.remove('show');
@@ -582,4 +448,5 @@ document.getElementById('deleteModal').addEventListener('click', function(e) {
   if (e.target === this) closeDeleteModal();
 });
 </script>
+
 {% endblock %}
