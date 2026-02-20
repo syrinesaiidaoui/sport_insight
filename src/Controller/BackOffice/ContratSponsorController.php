@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\BackOffice;
 
 use App\Entity\ContratSponsor;
 use App\Form\ContratSponsorType;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/contrat/sponsor')]
+#[Route('/admin/contrat/sponsor')]
 final class ContratSponsorController extends AbstractController
 {
     #[Route(name: 'app_contrat_sponsor_index', methods: ['GET'])]
@@ -37,7 +37,7 @@ final class ContratSponsorController extends AbstractController
             $contrats = $contratSponsorRepository->findAll();
         }
 
-        return $this->render('contrat_sponsor/index.html.twig', [
+        return $this->render('back_office/contrat_sponsor/index.html.twig', [
             'contrat_sponsors' => $contrats,
             'sponsor_nom' => $sponsorNom,
             'date_debut' => $dateDebut,
@@ -61,7 +61,7 @@ final class ContratSponsorController extends AbstractController
             return $this->redirectToRoute($route, [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('contrat_sponsor/new.html.twig', [
+        return $this->render('back_office/contrat_sponsor/new.html.twig', [
             'contrat_sponsor' => $contratSponsor,
             'form' => $form,
         ]);
@@ -70,7 +70,7 @@ final class ContratSponsorController extends AbstractController
     #[Route('/{id}', name: 'app_contrat_sponsor_show', methods: ['GET'])]
     public function show(ContratSponsor $contratSponsor): Response
     {
-        return $this->render('contrat_sponsor/show.html.twig', [
+        return $this->render('back_office/contrat_sponsor/show.html.twig', [
             'contrat_sponsor' => $contratSponsor,
         ]);
     }
@@ -90,7 +90,7 @@ final class ContratSponsorController extends AbstractController
             return $this->redirectToRoute($route, [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('contrat_sponsor/edit.html.twig', [
+        return $this->render('back_office/contrat_sponsor/edit.html.twig', [
             'contrat_sponsor' => $contratSponsor,
             'form' => $form,
         ]);
@@ -99,7 +99,7 @@ final class ContratSponsorController extends AbstractController
     #[Route('/{id}/pdf', name: 'app_contrat_sponsor_pdf', methods: ['GET'])]
     public function pdf(ContratSponsor $contratSponsor): Response
     {
-        return $this->render('contrat_sponsor/pdf.html.twig', [
+        return $this->render('back_office/contrat_sponsor/pdf.html.twig', [
             'contrat_sponsor' => $contratSponsor,
         ]);
     }

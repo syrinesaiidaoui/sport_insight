@@ -9,14 +9,14 @@
         </div>
 
         <div class="card form-card">
-            {{ include('contrat_sponsor/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+            {{ include('back_office/contrat_sponsor/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
         </div>
 
         <div class="mt-3 form-actions">
             <a href="{{ path('app_contrat_sponsor_index') }}" class="btn btn-secondary">
                 <i class="lucide-arrow-left"></i> Retour à la liste
             </a>
-            {{ include('contrat_sponsor/_delete_form.html.twig') }}
+            {{ include('back_office/contrat_sponsor/_delete_form.html.twig') }}
         </div>
     </div>
 

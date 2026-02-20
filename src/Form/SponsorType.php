@@ -39,12 +39,20 @@ class SponsorType extends AbstractType
                 ],
             ])
             ->add('budget', NumberType::class, [
-                'label' => 'Budget annuel (€)',
+                'label' => 'Budget annuel (DT)',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Entrez le budget',
                     'step' => '0.01',
                     'min' => '0',
+                ],
+            ])
+            ->add('logo', TextType::class, [
+                'label' => 'Logo (URL ou chemin)',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Entrez l\'URL du logo ou le chemin du fichier',
                 ],
             ])
         ;

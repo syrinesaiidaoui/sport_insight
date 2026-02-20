@@ -1,19 +1,19 @@
 {% extends 'back_office/base.html.twig' %}
 
-{% block title %}Nouveau contrat sponsor{% endblock %}
+{% block title %}Nouveau sponsor{% endblock %}
 
 {% block body %}
     <div class="main-content">
         <div class="page-header">
-            <h1>Nouveau contrat sponsor</h1>
+            <h1>Nouveau sponsor</h1>
         </div>
 
         <div class="card form-card">
-            {{ include('contrat_sponsor/_form.html.twig') }}
+            {{ include('back_office/sponsor/_form.html.twig') }}
         </div>
 
         <div class="mt-3">
-            <a href="{{ path('app_contrat_sponsor_index') }}" class="btn btn-secondary">
+            <a href="{{ path('app_sponsor_index') }}" class="btn btn-secondary">
                 <i class="lucide-arrow-left"></i> Retour à la liste
             </a>
         </div>

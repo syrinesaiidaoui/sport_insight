@@ -22,7 +22,10 @@ class ContratSponsorRepository extends ServiceEntityRepository
     public function searchContrats(?string $sponsorNom = null, ?\DateTime $dateDebut = null): array
     {
         $qb = $this->createQueryBuilder('c')
+            ->addSelect('s')
+            ->addSelect('e')
             ->innerJoin('c.sponsor', 's')
+            ->innerJoin('c.equipe', 'e')
             ->orderBy('c.dateDebut', 'DESC');
 
         if ($sponsorNom) {

@@ -42,7 +42,7 @@ class ContratSponsorType extends AbstractType
                 'required' => true,
             ])
             ->add('montant', null, [
-                'label' => 'Montant du contrat (€)',
+                'label' => 'Montant du contrat (DT)',
                 'required' => true,
             ])
             ->add('description', TextareaType::class, [

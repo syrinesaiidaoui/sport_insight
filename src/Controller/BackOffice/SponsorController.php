@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\BackOffice;
 
 use App\Entity\Sponsor;
 use App\Form\SponsorType;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/sponsor')]
+#[Route('/admin/sponsor')]
 final class SponsorController extends AbstractController
 {
     #[Route(name: 'app_sponsor_index', methods: ['GET'])]
@@ -33,7 +33,7 @@ final class SponsorController extends AbstractController
             $sponsors = $sponsorRepository->findAll();
         }
         
-        return $this->render('sponsor/index.html.twig', [
+        return $this->render('back_office/sponsor/index.html.twig', [
             'sponsors' => $sponsors,
             'email' => $email,
             'budget' => $budget,
@@ -54,7 +54,7 @@ final class SponsorController extends AbstractController
             return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('sponsor/new.html.twig', [
+        return $this->render('back_office/sponsor/new.html.twig', [
             'sponsor' => $sponsor,
             'form' => $form,
         ]);
@@ -63,7 +63,7 @@ final class SponsorController extends AbstractController
     #[Route('/{id}', name: 'app_sponsor_show', methods: ['GET'])]
     public function show(Sponsor $sponsor): Response
     {
-        return $this->render('sponsor/show.html.twig', [
+        return $this->render('back_office/sponsor/show.html.twig', [
             'sponsor' => $sponsor,
         ]);
     }
@@ -80,7 +80,7 @@ final class SponsorController extends AbstractController
             return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('sponsor/edit.html.twig', [
+        return $this->render('back_office/sponsor/edit.html.twig', [
             'sponsor' => $sponsor,
             'form' => $form,
         ]);

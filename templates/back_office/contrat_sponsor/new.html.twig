@@ -1,22 +1,21 @@
 {% extends 'back_office/base.html.twig' %}
 
-{% block title %}Éditer sponsor{% endblock %}
+{% block title %}Nouveau contrat sponsor{% endblock %}
 
 {% block body %}
     <div class="main-content">
         <div class="page-header">
-            <h1>Éditer le sponsor "{{ sponsor.nom }}"</h1>
+            <h1>Nouveau contrat sponsor</h1>
         </div>
 
         <div class="card form-card">
-            {{ include('sponsor/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+            {{ include('back_office/contrat_sponsor/_form.html.twig') }}
         </div>
 
-        <div class="mt-3 form-actions">
-            <a href="{{ path('app_sponsor_index') }}" class="btn btn-secondary">
+        <div class="mt-3">
+            <a href="{{ path('app_contrat_sponsor_index') }}" class="btn btn-secondary">
                 <i class="lucide-arrow-left"></i> Retour à la liste
             </a>
-            {{ include('sponsor/_delete_form.html.twig') }}
         </div>
     </div>
 
@@ -35,10 +34,6 @@
             border: 1px solid var(--border-color);
             max-width: 600px;
         }
-        .form-actions {
-            display: flex;
-            gap: 12px;
-        }
         .btn-secondary {
             display: inline-flex;
             align-items: center;
@@ -55,22 +50,6 @@
         .btn-secondary:hover {
             background: #4b5563;
             color: white;
-        }
-        .btn-danger {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        .btn-danger:hover {
-            background: #dc2626;
         }
         .mt-3 {
             margin-top: 20px;

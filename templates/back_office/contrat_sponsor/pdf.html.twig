@@ -184,7 +184,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label">Budget annuel</div>
-                        <div class="info-value">{{ contrat_sponsor.sponsor.budget }}€</div>
+                        <div class="info-value">{{ contrat_sponsor.sponsor.budget }} DT</div>
                     </div>
                 </div>
             </div>
@@ -203,7 +203,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label">Montant du contrat</div>
-                        <div class="info-value">{{ contrat_sponsor.montant }}€</div>
+                        <div class="info-value">{{ contrat_sponsor.montant }} DT</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Équipe partenaire</div>
@@ -224,7 +224,7 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label">Montant par jour</div>
-                            <div class="info-value">{{ (contrat_sponsor.montant / (interval.days + 1))|round(2) }}€</div>
+                            <div class="info-value">{{ (contrat_sponsor.montant / (interval.days + 1))|round(2) }} DT</div>
                         </div>
                     </div>
                 {% endif %}

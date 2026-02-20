@@ -1,0 +1,196 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ equipe.nom }} - Sponsors{% endblock %}
+
+{% block body %}
+<div class="sponsors-container">
+    <h1>Nos Sponsors - {{ equipe.nom }}</h1>
+    
+    {% if sponsors_contrats is empty %}
+        <div class="alert alert-info">
+            <p>Aucun sponsor pour cette équipe pour le moment.</p>
+        </div>
+    {% else %}
+        <div class="sponsors-grid">
+            {% for contrat in sponsors_contrats %}
+                <div class="sponsor-card">
+                    <div class="sponsor-card-header">
+                        {% if contrat.sponsor.logo %}
+                            <img src="{{ asset('uploads/sponsors/' ~ contrat.sponsor.logo) }}" 
+                                 alt="{{ contrat.sponsor.nom }}" 
+                                 class="sponsor-logo">
+                        {% else %}
+                            <div class="sponsor-logo-placeholder">
+                                {{ contrat.sponsor.nom | length > 0 ? contrat.sponsor.nom[0] : 'S' }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="sponsor-card-body">
+                        <h3 class="sponsor-name">{{ contrat.sponsor.nom }}</h3>
+                        <p class="sponsor-montant">Budget partenariat: <strong>{{ contrat.montant | number_format(2, ',', ' ') }} €</strong></p>
+                        <p class="sponsor-dates">
+                            <i class="far fa-calendar"></i>
+                            {{ contrat.dateDebut | format_date('long') }} - {{ contrat.dateFin | format_date('long') }}
+                        </p>
+                        {% if contrat.description %}
+                            <p class="sponsor-description">{{ contrat.description }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="sponsor-card-footer">
+                        <a href="mailto:{{ contrat.sponsor.email }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-envelope"></i> Contacter
+                        </a>
+                        <span class="sponsor-phone">{{ contrat.sponsor.telephone }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .sponsors-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .sponsors-container h1 {
+        text-align: center;
+        margin-bottom: 40px;
+        color: #333;
+        font-size: 2.5rem;
+    }
+
+    .sponsors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .sponsor-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .sponsor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        border-color: #007bff;
+    }
+
+    .sponsor-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 30px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 180px;
+    }
+
+    .sponsor-logo {
+        max-width: 100%;
+        max-height: 150px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    .sponsor-logo-placeholder {
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 48px;
+        font-weight: bold;
+        color: white;
+    }
+
+    .sponsor-card-body {
+        padding: 25px 20px;
+    }
+
+    .sponsor-name {
+        margin: 0 0 15px 0;
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .sponsor-montant {
+        font-size: 1rem;
+        color: #28a745;
+        font-weight: 600;
+        margin: 10px 0;
+    }
+
+    .sponsor-dates {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 10px 0;
+    }
+
+    .sponsor-dates i {
+        margin-right: 8px;
+        color: #007bff;
+    }
+
+    .sponsor-description {
+        font-size: 0.9rem;
+        color: #555;
+        margin-top: 15px;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .sponsor-card-footer {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sponsor-phone {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .btn-outline-primary {
+        border-color: #007bff;
+        color: #007bff;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .sponsors-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .sponsors-container h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}

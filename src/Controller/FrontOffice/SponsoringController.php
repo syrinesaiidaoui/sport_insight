@@ -32,7 +32,13 @@ class SponsoringController extends AbstractController
         if ($sponsorNom || $dateDebutObj) {
             $contrats = $contratSponsorRepository->searchContrats($sponsorNom, $dateDebutObj);
         } else {
-            $contrats = $contratSponsorRepository->findAll();
+            $qb = $contratSponsorRepository->createQueryBuilder('c')
+                ->addSelect('s')
+                ->addSelect('e')
+                ->innerJoin('c.sponsor', 's')
+                ->innerJoin('c.equipe', 'e')
+                ->orderBy('c.dateDebut', 'DESC');
+            $contrats = $qb->getQuery()->getResult();
         }
 
         return $this->render('front_office/sponsoring/index.html.twig', [

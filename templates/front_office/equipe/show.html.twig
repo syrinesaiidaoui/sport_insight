@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ equipe.nom }}{% endblock %}
+
+{% block body %}
+<div class="equipe-detail-container">
+    <div class="equipe-header">
+        <h1>{{ equipe.nom }}</h1>
+        {% if equipe.coach %}
+            <p class="equipe-coach"><strong>Coach:</strong> {{ equipe.coach }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Section Sponsors Actifs -->
+    <div class="equipe-sponsors-section">
+        <h2>Nos Partenaires Actuels</h2>
+        
+        {% if sponsors_contrats is empty %}
+            <div class="alert alert-info">
+                <p>Aucun partenaire actuellement actif pour cette équipe.</p>
+            </div>
+        {% else %}
+            <div class="sponsors-carousel">
+                {% for contrat in sponsors_contrats %}
+                    <div class="sponsor-item">
+                        <div class="sponsor-item-logo">
+                            {% if contrat.sponsor.logo %}
+                                <img src="{{ asset('uploads/sponsors/' ~ contrat.sponsor.logo) }}" 
+                                     alt="{{ contrat.sponsor.nom }}" 
+                                     title="{{ contrat.sponsor.nom }}">
+                            {% else %}
+                                <div class="sponsor-placeholder">
+                                    {{ contrat.sponsor.nom[0] ?? 'S' }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <p class="sponsor-item-name">{{ contrat.sponsor.nom }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="sponsors-cta">
+                <a href="{{ path('front_equipe_sponsors', {'id': equipe.id}) }}" class="btn btn-primary">
+                    Vue complète de nos partenaires
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .equipe-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .equipe-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 10px;
+        margin-bottom: 40px;
+    }
+
+    .equipe-header h1 {
+        margin: 0 0 10px 0;
+        font-size: 2.5rem;
+    }
+
+    .equipe-coach {
+        margin: 10px 0 0 0;
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .equipe-sponsors-section {
+        margin: 40px 0;
+    }
+
+    .equipe-sponsors-section h2 {
+        margin-bottom: 30px;
+        color: #333;
+        font-size: 1.8rem;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 10px;
+    }
+
+    .sponsors-carousel {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 30px;
+        margin: 30px 0;
+    }
+
+    .sponsor-item {
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        background: white;
+        border: 2px solid #f0f0f0;
+        transition: all 0.3s ease;
+    }
+
+    .sponsor-item:hover {
+        border-color: #007bff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .sponsor-item-logo {
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 8px;
+    }
+
+    .sponsor-item-logo img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .sponsor-placeholder {
+        width: 80px;
+        height: 80px;
+        background: #e0e0e0;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 32px;
+        font-weight: bold;
+        color: #666;
+    }
+
+    .sponsor-item-name {
+        margin: 0;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .sponsors-cta {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        .equipe-header {
+            padding: 20px;
+        }
+
+        .equipe-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .sponsors-carousel {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .sponsors-carousel {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}

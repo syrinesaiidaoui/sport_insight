@@ -52,6 +52,9 @@ class Sponsor
     #[Assert\Type(type: 'float', message: 'Le budget doit être un nombre')]
     private ?float $budget = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logo = null;
+
     /**
      * @var Collection<int, ContratSponsor>
      */
@@ -112,6 +115,18 @@ class Sponsor
     public function setBudget(float $budget): static
     {
         $this->budget = $budget;
+
+        return $this;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): static
+    {
+        $this->logo = $logo;
 
         return $this;
     }

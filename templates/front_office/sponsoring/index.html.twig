@@ -3,51 +3,10 @@
 {% block title %}Sponsoring - FC Club{% endblock %}
 
 {% block body %}
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-        <h2 class="section-title">Nos Sponsors</h2>
-        <div>
-            <a href="{{ path('app_sponsor_new') }}" class="btn btn-primary btn-sm" style="margin-right:8px;">Nouveau sponsor</a>
-            <a href="{{ path('app_contrat_sponsor_new') }}" class="btn btn-success btn-sm">Nouveau contrat</a>
-        </div>
-    </div>
-
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="front-card">
-                <div class="stat-card-label">Sponsors actifs</div>
-                <div class="stat-card-value">{{ sponsors|length }}</div>
-                <div class="stat-card-sub">Total sponsors</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="front-card">
-                <div class="stat-card-label">Revenu annuel</div>
-                <div class="stat-card-value">{{ (sponsors|reduce((carry, sponsor) => carry + sponsor.budget, 0) / 1000)|round(0) }}K DT</div>
-                <div class="stat-card-sub">Budget total</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="front-card">
-                <div class="stat-card-label">Contrats actifs</div>
-                <div class="stat-card-value">{{ contrats|length }}</div>
-                <div class="stat-card-sub">Total contrats</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="front-card">
-                <div class="stat-card-label">Valeur moyenne</div>
-                <div class="stat-card-value">{% if contrats|length > 0 %}{{ (contrats|reduce((carry, contrat) => carry + contrat.montant, 0) / contrats|length / 1000)|round(0) }}K{% else %}0{% endif %} DT</div>
-                <div class="stat-card-sub">Par contrat</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="front-table">
-        <div class="front-table-header">
-            <h3>Liste des contrats sponsors</h3>
-        </div>
-
-        <div style="padding: 16px 24px;">
+    <!-- Affichage en cartes des sponsors -->
+    <div class="sponsors-section">
+        <div style="margin-bottom: 30px;">
+            <h3 style="margin-bottom: 20px; color: #333; font-size: 1.5rem;">Nos Partenaires</h3>
             <form method="GET" class="search-form-inline">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: flex-end;">
                     <div>
@@ -66,43 +25,231 @@
             </form>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Sponsor</th>
-                    <th>Montant</th>
-                    <th>Début</th>
-                    <th>Fin</th>
-                    <th>Équipe</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if contrats|length > 0 %}
-                    {% for contrat in contrats %}
-                        <tr>
-                            <td><strong>{{ contrat.sponsor.nom }}</strong></td>
-                            <td>{{ contrat.montant }} DT</td>
-                            <td>{{ contrat.dateDebut ? contrat.dateDebut|date('d/m/Y') : '-' }}</td>
-                            <td>{{ contrat.dateFin ? contrat.dateFin|date('d/m/Y') : '-' }}</td>
-                            <td>{{ contrat.equipe.nom ?? '-' }}</td>
-                            <td>
-                                <a href="{{ path('app_contrat_sponsor_show', {'id': contrat.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+        {% if contrats|length > 0 %}
+            <div class="sponsors-grid">
+                {% for contrat in contrats %}
+                    <div class="sponsor-card">
+                        <div class="sponsor-card-header">
+                            {% if contrat.sponsor.logo %}
+                                <img src="{{ asset('uploads/sponsors/' ~ contrat.sponsor.logo) }}" 
+                                     alt="{{ contrat.sponsor.nom }}" 
+                                     class="sponsor-logo">
+                            {% else %}
+                                <div class="sponsor-logo-placeholder">
+                                    {{ contrat.sponsor.nom[0] ?? 'S' }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="sponsor-card-body">
+                            <h3 class="sponsor-name">{{ contrat.sponsor.nom }}</h3>
+                            <p class="sponsor-dates">
+                                <i class="far fa-calendar"></i>
+                                {{ contrat.dateDebut | format_date('short') }} → {{ contrat.dateFin | format_date('short') }}
+                            </p>
+                            <p class="sponsor-equipe">
+                                <strong>Équipe:</strong> {{ contrat.equipe.nom ?? '-' }}
+                            </p>
+                            {% if contrat.description %}
+                                <p class="sponsor-description">{{ contrat.description }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="sponsor-card-footer">
+                            <div class="sponsor-footer-amount">
+                                <span class="amount-label">Montant:</span>
+                                <span class="amount-value">{{ contrat.montant }} DT</span>
+                            </div>
+                            <div class="sponsor-footer-buttons">
+                                <a href="{{ path('app_contrat_sponsor_show', {'id': contrat.id}) }}" class="btn btn-sm btn-outline-primary">Détails</a>
                                 <a href="{{ path('app_contrat_sponsor_pdf', {'id': contrat.id}) }}" class="btn btn-sm btn-outline-info" target="_blank">PDF</a>
-                                <a href="{{ path('app_contrat_sponsor_edit', {'id': contrat.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>
-                                <form method="post" action="{{ path('app_contrat_sponsor_delete', {'id': contrat.id}) }}" onsubmit="return confirm('Êtes-vous sûr ?');" style="display:inline;">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contrat.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="6" style="text-align:center; padding: 20px;">Aucun contrat sponsor trouvé</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info" style="text-align: center; padding: 30px;">
+                <h4>Aucun sponsor trouvé</h4>
+                <p>Aucun contrat de sponsoring ne correspond à vos critères de recherche.</p>
+            </div>
+        {% endif %}
     </div>
+
+    <style>
+        .sponsors-section {
+            margin-top: 30px;
+        }
+
+        .sponsors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .sponsor-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .sponsor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            border-color: #007bff;
+        }
+
+        .sponsor-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+        }
+
+        .sponsor-logo {
+            max-width: 100%;
+            max-height: 160px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .sponsor-logo-placeholder {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .sponsor-card-body {
+            padding: 25px 20px;
+            flex-grow: 1;
+        }
+
+        .sponsor-name {
+            margin: 0 0 15px 0;
+            font-size: 1.4rem;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .sponsor-montant {
+            font-size: 1.1rem;
+            color: #28a745;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        .sponsor-dates {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .sponsor-dates i {
+            margin-right: 6px;
+            color: #007bff;
+        }
+
+        .sponsor-equipe {
+            font-size: 0.95rem;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .sponsor-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 15px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .sponsor-card-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sponsor-footer-amount {
+            font-weight: 600;
+            color: #28a745;
+            font-size: 1rem;
+        }
+
+        .amount-label {
+            color: #666;
+            font-weight: 500;
+            margin-right: 6px;
+        }
+
+        .amount-value {
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        .sponsor-footer-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .sponsors-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .sponsor-card-footer {
+                flex-wrap: wrap;
+            }
+        }
+
+        .btn-outline-primary, .btn-outline-info {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid;
+            display: inline-block;
+        }
+
+        .btn-outline-primary {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-outline-info {
+            border-color: #17a2b8;
+            color: #17a2b8;
+        }
+
+        .btn-outline-info:hover {
+            background-color: #17a2b8;
+            color: white;
+        }
+    </style>
 {% endblock %}
