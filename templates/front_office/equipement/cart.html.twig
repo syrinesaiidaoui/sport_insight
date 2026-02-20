@@ -1,0 +1,52 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Your Cart - Sport Insight{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Your Cart</h2>
+
+    <div class="front-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.category }}</td>
+                        <td>{{ item.product.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ (item.product.price * item.quantity) }}</td>
+                        <td>
+                            <a href="{{ path('front_equipement_remove', {id: item.product.id}) }}" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 12px;"><svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>Remove</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Your cart is empty.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-end">
+        <strong>Total: {{ total }}</strong>
+    </div>
+
+    <div class="mt-3">
+        <form method="post" action="{{ path('front_equipement_checkout') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('checkout') }}">
+            <button class="btn btn-primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg>Checkout</button>
+            <a href="{{ path('front_equipement_index') }}" class="btn btn-secondary"><svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>Continue shopping</a>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}New Order{% endblock %}
+{% block page_title %}Create New Order{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px;">
+        {{ include('order/_form.html.twig') }}
+    </div>
+{% endblock %}

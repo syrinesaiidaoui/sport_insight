@@ -1,0 +1,67 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Equipement - Sport Insight{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Équipement du Club</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="get" class="front-card marketing-accent" style="display:flex; gap:12px; align-items:center; padding:18px;">
+            <input type="search" name="q" placeholder="Rechercher un produit..." class="form-control" style="flex:1; max-width:420px;" value="{{ app.request.query.get('q') }}">
+            <select name="category" class="form-select" style="width:220px;">
+                <option value="">Toutes les catégories</option>
+                {% for cat in categories|default([]) %}
+                    <option value="{{ cat }}" {% if app.request.query.get('category') == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+            <select name="sort" class="form-select" style="width:220px;">
+                <option value="name" {% if app.request.query.get('sort') == 'name' %}selected{% endif %}>Trier par nom</option>
+                <option value="price" {% if app.request.query.get('sort') == 'price' %}selected{% endif %}>Trier par prix</option>
+                <option value="stock" {% if app.request.query.get('sort') == 'stock' %}selected{% endif %}>Trier par stock</option>
+            </select>
+            <button class="btn btn-primary" type="submit">Chercher</button>
+        </form>
+
+        <div>
+            <a href="{{ path('front_equipement_cart') }}" class="btn btn-success" style="border-radius:12px; padding:10px 18px;">
+                Panier
+            </a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
+        {% for product in products %}
+            <div class="front-card">
+                <div class="card-hero">
+                    {% if product.image %}
+                        <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
+                    {% else %}
+                        {# gradient background already provided by .card-hero #}
+                    {% endif %}
+                </div>
+
+                <div class="card-body-custom">
+                    <div class="product-category">{{ product.category ?: 'Maillots' }}</div>
+                    <h3 style="margin:0 0 6px 0; font-size:18px; font-weight:700;">{{ product.name }}</h3>
+
+                    <div class="product-price">{{ product.price|number_format(2, ',', ' ') }} USD</div>
+
+                    <div class="stock-text">{% if product.stock > 0 %}{{ product.stock }} en stock{% else %}Rupture de stock{% endif %}</div>
+
+                    <div class="card-actions">
+                        <a href="{{ path('front_equipement_show', {'id': product.id}) }}" class="btn btn-light" style="flex:1; border:1px solid var(--border-color);">Détails</a>
+                        {% if product.stock > 0 %}
+                            <a href="{{ path('front_equipement_buy', {'id': product.id}) }}" class="btn btn-success" style="flex:1;">Ajouter</a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled style="flex:1;">Indisponible</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6b7280;">
+                <p>Aucun produit trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

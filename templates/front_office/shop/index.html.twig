@@ -1,0 +1,365 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Shop - Équipement du Club{% endblock %}
+
+{% block body %}
+<style>
+    /* ===== SHOP HEADER ===== */
+    .shop-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .shop-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+    }
+
+    .cart-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #fff !important;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .cart-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    /* ===== FILTER CARD ===== */
+    .filter-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 32px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .filter-card-title {
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 18px;
+        font-size: 15px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 16px;
+        align-items: flex-end;
+    }
+
+    @media (max-width: 1024px) {
+        .filter-form {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .filter-form .form-control,
+    .filter-form .form-select {
+        border-radius: 8px;
+    }
+
+    .filter-form button {
+        height: 38px;
+    }
+
+    /* ===== PRODUCTS GRID ===== */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    /* ===== PRODUCT CARD ===== */
+    .product-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .product-image-wrapper {
+        height: 280px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .product-image-wrapper i {
+        font-size: 64px;
+        opacity: 0.5;
+    }
+
+    .product-info {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name {
+        font-weight: 700;
+        font-size: 16px;
+        color: #111827;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+    .product-category {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product-price {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 12px;
+    }
+
+    .product-stock {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 16px;
+        flex: 1;
+    }
+
+    .product-stock.in-stock {
+        color: #059669;
+    }
+
+    .product-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .product-actions a,
+    .product-actions button {
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .product-actions .btn-detail {
+        background: #f3f4f6;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+    }
+
+    .product-actions .btn-detail:hover {
+        background: #e5e7eb;
+        border-color: #d1d5db;
+    }
+
+    .product-actions .btn-add {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .product-actions .btn-add:hover {
+        background: var(--primary-hover);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        background: #f9fafb;
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        padding: 60px 40px;
+        text-align: center;
+    }
+
+    .empty-state-icon {
+        font-size: 64px;
+        color: #d1d5db;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .empty-state-text {
+        color: #6b7280;
+        font-size: 14px;
+    }
+</style>
+
+<div class="container py-5">
+    {# Header #}
+    <div class="shop-header">
+        <h1>Équipement du Club</h1>
+        <a href="{{ path('app_cart_index') }}" class="cart-link">
+            <i class="fa fa-shopping-cart"></i>
+            <span>Panier</span>
+            {% if cartCount > 0 %}
+                <span style="background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 12px; font-size: 12px;">{{ cartCount }}</span>
+            {% endif %}
+        </a>
+    </div>
+
+    {# Search and Filters #}
+    <div class="filter-card">
+        <div class="filter-card-title"><i class="fa fa-filter"></i> Filtrer et rechercher</div>
+        <form method="GET" class="filter-form">
+            <div class="form-group mb-0">
+                <input 
+                    type="text" 
+                    name="search" 
+                    class="form-control"
+                    placeholder="Rechercher un produit..."
+                    value="{{ searchTerm }}"
+                >
+            </div>
+            
+            {% if categories %}
+            <div class="form-group mb-0">
+                <select name="category" class="form-select">
+                    <option value="">Toutes les catégories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {% if categoryFilter == category %}selected{% endif %}>
+                            {{ category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="form-group mb-0">
+                <select name="sort" class="form-select">
+                    <option value="name" {% if sortBy == 'name' %}selected{% endif %}>Trier par nom</option>
+                    <option value="price" {% if sortBy == 'price' %}selected{% endif %}>Trier par prix</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-search"></i> Chercher
+            </button>
+        </form>
+    </div>
+
+    {# Products Grid #}
+    {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    {# Image #}
+                    <div class="product-image-wrapper">
+                        {% if product.image %}
+                            <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
+                        {% else %}
+                            <i class="fa fa-cube"></i>
+                        {% endif %}
+                    </div>
+
+                    {# Info #}
+                    <div class="product-info">
+                        <div class="product-category">{{ product.category ?? 'Non classé' }}</div>
+                        <div class="product-name">{{ product.name }}</div>
+                        <div class="product-price">{{ product.price|number_format(2, ',', '.') }} USD</div>
+                        
+                        <div class="product-stock {% if product.stock > 0 %}in-stock{% endif %}">
+                            {% if product.stock > 0 %}
+                                <i class="fa fa-check-circle"></i> {{ product.stock }} en stock
+                            {% else %}
+                                <i class="fa fa-times-circle"></i> Rupture de stock
+                            {% endif %}
+                        </div>
+
+                        {# Actions #}
+                        <div class="product-actions">
+                            <a href="{{ path('app_shop_product_detail', {id: product.id}) }}" class="btn-detail">
+                                <i class="fa fa-info-circle"></i> Détails
+                            </a>
+                            {% if product.stock > 0 %}
+                                <form method="POST" action="{{ path('app_shop_add_to_cart', {id: product.id}) }}" class="w-100">
+                                    <button type="submit" class="btn-add w-100">
+                                        <i class="fa fa-cart-plus"></i> Ajouter
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button disabled class="btn-add w-100" style="opacity: 0.5; cursor: not-allowed;">
+                                    <i class="fa fa-lock"></i> Indisponible
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fa fa-inbox"></i>
+            </div>
+            <div class="empty-state-title">Aucun produit disponible</div>
+            <div class="empty-state-text">Essayez d'ajuster vos filtres ou revenir plus tard</div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Gestion des Commandes{% endblock %}
+{% block page_title %}Gestion des Commandes{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Commandes</h1>
+        <a href="{{ path('app_order_new') }}" class="btn btn-success">
+            <i class="fa fa-plus"></i> Nouvelle commande
+        </a>
+    </div>
+
+    {# Filters #}
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ searchTerm }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="pending" {% if statusFilter == 'pending' %}selected{% endif %}>En attente</option>
+                        <option value="confirmed" {% if statusFilter == 'confirmed' %}selected{% endif %}>Confirmée</option>
+                        <option value="shipped" {% if statusFilter == 'shipped' %}selected{% endif %}>Expédiée</option>
+                        <option value="delivered" {% if statusFilter == 'delivered' %}selected{% endif %}>Livrée</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="sort" class="form-select">
+                        <option value="orderDate" {% if sortBy == 'orderDate' %}selected{% endif %}>Date</option>
+                        <option value="quantity" {% if sortBy == 'quantity' %}selected{% endif %}>Quantité</option>
+                        <option value="status" {% if sortBy == 'status' %}selected{% endif %}>Statut</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa fa-search"></i> Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Orders Table #}
+    {% if orders %}
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Produit</th>
+                            <th>Quantité</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Entraîneur</th>
+                            <th style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td><small>#{{ order.id }}</small></td>
+                                <td>{{ order.product.name }}</td>
+                                <td>{{ order.quantity }}</td>
+                                <td>{{ order.orderDate|date('d/m/Y') }}</td>
+                                <td>
+                                    {% set statusMap = {
+                                        'pending': {'badge': 'warning', 'label': 'En attente'},
+                                        'confirmed': {'badge': 'info', 'label': 'Confirmée'},
+                                        'shipped': {'badge': 'primary', 'label': 'Expédiée'},
+                                        'delivered': {'badge': 'success', 'label': 'Livrée'}
+                                    } %}
+                                    <span class="badge bg-{{ statusMap[order.status].badge|default('secondary') }}">
+                                        {{ statusMap[order.status].label|default(order.status) }}
+                                    </span>
+                                </td>
+                                <td>{{ order.entraineur.email }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ path('app_order_show', {id: order.id}) }}" class="btn btn-info" title="Voir">\n                                            <i class="fa fa-eye"></i>\n                                        </a>\n                                        <a href="{{ path('app_order_edit', {id: order.id}) }}" class="btn btn-warning" title="Modifier">\n                                            <i class="fa fa-edit"></i>\n                                        </a>\n                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ order.id }}" title="Supprimer">\n                                            <i class="fa fa-trash"></i>\n                                        </button>\n                                    </div>\n                                </td>\n                            </tr>\n                        {% endfor %}\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    {% else %}\n        <div class="alert alert-info">\n            <i class="fa fa-info-circle"></i> Aucune commande trouvée\n        </div>\n    {% endif %}\n</div>\n\n{# Delete Modals #}\n{% for order in orders %}\n    <div class=\"modal fade\" id=\"deleteModal{{ order.id }}\" tabindex=\"-1\">\n        <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n                <div class=\"modal-header\">\n                    <h5 class=\"modal-title\">Confirmer la suppression</h5>\n                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\n                </div>\n                <div class=\"modal-body\">\n                    Êtes-vous sûr de vouloir supprimer la commande #{{ order.id }} ?\n                </div>\n                <div class=\"modal-footer\">\n                    <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Annuler</button>\n                    <form method=\"POST\" action=\"{{ path('app_order_delete', {id: order.id}) }}\" style=\"display: inline;\">\n                        <button type=\"submit\" class=\"btn btn-danger\">Supprimer</button>\n                    </form>\n                </div>\n            </div>\n        </div>\n    </div>\n{% endfor %}\n{% endblock %}

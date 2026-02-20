@@ -1,0 +1,36 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}{{ product.name }} - Sport Insight{% endblock %}
+
+{% block body %}
+<div class="page-container">
+    <div class="front-card" style="display:flex; gap:24px; align-items:flex-start;">
+        <div style="width:420px;">
+            <div style="height:380px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg, #6b46c1 0%, #667eea 100%);">
+                {% if product.image %}
+                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit:cover;">
+                {% endif %}
+            </div>
+        </div>
+        <div style="flex:1;">
+            <div class="product-category">{{ product.category ?: 'Maillots' }}</div>
+            <h1 style="margin-top:6px;">{{ product.name }}</h1>
+            <div class="product-price">{{ product.price|number_format(2, ',', ' ') }} USD</div>
+            <p style="color:var(--text-muted); margin-top:8px;">Marque: {{ product.brand ?: 'N/A' }} — Taille: {{ product.size ?: 'Unique' }}</p>
+
+            <div style="margin-top:18px;">
+                {% if product.stock > 0 %}
+                    <a href="{{ path('front_equipement_buy', {'id': product.id}) }}" class="btn btn-success btn-lg">Ajouter au panier</a>
+                {% else %}
+                    <button class="btn btn-secondary btn-lg" disabled>Indisponible</button>
+                {% endif %}
+            </div>
+
+            <div style="margin-top:24px; color:var(--text-muted);">
+                <strong>Description</strong>
+                <p>Aucune description fournie.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

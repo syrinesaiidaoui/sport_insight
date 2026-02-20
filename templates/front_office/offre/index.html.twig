@@ -1,0 +1,34 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Offres - Sport Insight{% endblock %}
+
+{% block body %}
+    <h2 class="section-title">Nos Offres</h2>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="front-card">
+                <div class="card-icon"><i class="lucide-crown"></i></div>
+                <h3>Abonnement Premium</h3>
+                <p>Acces complet a tous les matchs, zone VIP et parking reserve.</p>
+                <div style="margin-top:16px;font-size:24px;font-weight:700;color:var(--primary)">150 DT<span style="font-size:14px;color:var(--text-muted);font-weight:400">/mois</span></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="front-card">
+                <div class="card-icon"><i class="lucide-users"></i></div>
+                <h3>Pack Famille</h3>
+                <p>4 places pour chaque match a domicile avec espace famille.</p>
+                <div style="margin-top:16px;font-size:24px;font-weight:700;color:var(--primary)">250 DT<span style="font-size:14px;color:var(--text-muted);font-weight:400">/mois</span></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="front-card">
+                <div class="card-icon"><i class="lucide-ticket"></i></div>
+                <h3>Billet Match VIP</h3>
+                <p>Place VIP unitaire pour un match avec acces aux coulisses.</p>
+                <div style="margin-top:16px;font-size:24px;font-weight:700;color:var(--primary)">80 DT<span style="font-size:14px;color:var(--text-muted);font-weight:400"> unitaire</span></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

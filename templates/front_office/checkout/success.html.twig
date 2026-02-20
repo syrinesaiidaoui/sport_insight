@@ -1,0 +1,49 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Commande confirmée - Équipement du Club{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-success">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <div style="width: 80px; height: 80px; background: #28a745; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa fa-check-circle text-white" style="font-size: 50px;"></i>
+                        </div>
+                    </div>
+
+                    <h2 class="text-success mb-3">Commande confirmée !</h2>
+                    
+                    <p class="text-muted mb-4">
+                        Merci pour votre commande. Une confirmation a été envoyée à votre adresse email.
+                    </p>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Email:</strong> {{ email }}</p>
+                            <p class="mb-2"><strong>Nom:</strong> {{ name }}</p>
+                            <p class="mb-0"><strong>Nombre d'articles:</strong> {{ orderData.items }}</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i> 
+                        <strong>Total commandé:</strong> {{ orderData.total|number_format(2, ',', '.') }} USD
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fa fa-clock-o"></i>
+                        Votre commande sera traitée dans les 24 heures. Vous recevrez un email de suivi.
+                    </div>
+
+                    <a href="{{ path('app_shop_index') }}" class="btn btn-primary btn-lg w-100">
+                        <i class="fa fa-shopping"></i> Continuer vos achats
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

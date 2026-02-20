@@ -1,0 +1,147 @@
+{% if errors is defined and errors %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading"><i class="fa fa-exclamation-circle"></i> Erreurs de validation</h4>
+        <ul class="mb-0">
+            {% for field, fieldErrors in errors %}
+                {% for error in fieldErrors %}
+                    <li><strong>{{ field }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}
+
+<style>
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 32px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .form-card h4 {
+        color: #111827;
+        font-weight: 700;
+        margin-bottom: 24px;
+        font-size: 18px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 0;
+    }
+
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+        justify-content: flex-start;
+    }
+
+    .btn-cancel {
+        background: #6b7280 !important;
+        color: #fff !important;
+    }
+</style>
+
+<div class="form-card">
+    <h4><i class="fa fa-plus-circle"></i> Ajouter une commande</h4>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'order-form'}}) }}
+
+    <div class="form-row">
+        <div class="form-group">
+            {{ form_label(form.quantity) }}
+            {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'placeholder': '1'}}) }}
+            {% if form.quantity.vars.errors %}
+                <div class="text-danger small mt-2">
+                    <i class="fa fa-times-circle"></i>
+                    {% for error in form.quantity.vars.errors %}
+                        {{ error.message }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.orderDate) }}
+            {{ form_widget(form.orderDate, {'attr': {'class': 'form-control'}}) }}
+            {% if form.orderDate.vars.errors %}
+                <div class="text-danger small mt-2">
+                    <i class="fa fa-times-circle"></i>
+                    {% for error in form.orderDate.vars.errors %}
+                        {{ error.message }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            {{ form_label(form.product) }}
+            {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
+            {% if form.product.vars.errors %}
+                <div class="text-danger small mt-2">
+                    <i class="fa fa-times-circle"></i>
+                    {% for error in form.product.vars.errors %}
+                        {{ error.message }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.entraineur) }}
+            {{ form_widget(form.entraineur, {'attr': {'class': 'form-control'}}) }}
+            {% if form.entraineur.vars.errors %}
+                <div class="text-danger small mt-2">
+                    <i class="fa fa-times-circle"></i>
+                    {% for error in form.entraineur.vars.errors %}
+                        {{ error.message }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-row full">
+        <div class="form-group">
+            {{ form_label(form.status) }}
+            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+            {% if form.status.vars.errors %}
+                <div class="text-danger small mt-2">
+                    <i class="fa fa-times-circle"></i>
+                    {% for error in form.status.vars.errors %}
+                        {{ error.message }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save"></i> Enregistrer
+        </button>
+        <a href="{{ path('app_order_index') }}" class="btn btn-secondary">
+            <i class="fa fa-times"></i> Annuler
+        </a>
+    </div>
+
+    {{ form_end(form) }}
+</div>

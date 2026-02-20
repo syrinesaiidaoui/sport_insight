@@ -1,0 +1,136 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Admin - Matchs{% endblock %}
+{% block page_title %}Matchs{% endblock %}
+
+{% block header_actions %}
+    <button class="btn btn-primary btn-sm">
+        <i class="lucide-plus" style="font-size:14px"></i> Ajouter un match
+    </button>
+{% endblock %}
+
+{% block body %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Matchs joues</div>
+                <div class="stat-card-value">18</div>
+                <div class="stat-card-sub">Saison 2025/26</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Victoires</div>
+                <div class="stat-card-value">12</div>
+                <div class="stat-card-sub">67% de reussite</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Buts marques</div>
+                <div class="stat-card-value">34</div>
+                <div class="stat-card-sub">1.9 par match</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-label">Prochain match</div>
+                <div class="stat-card-value">3j</div>
+                <div class="stat-card-sub">vs ES Tunis</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Matchs a venir -->
+    <div class="data-table mb-4">
+        <div class="data-table-header">
+            <h3>Matchs a venir</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Adversaire</th>
+                    <th>Lieu</th>
+                    <th>Competition</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>08/02/2026</td>
+                    <td>ES Tunis</td>
+                    <td>Domicile</td>
+                    <td>Ligue 1</td>
+                    <td><span class="badge-info">Programme</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>15/02/2026</td>
+                    <td>CA Bizertin</td>
+                    <td>Exterieur</td>
+                    <td>Coupe</td>
+                    <td><span class="badge-info">Programme</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Resultats -->
+    <div class="data-table">
+        <div class="data-table-header">
+            <h3>Derniers resultats</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Adversaire</th>
+                    <th>Score</th>
+                    <th>Resultat</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>01/02/2026</td>
+                    <td>Club Africain</td>
+                    <td>3 - 1</td>
+                    <td><span class="badge-success">Victoire</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>25/01/2026</td>
+                    <td>Etoile Sahel</td>
+                    <td>2 - 2</td>
+                    <td><span class="badge-warning">Nul</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>18/01/2026</td>
+                    <td>US Monastir</td>
+                    <td>0 - 1</td>
+                    <td><span class="badge-danger">Defaite</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary">Modifier</button>
+                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

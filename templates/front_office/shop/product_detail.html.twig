@@ -1,0 +1,94 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}{{ product.name }} - Équipement du Club{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    {# Header #}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ path('app_shop_index') }}" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Retour
+        </a>
+        <a href="{{ path('app_cart_index') }}" class="btn btn-outline-primary">
+            <i class="fa fa-shopping-cart"></i> Panier ({{ cartCount }})
+        </a>
+    </div>
+
+    <div class="row">
+        {# Product Image #}
+        <div class="col-md-6">
+            <div style="height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; border-radius: 8px;">
+                {% if product.image %}
+                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                {% else %}
+                    <i class="fa fa-cube fa-5x"></i>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Product Details #}
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+
+            {% if product.category %}
+                <p class="text-muted">{{ product.category }}</p>
+            {% endif %}
+
+            {# Price #}
+            <div class="my-4">
+                <p class="h3 text-success fw-bold">{{ product.price|number_format(2, ',', '.') }} USD</p>
+            </div>
+
+            {# Stock Status #}
+            <div class="mb-4">
+                {% if product.stock > 0 %}
+                    <span class="badge bg-success">En stock ({{ product.stock }} disponibles)</span>
+                {% else %}
+                    <span class="badge bg-danger">Rupture de stock</span>
+                {% endif %}
+            </div>
+
+            {# Details #}
+            <div class="mb-4">
+                <h5>Détails du produit</h5>
+                {% if product.brand %}
+                    <p><strong>Marque:</strong> {{ product.brand }}</p>
+                {% endif %}
+                {% if product.size %}
+                    <p><strong>Taille:</strong> {{ product.size }}</p>
+                {% endif %}
+            </div>
+
+            {# Add to Cart Form #}
+            {% if product.stock > 0 %}
+                <form method="POST" action="{{ path('app_shop_add_to_cart', {id: product.id}) }}" class="mb-4">
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="quantity">Quantité:</label>
+                        <input 
+                            type="number" 
+                            id="quantity"
+                            name="quantity" 
+                            class="form-control" 
+                            value="1" 
+                            min="1" 
+                            max="{{ product.stock }}"
+                        >
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="fa fa-shopping-cart"></i> Ajouter au panier
+                    </button>
+                </form>
+            {% else %}
+                <button class="btn btn-danger btn-lg w-100" disabled>
+                    <i class="fa fa-ban"></i> Indisponible
+                </button>
+            {% endif %}
+
+            {# Continue Shopping #}
+            <a href="{{ path('app_shop_index') }}" class="btn btn-outline-primary w-100">
+                <i class="fa fa-arrow-left"></i> Continuer vos achats
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

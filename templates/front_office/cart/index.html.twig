@@ -1,0 +1,292 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Panier - Équipement du Club{% endblock %}
+
+{% block body %}
+<style>
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .cart-header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .cart-table-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .cart-table {
+        margin-bottom: 0;
+    }
+
+    .cart-table thead {
+        background: #f9fafb;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .cart-table thead th {
+        font-weight: 700;
+        color: #111827;
+        padding: 16px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .cart-table tbody td {
+        padding: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: middle;
+    }
+
+    .cart-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .cart-table tbody tr:hover {
+        background: #f9fafb;
+    }
+
+    .cart-product-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .cart-product-link:hover {
+        color: var(--primary-hover);
+    }
+
+    .cart-qty-form {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .cart-qty-form input {
+        width: 70px;
+    }
+
+    .cart-qty-form button {
+        padding: 6px 10px;
+    }
+
+    .cart-summary-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        sticky-position: sticky;
+        top: 20px;
+    }
+
+    .cart-summary-header {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .cart-summary-header h5 {
+        margin: 0;
+        font-weight: 700;
+        color: #111827;
+        font-size: 16px;
+    }
+
+    .cart-summary-body {
+        padding: 24px;
+    }
+
+    .cart-summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .cart-summary-row strong {
+        color: #111827;
+    }
+
+    .cart-divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 16px 0;
+    }
+
+    .cart-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .cart-total h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #6b7280;
+    }
+
+    .cart-total h5 {
+        margin: 0;
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 20px;
+    }
+
+    .empty-cart {
+        background: #f9fafb;
+        border: 2px dashed #e5e7eb;
+        border-radius: 12px;
+        padding: 60px 40px;
+        text-align: center;
+    }
+
+    .empty-cart-icon {
+        font-size: 64px;
+        color: #d1d5db;
+        margin-bottom: 20px;
+    }
+
+    .empty-cart-text {
+        color: #6b7280;
+        font-size: 16px;
+        margin-bottom: 24px;
+    }
+</style>
+
+<div class="container py-5">
+    {# Header #}
+    <div class="cart-header">
+        <h1><i class="fa fa-shopping-cart"></i> Panier</h1>
+        <a href="{{ path('app_shop_index') }}" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Continuer les achats
+        </a>
+    </div>
+
+    {% if cart is empty %}
+        <div class="empty-cart">
+            <div class="empty-cart-icon">
+                <i class="fa fa-inbox"></i>
+            </div>
+            <div class="empty-cart-text">Votre panier est vide</div>
+            <a href="{{ path('app_shop_index') }}" class="btn btn-primary btn-lg">
+                <i class="fa fa-shopping"></i> Commencer à acheter
+            </a>
+        </div>
+    {% else %}
+        <div class="row">
+            {# Cart Items #}
+            <div class="col-lg-8">
+                <div class="cart-table-card">
+                    <table class="table cart-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for productId, item in cart %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ path('app_shop_product_detail', {id: item.product.id}) }}" class="cart-product-link">
+                                            {{ item.product.name }}
+                                        </a>
+                                        {% if item.product.category %}
+                                            <br><small style="color: #6b7280;">{{ item.product.category }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.product.price|number_format(2, ',', '.') }} USD</td>
+                                    <td>
+                                        <form method="POST" action="{{ path('app_cart_update', {productId: productId}) }}" class="cart-qty-form">
+                                            <input 
+                                                type="number" 
+                                                name="quantity" 
+                                                class="form-control form-control-sm" 
+                                                value="{{ item.quantity }}"
+                                                min="1"
+                                                max="{{ item.product.stock }}"
+                                                style="width: 70px;"
+                                            >
+                                            <button type="submit" class="btn btn-sm btn-outline-primary" title="Mettre à jour">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td style="font-weight: 700; color: var(--primary);">
+                                        {{ (item.product.price * item.quantity)|number_format(2, ',', '.') }} USD
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="{{ path('app_cart_remove', {productId: productId}) }}" style="display: inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# Cart Summary #}
+            <div class="col-lg-4">
+                <div class="cart-summary-card">
+                    <div class="cart-summary-header">
+                        <h5><i class="fa fa-receipt"></i> Résumé de la commande</h5>
+                    </div>
+                    <div class="cart-summary-body">
+                        <div class="cart-summary-row">
+                            <span>Nombre d'articles:</span>
+                            <strong>{{ cart|length }}</strong>
+                        </div>
+                        
+                        <div class="cart-divider"></div>
+                        
+                        <div class="cart-total">
+                            <h6>Total:</h6>
+                            <h5>{{ total|number_format(2, ',', '.') }} USD</h5>
+                        </div>
+
+                        <a href="{{ path('app_checkout_index') }}" class="btn btn-primary btn-lg w-100" style="margin-bottom: 12px;">
+                            <i class="fa fa-lock"></i> Procéder à la caisse
+                        </a>
+                        
+                        <form method="POST" action="{{ path('app_cart_clear') }}" class="mb-0">
+                            <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Êtes-vous sûr de vouloir vider le panier ?')">
+                                <i class="fa fa-trash"></i> Vider le panier
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

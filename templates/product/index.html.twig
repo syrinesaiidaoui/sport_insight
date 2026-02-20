@@ -1,0 +1,102 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Products{% endblock %}
+{% block page_title %}Manage Products{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('app_product_new') }}" class="btn btn-primary btn-sm">
+        <svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg> Add Product
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="data-table">
+        <div class="data-table-header">
+            <div>
+                <h3>Products</h3>
+                <p class="muted">Equipment list — manage inventory and details</p>
+            </div>
+            <div>
+                <form method="GET" style="display:flex; gap:8px; align-items:center;">
+                    <div>
+                        <input type="text" name="search" class="form-control" placeholder="Search by name, category, or brand..." value="{{ searchTerm }}">
+                    </div>
+                    <select name="sort" class="form-select">
+                        <option value="id" {% if sortBy == 'id' %}selected{% endif %}>ID</option>
+                        <option value="name" {% if sortBy == 'name' %}selected{% endif %}>Name</option>
+                        <option value="price" {% if sortBy == 'price' %}selected{% endif %}>Price</option>
+                        <option value="stock" {% if sortBy == 'stock' %}selected{% endif %}>Stock</option>
+                        <option value="category" {% if sortBy == 'category' %}selected{% endif %}>Category</option>
+                    </select>
+                    <select name="order" class="form-select" style="max-width:96px;">
+                        <option value="ASC" {% if sortOrder == 'ASC' %}selected{% endif %}>↑ ASC</option>
+                        <option value="DESC" {% if sortOrder == 'DESC' %}selected{% endif %}>↓ DESC</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="{{ path('app_product_index') }}" class="btn btn-outline-secondary">Reset</a>
+                </form>
+            </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="data-table-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Brand</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>
+                                {% if product.image %}
+                                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;border:1px solid rgba(0,0,0,0.06);">
+                                {% else %}
+                                    <div style="width:50px;height:50px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9ca3af;">📦</div>
+                                {% endif %}
+                            </td>
+                            <td style="font-weight:500;">{{ product.name }}</td>
+                            <td class="muted">{{ product.category ?? '-' }}</td>
+                            <td style="font-weight:600;color:var(--primary);">${{ product.price }}</td>
+                            <td>
+                                {% if product.stock > 10 %}
+                                    <span class="badge-success">{{ product.stock }}</span>
+                                {% elseif product.stock > 0 %}
+                                    <span class="badge-warning">{{ product.stock }}</span>
+                                {% else %}
+                                    <span class="badge-danger">0</span>
+                                {% endif %}
+                            </td>
+                            <td class="muted">{{ product.brand ?? '-' }}</td>
+                            <td>
+                                <div style="display:flex; gap:8px; align-items:center;">
+                                    <a href="{{ path('app_product_show', { id: product.id }) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ path('app_product_edit', { id: product.id }) }}" class="btn btn-sm btn-warning">Edit</a>
+                                    <form method="POST" action="{{ path('app_product_delete', { id: product.id }) }}" style="display:inline;" onsubmit="return confirm('Delete this product?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" style="padding:40px;text-align:center;color:#9ca3af;">
+                                <svg style="width:64px;height:64px;margin:0 auto 12px;opacity:0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m0 0l8 4 8-4m0 0v10l-8 4-8-4V7m8 4v10m-8-6l8 4 8-4"/>
+                                </svg>
+                                <p style="font-size:14px;margin:0;">No products found</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Tableau de Bord Admin{% endblock %}
+{% block page_title %}Tableau de Bord Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <h1 class="h3 mb-4">Bienvenue dans le Tableau de Bord Admin</h1>
+
+    {# Quick Stats #}
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fa fa-box fa-3x text-primary mb-3"></i>
+                    <h6 class="text-muted">Produits</h6>
+                    <h3 class="card-title">Gérer</h3>
+                    <a href="{{ path('app_product_index') }}" class="btn btn-sm btn-primary mt-2">
+                        <i class="fa fa-arrow-right"></i> Accéder
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fa fa-shopping-cart fa-3x text-success mb-3"></i>
+                    <h6 class="text-muted">Commandes</h6>
+                    <h3 class="card-title">Gérer</h3>
+                    <a href="{{ path('app_order_index') }}" class="btn btn-sm btn-success mt-2">
+                        <i class="fa fa-arrow-right"></i> Accéder
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fa fa-shop fa-3x text-info mb-3"></i>
+                    <h6 class="text-muted">Boutique</h6>
+                    <h3 class="card-title">Voir</h3>
+                    <a href="{{ path('app_shop_index') }}" class="btn btn-sm btn-info mt-2" target="_blank">
+                        <i class="fa fa-arrow-right"></i> Accéder
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fa fa-plus-circle fa-3x text-warning mb-3"></i>
+                    <h6 class="text-muted">Ajouter</h6>
+                    <h3 class="card-title">Produit</h3>
+                    <a href="{{ path('app_product_new') }}" class="btn btn-sm btn-warning mt-2">
+                        <i class="fa fa-arrow-right"></i> Créer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Information Panel #}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">À propos du système</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Fonctionnalités principales:</h6>
+                    <ul>
+                        <li><strong>Gestion de produits:</strong> Créer, lire, mettre à jour et supprimer des produits</li>
+                        <li><strong>Gestion de commandes:</strong> Suivre l'état des commandes clients</li>
+                        <li><strong>Panier d'achat:</strong> Les clients peuvent ajouter des produits au panier</li>\n                        <li><strong>Validation serveur:</strong> Tous les contrôles se font côté serveur</li>\n                        <li><strong>Interface client:</strong> Boutique professionnelle pour les clients</li>\n                    </ul>\n\n                    <h6 class=\"mt-4\">Règles de validation:</h6>\n                    <ul>\n                        <li>Produits: Nom (3-255 car), Prix (positif), Stock (nombre entier)</li>\n                        <li>Commandes: Quantité (min 1), Date (pas future), Statut (4 options)</li>\n                    </ul>\n                </div>\n            </div>\n        </div>\n\n        <div class=\"col-lg-4\">\n            <div class=\"card bg-light\">\n                <div class=\"card-header\">\n                    <h5 class=\"card-title mb-0\">Ressources utiles</h5>\n                </div>\n                <div class=\"card-body\">\n                    <p class=\"mb-3\">\n                        <strong>Documentation:</strong> Consultez VALIDATION_IMPROVEMENTS.md pour les détails de validation\n                    </p>\n                    <p class=\"mb-3\">\n                        <strong>Endpoints:</strong>\n                        <br> <code>/shop</code> - Boutique cliente\n                        <br> <code>/product</code> - Gestion produits (admin)\n                        <br> <code>/order</code> - Gestion commandes (admin)\n                    </p>\n                    <p>\n                        <strong>Support:</strong> Contactez l'administrateur du système\n                    </p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n{% endblock %}

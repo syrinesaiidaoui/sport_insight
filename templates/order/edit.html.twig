@@ -1,0 +1,10 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Edit Order{% endblock %}
+{% block page_title %}Edit Order #{{ order.id }}{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px;">
+        {{ include('order/_form.html.twig') }}
+    </div>
+{% endblock %}
