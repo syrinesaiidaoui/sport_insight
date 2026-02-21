@@ -18,18 +18,21 @@ class StatisticsController extends AbstractController
 
         $labels = [];
         $data = [];
-        $backgroundColors = [];
-        $borderColors = [];
+        $palette = [
+            ['bg' => 'rgba(16, 185, 129, 0.7)', 'border' => 'rgba(16, 185, 129, 1)'], // Emerald
+            ['bg' => 'rgba(139, 92, 246, 0.7)', 'border' => 'rgba(139, 100, 246, 1)'], // Violet
+            ['bg' => 'rgba(59, 130, 246, 0.7)', 'border' => 'rgba(59, 130, 246, 1)'],  // Blue
+            ['bg' => 'rgba(245, 158, 11, 0.7)', 'border' => 'rgba(245, 158, 11, 1)'],  // Amber
+            ['bg' => 'rgba(239, 68, 68, 0.7)', 'border' => 'rgba(239, 68, 68, 1)'],   // Red
+        ];
 
-        foreach ($annonces as $annonce) {
+        foreach ($annonces as $index => $annonce) {
             $labels[] = $annonce->getTitre();
-            // Using count of comments as a proxy for engagement/postulations
             $data[] = count($annonce->getCommentaires());
 
-            // Generate more vibrant colors for circular chart
-            $hue = ($annonce->getId() * 137) % 360; // Spread colors evenly
-            $backgroundColors[] = "hsla($hue, 70%, 50%, 0.7)";
-            $borderColors[] = "hsla($hue, 70%, 50%, 1)";
+            $color = $palette[$index % count($palette)];
+            $backgroundColors[] = $color['bg'];
+            $borderColors[] = $color['border'];
         }
 
         $chart = $chartBuilder->createChart(Chart::TYPE_DOUGHNUT);
@@ -38,12 +41,13 @@ class StatisticsController extends AbstractController
             'labels' => $labels,
             'datasets' => [
                 [
-                    'label' => 'Nombre de commentaires (Engagement)',
+                    'label' => 'Engagement (Commentaires)',
                     'backgroundColor' => $backgroundColors,
                     'borderColor' => $borderColors,
                     'borderWidth' => 2,
                     'data' => $data,
-                    'borderRadius' => 8,
+                    'hoverOffset' => 20,
+                    'cutout' => '70%',
                 ],
             ],
         ]);
@@ -53,19 +57,27 @@ class StatisticsController extends AbstractController
             'plugins' => [
                 'legend' => [
                     'display' => true,
+                    'position' => 'bottom',
                     'labels' => [
-                        'color' => '#f8fafc',
+                        'color' => '#94a3b8',
+                        'padding' => 20,
                         'font' => [
-                            'size' => 14,
-                            'weight' => 'bold'
-                        ]
+                            'size' => 12,
+                            'family' => "'Inter', sans-serif"
+                        ],
+                        'usePointStyle' => true,
+                        'pointStyle' => 'circle'
                     ]
+                ],
+                'tooltip' => [
+                    'backgroundColor' => '#1e293b',
+                    'titleColor' => '#fff',
+                    'bodyColor' => '#cbd5e1',
+                    'padding' => 12,
+                    'cornerRadius' => 8,
+                    'displayColors' => true
                 ]
-            ],
-            'scales' => [
-                'y' => ['display' => false],
-                'x' => ['display' => false]
-            ],
+            ]
         ]);
 
         return $this->render('statistics/index.html.twig', [
