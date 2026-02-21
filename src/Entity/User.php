@@ -60,6 +60,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
 
+    #[Vich\UploadableField(mapping: 'photos', fileNameProperty: 'photo')]
+    private ?File $photoFile = null;
+
     #[ORM\Column(length: 20)]
     #[Assert\Choice(choices: ['actif', 'bloque'], message: "Statut invalide")]
     private string $statut = 'actif';
@@ -229,6 +232,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->photo = $photo;
         return $this;
+    }
+
+    public function getPhotoFile(): ?File
+    {
+        return $this->photoFile;
+    }
+
+    public function setPhotoFile(?File $photoFile = null): void
+    {
+        $this->photoFile = $photoFile;
+
+        if (null !== $photoFile) {
+            $this->updatedAt = new \DateTime();
+        }
     }
     public function getStatut(): string
     {

@@ -115,11 +115,47 @@
                     </div>
                 {% endif %}
             </div>
+
+            <!-- Facial Recognition Section -->
+            <div class="face-verification-group" style="margin-bottom: 24px; padding: 20px; background: #fff; border: 2px dashed #cbd5e1; border-radius: 12px; text-align: center;">
+                <h4 style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="lucide-scan-face"></i> Vérification d'identité par reconnaissance faciale
+                </h4>
+                
+                <div id="camera_container" style="display: none; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <video id="webcam_preview" autoplay playsinline style="width: 100%; max-width: 320px; border-radius: 12px; background: #000;"></video>
+                    <canvas id="face_canvas" style="display: none;"></canvas>
+                    <button type="button" onclick="captureAndVerify('{{ annonce.id }}')" class="btn" style="background: var(--primary); color: #fff; font-weight: 700; border-radius: 30px; padding: 8px 20px;">
+                        📸 Capturer et Vérifier
+                    </button>
+                </div>
+
+                <div id="face_status_{{ annonce.id }}" style="margin-bottom: 12px;">
+                    <div id="face_loading_{{ annonce.id }}" style="display: none;">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        <span style="font-size: 14px; margin-left: 8px;">Analyse en cours...</span>
+                    </div>
+                    
+                    <div id="face_success_{{ annonce.id }}" style="display: none; color: #059669; font-weight: 700; font-size: 14px; background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                        ✅ Identité vérifiée avec succès ! Vous pouvez publier.
+                    </div>
+
+                    <div id="face_error_{{ annonce.id }}" style="display: none; color: #dc2626; font-weight: 700; font-size: 14px; background: #fff1f2; padding: 10px; border-radius: 8px; border: 1px solid #fecaca;">
+                        ❌ Échec de la vérification. Veuillez réessayer.
+                    </div>
+                </div>
+
+                <button type="button" id="start_camera_btn" onclick="startCamera()" class="btn btn-outline-primary" style="font-weight: 600; border-radius: 10px; display: flex; align-items: center; gap: 8px; margin: 0 auto; padding: 10px 20px;">
+                    👤 Scanner mon visage
+                </button>
+                
+                <input type="hidden" name="face_verified" id="face_verified_{{ annonce.id }}" value="0">
+            </div>
         {% endif %}
 
 
         <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-            <button type="submit" id="submit_{{ annonce.id }}" class="btn-publish" style="flex: 2;">
+            <button type="submit" id="submit_{{ annonce.id }}" class="btn-publish" style="flex: 2; {% if app.user %}opacity: 0.5; cursor: not-allowed;{% endif %}" {% if app.user %}disabled{% endif %}>
                 <span>📖</span> Publier
             </button>
             <div class="btn-like-stat" style="flex: 1; justify-content: center;">
@@ -127,12 +163,120 @@
             </div>
         </div>
 
-        <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Les commentaires sont visibles immédiatement</p>
+        <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">{% if app.user %}Veuillez vérifier votre identité avant de publier.{% else %}Les commentaires sont visibles immédiatement{% endif %}</p>
     </form>
 
     <script>
         let timeout = null;
         let moderationStatus = 'PENDING';
+        let videoStream = null;
+
+        function startCamera() {
+            const container = document.getElementById('camera_container');
+            const video = document.getElementById('webcam_preview');
+            const startBtn = document.getElementById('start_camera_btn');
+
+            container.style.display = 'flex';
+            startBtn.style.display = 'none';
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    videoStream = stream;
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error("Camera access denied:", err);
+                    alert("Accès à la caméra refusé. Vous ne pourrez pas vérifier votre identité.");
+                });
+        }
+
+        function captureAndVerify(annonceId) {
+            const video = document.getElementById('webcam_preview');
+            const canvas = document.getElementById('face_canvas');
+            const loading = document.getElementById('face_loading_' + annonceId);
+            const success = document.getElementById('face_success_' + annonceId);
+            const errorView = document.getElementById('face_error_' + annonceId);
+            const submitBtn = document.getElementById('submit_' + annonceId);
+            const verifiedInput = document.getElementById('face_verified_' + annonceId);
+
+            // Hide previous results
+            success.style.display = 'none';
+            errorView.style.display = 'none';
+            loading.style.display = 'block';
+
+            // Capture the image from video
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            const fetchUrl = '{{ path('app_commentaire_verify_face') }}';
+            console.log("Fetching Face Verification from:", fetchUrl);
+
+            fetch(fetchUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        console.error("Server Error Response:", text);
+                        throw new Error(`Server returned ${res.status}: ${text.substring(0, 100)}`);
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                loading.style.display = 'none';
+                if (data.verified) {
+                    success.style.display = 'block';
+                    if (data.message) {
+                        success.innerHTML = `✅ ${data.message}`;
+                    } else {
+                        success.innerHTML = `✅ Identité vérifiée avec succès ! Vous pouvez publier.`;
+                    }
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.cursor = 'pointer';
+                    verifiedInput.value = "1";
+                    if (videoStream) {
+                        videoStream.getTracks().forEach(track => track.stop());
+                    }
+                    document.getElementById('camera_container').style.display = 'none';
+                } else {
+                    errorView.style.display = 'block';
+                    if (data.error && (data.error.includes('127.0.0.1:8001') || data.error.includes('Face++'))) {
+                        errorView.innerHTML = `❌ Erreur: ${data.error}`;
+                    } else {
+                        errorView.innerHTML = `❌ Échec: ${data.error || 'Visage non reconnu'}`;
+                    }
+                }
+            })
+            .catch(err => {
+                loading.style.display = 'none';
+                errorView.style.display = 'block';
+                
+                let errorMsg = err.message || 'Connexion impossible';
+                if (errorMsg.includes('Photo de profil absente') || errorMsg.includes('profil n\'a pas de photo')) {
+                    errorView.innerHTML = `❌ ${errorMsg.split(':')[1] || errorMsg} <br><br> <a href="{{ path('app_profile_edit') }}" class="btn btn-sm btn-primary" style="color:white; text-decoration:none; margin-top:8px; display:inline-block;">Go to my Profile 👤</a>`;
+                } else if (err.message && err.message.includes('{')) {
+                    try {
+                        const jsonErr = JSON.parse(err.message.substring(err.message.indexOf('{')));
+                        errorView.innerHTML = `❌ Erreur: ${jsonErr.error || 'Erreur inconnue'}`;
+                        if (jsonErr.error && (jsonErr.error.includes('profil') || jsonErr.error.includes('Photo'))) {
+                             errorView.innerHTML += `<br><br> <a href="{{ path('app_profile_edit') }}" class="btn btn-sm btn-primary" style="color:white; text-decoration:none; margin-top:8px; display:inline-block;">Go to my Profile 👤</a>`;
+                        }
+                    } catch(e) {
+                        errorView.innerHTML = `❌ Erreur technique: ${err.message}`;
+                    }
+                } else {
+                    errorView.innerHTML = `❌ Erreur technique: ${err.message}`;
+                }
+            });
+        }
 
         function debouncedCheck(annonceId) {
             clearTimeout(timeout);
