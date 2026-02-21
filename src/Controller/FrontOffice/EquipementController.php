@@ -11,14 +11,26 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/equipement')]
 class EquipementController extends AbstractController
 {
+    private HttpClientInterface $httpClient;
+
+    public function __construct(HttpClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
+    // =========================
+    //  Product listing
+    // =========================
     #[Route('/', name: 'front_equipement_index')]
     public function index(ProductRepository $repo, Request $request): Response
     {
@@ -29,32 +41,45 @@ class EquipementController extends AbstractController
         $products = $repo->searchProducts($q, $category, $sort);
         $categories = $repo->findDistinctCategories();
 
+        $apiProducts = [];
+        $apiFilePath = $this->getParameter('kernel.project_dir') . '/public/api/products.json';
+        if (is_file($apiFilePath)) {
+            $apiRaw = file_get_contents($apiFilePath);
+            $apiDecoded = json_decode($apiRaw ?: '[]', true);
+            if (is_array($apiDecoded)) {
+                $apiProducts = $apiDecoded;
+            }
+        }
+
         return $this->render('front_office/equipement/index.html.twig', [
             'products' => $products,
             'categories' => $categories,
+            'apiProducts' => $apiProducts,
+            'apiProductsUrl' => $this->generateUrl('api_catalog_products'),
         ]);
     }
 
-    #[Route('/{id}/buy', name: 'front_equipement_buy', requirements: ['id' => '\\d+'])]
+    // =========================
+    //  Buy product (cart)
+    // =========================
+    #[Route('/{id}/buy', name: 'front_equipement_buy', requirements: ['id' => '\d+'])]
     public function buy(Product $product, EntityManagerInterface $em, Request $request): Response
     {
-        // Add product to session cart
         $session = $request->getSession();
         $cart = $session->get('cart', []);
         $id = $product->getId();
 
-        if (!isset($cart[$id])) {
-            $cart[$id] = 0;
-        }
-        $cart[$id]++;
-
+        $cart[$id] = ($cart[$id] ?? 0) + 1;
         $session->set('cart', $cart);
 
         $this->addFlash('success', 'Produit ajouté au panier.');
         return $this->redirectToRoute('front_equipement_index');
     }
 
-    #[Route('/{id}', name: 'front_equipement_show', methods: ['GET'], requirements: ['id' => '\\d+'])]
+    // =========================
+    //  Show product details
+    // =========================
+    #[Route('/{id}', name: 'front_equipement_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(Product $product): Response
     {
         return $this->render('front_office/equipement/show.html.twig', [
@@ -62,7 +87,10 @@ class EquipementController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/remove', name: 'front_equipement_remove', requirements: ['id' => '\\d+'])]
+    // =========================
+    //  Remove from cart
+    // =========================
+    #[Route('/{id}/remove', name: 'front_equipement_remove', requirements: ['id' => '\d+'])]
     public function remove(Product $product, Request $request): Response
     {
         $session = $request->getSession();
@@ -78,6 +106,9 @@ class EquipementController extends AbstractController
         return $this->redirectToRoute('front_equipement_cart');
     }
 
+    // =========================
+    //  Cart page
+    // =========================
     #[Route('/cart', name: 'front_equipement_cart')]
     public function cart(ProductRepository $repo, Request $request): Response
     {
@@ -100,12 +131,13 @@ class EquipementController extends AbstractController
         ]);
     }
 
+    // =========================
+    //  Checkout
+    // =========================
     #[Route('/checkout', name: 'front_equipement_checkout', methods: ['POST'])]
     public function checkout(Request $request, EntityManagerInterface $em, ProductRepository $repo, MailerInterface $mailer, CsrfTokenManagerInterface $csrfManager): Response
     {
         $user = $this->getUser();
-        // Allow anonymous checkout: proceed but skip user-specific actions when not logged in
-
         $token = new CsrfToken('checkout', $request->request->get('_token'));
         if (!$csrfManager->isTokenValid($token)) {
             $this->addFlash('danger', 'Invalid CSRF token.');
@@ -147,7 +179,6 @@ class EquipementController extends AbstractController
 
         $em->flush();
 
-        // Send confirmation email only when we have a logged-in user with an email
         if ($user) {
             $body = $this->renderView('emails/order_confirmation.html.twig', ['user' => $user, 'orders' => $orders]);
             $userEmail = $user->getEmail() ?: $user->getUserIdentifier();
@@ -158,17 +189,11 @@ class EquipementController extends AbstractController
                     ->subject('Thank you for your purchase - Sport Insight')
                     ->html($body);
 
-                try {
-                    $mailer->send($email);
-                } catch (\Throwable $e) {
-                    // ignore email errors
-                }
+                try { $mailer->send($email); } catch (\Throwable $e) {}
             }
         }
 
-        // Clear cart
         $session->remove('cart');
-
         return $this->redirectToRoute('front_equipement_checkout_success');
     }
 
@@ -182,16 +207,81 @@ class EquipementController extends AbstractController
     public function orders(Request $request, OrderRepository $orderRepo): Response
     {
         $user = $this->getUser();
-
-        if (!$user) {
-            // For anonymous users, show recent orders (demo mode)
-            $orders = $orderRepo->findBy([], ['orderDate' => 'DESC'], 50);
-        } else {
-            $orders = $user->getOrders();
-        }
+        $orders = $user ? $user->getOrders() : $orderRepo->findBy([], ['orderDate' => 'DESC'], 50);
 
         return $this->render('front_office/equipement/orders.html.twig', [
             'orders' => $orders,
         ]);
+    }
+
+    // =========================
+    //  AI Chat endpoint
+    // =========================
+    #[Route('/ai-chat', name: 'front_equipement_ai_chat', methods: ['POST'])]
+    public function aiChat(Request $request, ProductRepository $productRepo): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $userMessage = trim($data['message'] ?? '');
+        if (!$userMessage) {
+            return new JsonResponse(['reply' => 'Message vide.'], 400);
+        }
+
+        // Limit product context to last 50 products to avoid huge requests
+        $products = array_slice($productRepo->findAll(), 0, 50);
+        $productContext = "";
+        foreach ($products as $product) {
+            $productContext .= sprintf(
+                "Product: %s | Category: %s | Price: %s USD | Stock: %d | Description: %s\n",
+                $product->getName(),
+                $product->getCategory() ?: 'N/A',
+                $product->getPrice(),
+                $product->getStock(),
+                $product->getDescription() ?: 'No description'
+            );
+        }
+
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                'https://api.openai.com/v1/chat/completions',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $_ENV['OPENAI_API_KEY'],
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => [
+                        'model' => 'gpt-4o-mini',
+                        'messages' => [
+                            [
+                                'role' => 'system',
+                                'content' =>
+"⚡ You are a friendly AI assistant ONLY for the Sport Insight football store.
+Answer ONLY questions about products, prices, stock, outfits, or orders.
+If a question is unrelated, politely say:
+\"Hi! I'm here to help only with Sport Insight products. I can't answer that, but feel free to ask about football items, outfits, stock or prices.\"
+Here is the product database:
+$productContext"
+                            ],
+                            [
+                                'role' => 'user',
+                                'content' => $userMessage
+                            ]
+                        ],
+                        'temperature' => 0.4
+                    ]
+                ]
+            );
+
+            $aiData = $response->toArray();
+            $reply = $aiData['choices'][0]['message']['content'] ?? "Sorry, I couldn't generate a reply.";
+
+            return new JsonResponse(['reply' => $reply]);
+
+        } catch (\Throwable $e) {
+            // Return real error for debugging
+            return new JsonResponse([
+                'reply' => 'AI temporarily unavailable: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

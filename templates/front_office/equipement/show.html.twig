@@ -1,34 +1,28 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}{{ product.name }} - Sport Insight{% endblock %}
+{% block title %}Équipement - Sport Insight{% endblock %}
 
 {% block body %}
 <div class="page-container">
     <div class="front-card" style="display:flex; gap:24px; align-items:flex-start;">
         <div style="width:420px;">
-            <div style="height:380px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg, #6b46c1 0%, #667eea 100%);">
-                {% if product.image %}
-                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit:cover;">
-                {% endif %}
+            <div style="height:380px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg, #6b46c1 0%, #667eea 100%); display:flex; align-items:center; justify-content:center; color:white; font-size:2rem;">
+                Image de l'équipement
             </div>
         </div>
         <div style="flex:1;">
-            <div class="product-category">{{ product.category ?: 'Maillots' }}</div>
-            <h1 style="margin-top:6px;">{{ product.name }}</h1>
-            <div class="product-price">{{ product.price|number_format(2, ',', ' ') }} USD</div>
-            <p style="color:var(--text-muted); margin-top:8px;">Marque: {{ product.brand ?: 'N/A' }} — Taille: {{ product.size ?: 'Unique' }}</p>
+            <div class="product-category">Catégorie d'équipement</div>
+            <h1 style="margin-top:6px;">Nom de l'équipement</h1>
+            <div class="product-price">Prix à définir</div>
+            <p style="color:var(--text-muted); margin-top:8px;">Marque: à définir — Taille: à définir</p>
 
             <div style="margin-top:18px;">
-                {% if product.stock > 0 %}
-                    <a href="{{ path('front_equipement_buy', {'id': product.id}) }}" class="btn btn-success btn-lg">Ajouter au panier</a>
-                {% else %}
-                    <button class="btn btn-secondary btn-lg" disabled>Indisponible</button>
-                {% endif %}
+                <button class="btn btn-primary btn-lg">Ajouter manuellement</button>
             </div>
 
             <div style="margin-top:24px; color:var(--text-muted);">
                 <strong>Description</strong>
-                <p>Aucune description fournie.</p>
+                <p>Ajoutez ici la description de l'équipement.</p>
             </div>
         </div>
     </div>

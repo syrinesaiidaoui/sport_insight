@@ -61,12 +61,12 @@
 <div class="form-card">
     <h4><i class="fa fa-plus-circle"></i> Ajouter une commande</h4>
 
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'order-form'}}) }}
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'order-form', 'onsubmit': 'return validateOrderForm(this);'}}) }}
 
     <div class="form-row">
         <div class="form-group">
             {{ form_label(form.quantity) }}
-            {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'placeholder': '1'}}) }}
+            {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'placeholder': '1', 'required': 'required', 'min': '1', 'type': 'number'}}) }}
             {% if form.quantity.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -94,7 +94,7 @@
     <div class="form-row">
         <div class="form-group">
             {{ form_label(form.product) }}
-            {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.product, {'attr': {'class': 'form-control', 'required': 'required'}}) }}
             {% if form.product.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -107,7 +107,7 @@
 
         <div class="form-group">
             {{ form_label(form.entraineur) }}
-            {{ form_widget(form.entraineur, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.entraineur, {'attr': {'class': 'form-control', 'required': 'required'}}) }}
             {% if form.entraineur.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -122,7 +122,25 @@
     <div class="form-row full">
         <div class="form-group">
             {{ form_label(form.status) }}
-            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.status, {'attr': {'class': 'form-control', 'required': 'required'}}) }}
+            <script>
+            function validateOrderForm(form) {
+                let quantity = form.querySelector('[name$="[quantity]"]');
+                let product = form.querySelector('[name$="[product]"]');
+                let entraineur = form.querySelector('[name$="[entraineur]"]');
+                let status = form.querySelector('[name$="[status]"]');
+                let errors = [];
+                if (!quantity.value || isNaN(quantity.value) || Number(quantity.value) < 1) errors.push('Quantité doit être supérieure à 0');
+                if (!product.value) errors.push('Produit requis');
+                if (!entraineur.value) errors.push('Entraîneur requis');
+                if (!status.value) errors.push('Statut requis');
+                if (errors.length > 0) {
+                    alert(errors.join('\n'));
+                    return false;
+                }
+                return true;
+            }
+            </script>
             {% if form.status.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>

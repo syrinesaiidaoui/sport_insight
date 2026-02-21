@@ -11,10 +11,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class OrderController extends AbstractController
 {
     #[Route('/', name: 'back_orders_index')]
-    public function index(OrderRepository $repo): Response
+    public function index(OrderRepository $repo, \Symfony\Component\HttpFoundation\Request $request): Response
     {
-        // removed auth check for public access
-        $orders = $repo->findAll();
-        return $this->render('back_office/order/index.html.twig', ['orders' => $orders]);
+        // Pagination for admin orders
+        $page = max(1, (int)$request->query->get('page', 1));
+        $perPage = 5;
+        $qb = $repo->createQueryBuilder('o')->orderBy('o.orderDate', 'DESC');
+        $qb->setFirstResult(($page - 1) * $perPage)->setMaxResults($perPage);
+        $orders = $qb->getQuery()->getResult();
+        $totalOrders = (int)$repo->createQueryBuilder('o')->select('COUNT(o.id)')->getQuery()->getSingleScalarResult();
+        $totalPages = (int)ceil($totalOrders / $perPage);
+        return $this->render('back_office/order/index.html.twig', [
+            'orders' => $orders,
+            'page' => $page,
+            'totalPages' => $totalPages,
+        ]);
     }
 }

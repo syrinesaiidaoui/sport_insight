@@ -61,12 +61,12 @@
 <div class="form-card">
     <h4><i class="fa fa-plus-circle"></i> Ajouter un produit</h4>
 
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'product-form'}}) }}
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'product-form', 'onsubmit': 'return validateProductForm(this);'}}) }}
 
     <div class="form-row full">
         <div class="form-group">
             {{ form_label(form.name) }}
-            {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Maillot Équipe'}}) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Maillot Équipe', 'required': 'required', 'minlength': '2'}}) }}
             {% if form.name.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -81,7 +81,7 @@
     <div class="form-row">
         <div class="form-group">
             {{ form_label(form.category) }}
-            {{ form_widget(form.category, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Vêtements'}}) }}
+            {{ form_widget(form.category, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Vêtements', 'required': 'required'}}) }}
             {% if form.category.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -94,7 +94,7 @@
 
         <div class="form-group">
             {{ form_label(form.brand) }}
-            {{ form_widget(form.brand, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Nike'}}) }}
+            {{ form_widget(form.brand, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Nike', 'required': 'required'}}) }}
             {% if form.brand.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -109,7 +109,7 @@
     <div class="form-row">
         <div class="form-group">
             {{ form_label(form.price) }}
-            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}}) }}
+            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': '0.00', 'step': '0.01', 'required': 'required', 'min': '0.01', 'type': 'number'}}) }}
             {% if form.price.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -122,7 +122,27 @@
 
         <div class="form-group">
             {{ form_label(form.stock) }}
-            {{ form_widget(form.stock, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+            {{ form_widget(form.stock, {'attr': {'class': 'form-control', 'placeholder': '0', 'required': 'required', 'min': '0', 'type': 'number'}}) }}
+            <script>
+            function validateProductForm(form) {
+                let name = form.querySelector('[name$="[name]"]');
+                let category = form.querySelector('[name$="[category]"]');
+                let brand = form.querySelector('[name$="[brand]"]');
+                let price = form.querySelector('[name$="[price]"]');
+                let stock = form.querySelector('[name$="[stock]"]');
+                let errors = [];
+                if (!name.value.trim() || name.value.length < 2) errors.push('Nom du produit requis (min 2 caractères)');
+                if (!category.value.trim()) errors.push('Catégorie requise');
+                if (!brand.value.trim()) errors.push('Marque requise');
+                if (!price.value || isNaN(price.value) || Number(price.value) < 0.01) errors.push('Prix doit être supérieur à 0');
+                if (!stock.value || isNaN(stock.value) || Number(stock.value) < 0) errors.push('Stock doit être 0 ou plus');
+                if (errors.length > 0) {
+                    alert(errors.join('\n'));
+                    return false;
+                }
+                return true;
+            }
+            </script>
             {% if form.stock.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>

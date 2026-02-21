@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "name": "Classic Football Ball",
+    "category": "Football",
+    "price": 30.0,
+    "stock": 50,
+    "size": "5",
+    "brand": "Generic",
+    "image": "football_ball.png",
+    "description": "Durable size 5 football ball suitable for match play."
+  },
+  {
+    "id": 2,
+    "name": "Football Boots",
+    "category": "Football",
+    "price": 75.0,
+    "stock": 30,
+    "size": "Various",
+    "brand": "Generic",
+    "image": "football_cleats.png",
+    "description": "Lightweight football boots with excellent traction and comfort."
+  },
+  {
+    "id": 3,
+    "name": "Football Jersey",
+    "category": "Football",
+    "price": 45.0,
+    "stock": 40,
+    "size": "M, L, XL",
+    "brand": "Generic",
+    "image": "football_jersey.png",
+    "description": "Breathable, moisture-wicking football jersey in vibrant color."
+  }
+]

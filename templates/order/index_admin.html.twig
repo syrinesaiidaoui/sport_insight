@@ -81,4 +81,41 @@
                                 <td>{{ order.entraineur.email }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ path('app_order_show', {id: order.id}) }}" class="btn btn-info" title="Voir">\n                                            <i class="fa fa-eye"></i>\n                                        </a>\n                                        <a href="{{ path('app_order_edit', {id: order.id}) }}" class="btn btn-warning" title="Modifier">\n                                            <i class="fa fa-edit"></i>\n                                        </a>\n                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ order.id }}" title="Supprimer">\n                                            <i class="fa fa-trash"></i>\n                                        </button>\n                                    </div>\n                                </td>\n                            </tr>\n                        {% endfor %}\n                    </tbody>\n                </table>\n            </div>\n        </div>\n    {% else %}\n        <div class="alert alert-info">\n            <i class="fa fa-info-circle"></i> Aucune commande trouvée\n        </div>\n    {% endif %}\n</div>\n\n{# Delete Modals #}\n{% for order in orders %}\n    <div class=\"modal fade\" id=\"deleteModal{{ order.id }}\" tabindex=\"-1\">\n        <div class=\"modal-dialog\">\n            <div class=\"modal-content\">\n                <div class=\"modal-header\">\n                    <h5 class=\"modal-title\">Confirmer la suppression</h5>\n                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\n                </div>\n                <div class=\"modal-body\">\n                    Êtes-vous sûr de vouloir supprimer la commande #{{ order.id }} ?\n                </div>\n                <div class=\"modal-footer\">\n                    <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Annuler</button>\n                    <form method=\"POST\" action=\"{{ path('app_order_delete', {id: order.id}) }}\" style=\"display: inline;\">\n                        <button type=\"submit\" class=\"btn btn-danger\">Supprimer</button>\n                    </form>\n                </div>\n            </div>\n        </div>\n    </div>\n{% endfor %}\n{% endblock %}
+                                        <a href="{{ path('app_order_show', {id: order.id}) }}" class="btn btn-info" title="Voir">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_order_edit', {id: order.id}) }}" class="btn btn-warning" title="Modifier">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ order.id }}" title="Supprimer">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {# Pagination Controls #}
+        {% if totalPages > 1 %}
+            <nav aria-label="Order pagination" class="mt-3">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item{% if page == 1 %} disabled{% endif %}">
+                        <a class="page-link" href="?search={{ searchTerm }}&status={{ statusFilter }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ page-1 }}" tabindex="-1">Précédent</a>
+                    </li>
+                    {% for p in 1..totalPages %}
+                        <li class="page-item{% if p == page %} active{% endif %}"><a class="page-link" href="?search={{ searchTerm }}&status={{ statusFilter }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ p }}">{{ p }}</a></li>
+                    {% endfor %}
+                    <li class="page-item{% if page == totalPages %} disabled{% endif %}">
+                        <a class="page-link" href="?search={{ searchTerm }}&status={{ statusFilter }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ page+1 }}">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i> Aucune commande trouvée
+        </div>
+    {% endif %}

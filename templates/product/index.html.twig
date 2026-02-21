@@ -4,9 +4,117 @@
 {% block page_title %}Manage Products{% endblock %}
 
 {% block header_actions %}
-    <a href="{{ path('app_product_new') }}" class="btn btn-primary btn-sm">
-        <svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg> Add Product
-    </a>
+    <a href="{{ path('app_product_new') }}" class="btn btn-primary btn-add-product">
+     Add Product
+</a>
+    <!-- AI Chatbot Widget (UI Only) -->
+    <style>
+        #ai-chatbot-btn {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: #10b981;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        #ai-chatbot-btn:hover { background: #059669; }
+        #ai-chatbot-window {
+            position: fixed;
+            bottom: 100px;
+            right: 32px;
+            width: 340px;
+            max-width: 95vw;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #ai-chatbot-header {
+            background: #10b981;
+            color: #fff;
+            padding: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #ai-chatbot-messages {
+            padding: 16px;
+            height: 220px;
+            overflow-y: auto;
+            background: #f9fafb;
+            font-size: 15px;
+        }
+        #ai-chatbot-input {
+            display: flex;
+            border-top: 1px solid #e5e7eb;
+        }
+        #ai-chatbot-input input {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            font-size: 15px;
+            outline: none;
+        }
+        #ai-chatbot-input button {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 0 18px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 0 0 16px 0;
+        }
+    </style>
+    <button id="ai-chatbot-btn" title="AI Chatbot">
+        <span>💬</span>
+    </button>
+    <div id="ai-chatbot-window">
+        <div id="ai-chatbot-header">
+            <span>Sport Insight AI</span>
+            <button onclick="document.getElementById('ai-chatbot-window').style.display='none'" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
+        </div>
+        <div id="ai-chatbot-messages">
+            <div style="color:#10b981;font-weight:bold;margin-bottom:8px;">🤖 Bonjour ! Je suis votre assistant Sport Insight.<br>Posez-moi une question sur les équipements ou demandez un conseil !</div>
+        </div>
+        <form id="ai-chatbot-input" onsubmit="event.preventDefault(); aiSendMessage();">
+            <input type="text" id="ai-chatbot-user-input" placeholder="Votre question..." autocomplete="off" />
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+    <script>
+        const btn = document.getElementById('ai-chatbot-btn');
+        const win = document.getElementById('ai-chatbot-window');
+        btn.onclick = () => { win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; win.style.flexDirection = 'column'; };
+        function aiSendMessage() {
+            const input = document.getElementById('ai-chatbot-user-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            const messages = document.getElementById('ai-chatbot-messages');
+            messages.innerHTML += `<div style='margin-bottom:6px;'><b>Vous:</b> ${msg}</div>`;
+            input.value = '';
+            // Placeholder AI response
+            setTimeout(() => {
+                messages.innerHTML += `<div style='color:#10b981;margin-bottom:8px;'><b>AI:</b> (Ceci est une réponse fictive. L'IA sera connectée plus tard.)</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            }, 600);
+            messages.scrollTop = messages.scrollHeight;
+        }
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -99,4 +207,20 @@
             </table>
         </div>
     </div>
+    {# Pagination Controls #}
+    {% if totalPages is defined and page is defined and totalPages > 1 %}
+        <nav aria-label="Product pagination" class="mt-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item{% if page == 1 %} disabled{% endif %}">
+                    <a class="page-link" href="?search={{ searchTerm }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ page-1 }}" tabindex="-1">Previous</a>
+                </li>
+                {% for p in 1..totalPages %}
+                    <li class="page-item{% if p == page %} active{% endif %}"><a class="page-link" href="?search={{ searchTerm }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ p }}">{{ p }}</a></li>
+                {% endfor %}
+                <li class="page-item{% if page == totalPages %} disabled{% endif %}">
+                    <a class="page-link" href="?search={{ searchTerm }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ page+1 }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
 {% endblock %}

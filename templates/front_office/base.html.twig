@@ -614,6 +614,7 @@
                     Equipement
                 </a>
             </li>
+             
         </ul>
 
         <div class="nav-actions">
@@ -632,9 +633,13 @@
 
     {% block hero %}{% endblock %}
 
+
     <div class="page-container">
         {% block body %}{% endblock %}
     </div>
+
+    {# Slot for floating chat, only rendered if defined in child template #}
+    {% block extra_chat %}{% endblock %}
 
     <footer class="site-footer">
         <p>&copy; {{ "now"|date("Y") }} Sport Insight. Tous droits reserves.</p>

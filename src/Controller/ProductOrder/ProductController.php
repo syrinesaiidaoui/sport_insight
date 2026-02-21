@@ -23,38 +23,44 @@ class ProductController extends AbstractController
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(Request $request, ProductRepository $productRepository): Response
     {
-        // access control removed to allow public access during local development
-        
-        // Search functionality with input sanitization
+        // Pagination and search
         $searchTerm = trim($request->query->get('search', ''));
         $sortBy = $request->query->get('sort', 'id');
         $sortOrder = $request->query->get('order', 'ASC');
-        
-        // Sanitize search term
+        $page = max(1, (int)$request->query->get('page', 1));
+        $perPage = 5;
         $searchTerm = htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8');
-        
         $qb = $productRepository->createQueryBuilder('p');
-        
         if ($searchTerm) {
             $qb->where('p.name LIKE :search')
                ->orWhere('p.category LIKE :search')
                ->orWhere('p.brand LIKE :search')
                ->setParameter('search', '%' . $searchTerm . '%');
         }
-        
-        // Sorting with whitelist validation
         $allowedSorts = ['id', 'name', 'price', 'stock', 'category'];
         if (in_array($sortBy, $allowedSorts)) {
             $qb->orderBy('p.' . $sortBy, strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC');
         }
-        
+        $qb->setFirstResult(($page - 1) * $perPage)
+           ->setMaxResults($perPage);
         $products = $qb->getQuery()->getResult();
-        
+        // Get total count for pagination
+        $countQb = $productRepository->createQueryBuilder('p');
+        if ($searchTerm) {
+            $countQb->where('p.name LIKE :search')
+                ->orWhere('p.category LIKE :search')
+                ->orWhere('p.brand LIKE :search')
+                ->setParameter('search', '%' . $searchTerm . '%');
+        }
+        $totalProducts = (int)$countQb->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
+        $totalPages = (int)ceil($totalProducts / $perPage);
         return $this->render('product/index.html.twig', [
             'products' => $products,
             'searchTerm' => $searchTerm,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
+            'page' => $page,
+            'totalPages' => $totalPages,
         ]);
     }
 

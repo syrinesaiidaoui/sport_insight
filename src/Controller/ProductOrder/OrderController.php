@@ -23,35 +23,27 @@ class OrderController extends AbstractController
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
     public function index(Request $request, OrderRepository $orderRepository): Response
     {
-        // removed auth check for public access
-        
-        // Search and filter functionality with input sanitization
+        // Pagination and search
         $searchTerm = trim($request->query->get('search', ''));
         $statusFilter = $request->query->get('status', '');
         $sortBy = $request->query->get('sort', 'orderDate');
         $sortOrder = $request->query->get('order', 'DESC');
-        
-        // Sanitize search term
+        $page = max(1, (int)$request->query->get('page', 1));
+        $perPage = 5;
         $searchTerm = htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8');
-        
         $qb = $orderRepository->createQueryBuilder('o')
             ->leftJoin('o.product', 'p')
             ->leftJoin('o.entraineur', 'u');
-        
         if ($searchTerm) {
             $qb->where('p.name LIKE :search')
                ->orWhere('u.email LIKE :search')
                ->setParameter('search', '%' . $searchTerm . '%');
         }
-        
-        // Status filter with whitelist validation
         $validStatuses = ['pending', 'confirmed', 'shipped', 'delivered'];
         if ($statusFilter && in_array($statusFilter, $validStatuses)) {
             $qb->andWhere('o.status = :status')
                ->setParameter('status', $statusFilter);
         }
-        
-        // Sorting with whitelist
         $allowedSorts = ['id', 'orderDate', 'status', 'quantity', 'product'];
         if (in_array($sortBy, $allowedSorts)) {
             if ($sortBy === 'product') {
@@ -60,15 +52,32 @@ class OrderController extends AbstractController
                 $qb->orderBy('o.' . $sortBy, strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC');
             }
         }
-        
+        $qb->setFirstResult(($page - 1) * $perPage)
+           ->setMaxResults($perPage);
         $orders = $qb->getQuery()->getResult();
-        
+        // Get total count for pagination
+        $countQb = $orderRepository->createQueryBuilder('o')
+            ->leftJoin('o.product', 'p')
+            ->leftJoin('o.entraineur', 'u');
+        if ($searchTerm) {
+            $countQb->where('p.name LIKE :search')
+                ->orWhere('u.email LIKE :search')
+                ->setParameter('search', '%' . $searchTerm . '%');
+        }
+        if ($statusFilter && in_array($statusFilter, $validStatuses)) {
+            $countQb->andWhere('o.status = :status')
+                ->setParameter('status', $statusFilter);
+        }
+        $totalOrders = (int)$countQb->select('COUNT(o.id)')->getQuery()->getSingleScalarResult();
+        $totalPages = (int)ceil($totalOrders / $perPage);
         return $this->render('order/index.html.twig', [
             'orders' => $orders,
             'searchTerm' => $searchTerm,
             'statusFilter' => $statusFilter,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
+            'page' => $page,
+            'totalPages' => $totalPages,
         ]);
     }
 
