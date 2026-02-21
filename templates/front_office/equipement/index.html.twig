@@ -1,320 +1,664 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Equipement - Sport Insight{% endblock %}
+{% block title %}Boutique Football - Sport Insight{% endblock %}
 
-{# ===========================
-   AI CHAT HTML
-   =========================== #}
 {% block extra_chat %}
-<div id="ai-chat-bubble">💬</div>
-
+<div id="ai-chat-bubble">AI</div>
 <div id="ai-chat-window">
     <div id="ai-chat-header">
-        AI Assistant
-        <span id="ai-chat-close">&times;</span>
+        Assistant boutique
+        <span id="ai-chat-close">x</span>
     </div>
     <div id="ai-chat-messages"></div>
     <form id="ai-chat-form">
-        <input type="text" id="ai-chat-input" placeholder="Ask something..." required>
-        <button type="submit">Send</button>
+        <input type="text" id="ai-chat-input" placeholder="Demandez des chaussures, maillots, tailles, stock..." required>
+        <button type="submit">Envoyer</button>
     </form>
 </div>
-
-<script>
-const bubble = document.getElementById('ai-chat-bubble');
-const windowChat = document.getElementById('ai-chat-window');
-const closeBtn = document.getElementById('ai-chat-close');
-const form = document.getElementById('ai-chat-form');
-const input = document.getElementById('ai-chat-input');
-const messages = document.getElementById('ai-chat-messages');
-
-bubble.onclick = () => { windowChat.style.display = 'flex'; bubble.style.display = 'none'; input.focus(); };
-closeBtn.onclick = () => { windowChat.style.display = 'none'; bubble.style.display = 'flex'; };
-form.onsubmit = async e => {
-    e.preventDefault();
-    const userText = input.value.trim();
-    if(!userText) return;
-
-    const userMsg = document.createElement('div'); 
-    userMsg.innerHTML = `<b>You:</b> ${userText}`; 
-    messages.appendChild(userMsg);
-    input.value = '';
-    messages.scrollTop = messages.scrollHeight;
-
-    try {
-        const res = await fetch("{{ path('front_equipement_ai_chat') }}", {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({message: userText})
-        });
-        const data = await res.json();
-        const aiMsg = document.createElement('div');
-        aiMsg.innerHTML = `<b>AI:</b> ${data.reply}`;
-        messages.appendChild(aiMsg);
-        messages.scrollTop = messages.scrollHeight;
-    } catch(err) {
-        const aiMsg = document.createElement('div');
-        aiMsg.innerHTML = `<b>AI:</b> Sorry, I'm temporarily unavailable.`;
-        messages.appendChild(aiMsg);
-        messages.scrollTop = messages.scrollHeight;
-    }
-};
-</script>
 {% endblock %}
 
-{# ===========================
-   CSS
-   =========================== #}
 {% block stylesheets %}
 {{ parent() }}
-
 <style>
-#ai-chat-bubble {
-    position: fixed !important;
-    bottom: 25px;
-    right: 25px;
-    background: #10b981;
-    color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 26px;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    z-index: 999999 !important;
-    transition: transform 0.2s ease;
-}
-#ai-chat-bubble:hover { transform: scale(1.1); }
+    .shop-grid {
+        display: grid;
+        grid-template-columns: 290px 1fr;
+        gap: 16px;
+    }
 
-#ai-chat-window {
-    position: fixed !important;
-    bottom: 95px;
-    right: 25px;
-    width: 360px;
-    max-height: 500px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 999999 !important;
-}
+    .catalog-bar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
 
-#ai-chat-header {
-    background: #10b981;
-    color: white;
-    padding: 15px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-#ai-chat-close { cursor: pointer; font-size: 22px; }
+    .catalog-bar .form-control,
+    .catalog-bar .form-select {
+        border-radius: 10px;
+        min-height: 44px;
+    }
 
-#ai-chat-messages {
-    height: 320px;
-    overflow-y: auto;
-    padding: 15px;
-    background: #f9fafb;
-    font-size: 14px;
-}
+    .filter-panel {
+        position: sticky;
+        top: 90px;
+        height: fit-content;
+    }
 
-.user-message { text-align: right; margin-bottom: 12px; color: #111; }
-.ai-message { text-align: left; margin-bottom: 12px; color: #065f46; }
+    .filter-title {
+        margin: 0 0 12px;
+        font-size: 28px;
+    }
 
-#ai-chat-form { display: flex; border-top: 1px solid #eee; }
-#ai-chat-input { flex: 1; border: none; padding: 14px; outline: none; }
-#ai-chat-form button { background: #10b981; color: white; border: none; padding: 14px 18px; font-weight: 600; cursor: pointer; }
-#ai-chat-form button:hover { background: #059669; }
+    .filter-group {
+        margin-bottom: 14px;
+    }
 
+    .filter-group label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #64748b;
+        font-weight: 800;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .product-layout {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .product-card {
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card-media {
+        height: 180px;
+        background: linear-gradient(140deg, #0f2f22, #1f6b49);
+        position: relative;
+    }
+
+    .card-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-badges {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .product-badges span {
+        background: rgba(255,255,255,.92);
+        border-radius: 999px;
+        padding: 5px 8px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .wishlist-btn {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255,255,255,.96);
+        color: #64748b;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .wishlist-btn.active {
+        color: #dc2626;
+    }
+
+    .product-body {
+        padding: 14px;
+    }
+
+    .product-name {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    .product-meta {
+        margin-top: 7px;
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .rating {
+        margin-top: 7px;
+        color: #f59e0b;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .price-row {
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+    }
+
+    .price-row strong {
+        font-size: 23px;
+        font-family: 'Barlow Condensed', sans-serif;
+        color: #0f5132;
+    }
+
+    .old-price {
+        color: #94a3b8;
+        text-decoration: line-through;
+        font-size: 13px;
+    }
+
+    .option-tags {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .option-tags span {
+        font-size: 11px;
+        padding: 4px 8px;
+        border: 1px solid #dbe2ea;
+        border-radius: 999px;
+        color: #475569;
+        font-weight: 700;
+    }
+
+    .card-actions {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .helper-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    #ai-chat-bubble {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        width: 58px;
+        height: 58px;
+        border-radius: 999px;
+        border: 0;
+        background: linear-gradient(140deg, #0f2f22, #2b8b60);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 14px 28px rgba(0,0,0,.25);
+        z-index: 999;
+    }
+
+    #ai-chat-window {
+        position: fixed;
+        bottom: 90px;
+        right: 22px;
+        width: 350px;
+        background: #fff;
+        border: 1px solid #dbe2ea;
+        border-radius: 14px;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 34px rgba(2,6,23,.24);
+        z-index: 999;
+    }
+
+    #ai-chat-header {
+        background: linear-gradient(140deg, #0f2f22, #2b8b60);
+        color: #fff;
+        padding: 12px;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #ai-chat-close { cursor: pointer; }
+
+    #ai-chat-messages {
+        height: 300px;
+        overflow-y: auto;
+        padding: 12px;
+        font-size: 14px;
+        background: #f8fafc;
+    }
+
+    .user-message { text-align: right; margin-bottom: 8px; }
+    .ai-message { text-align: left; margin-bottom: 8px; color: #065f46; }
+
+    #ai-chat-form {
+        display: flex;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    #ai-chat-input {
+        flex: 1;
+        border: 0;
+        padding: 11px;
+        outline: none;
+    }
+
+    #ai-chat-form button {
+        border: 0;
+        background: #1f6b49;
+        color: #fff;
+        padding: 11px 14px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 1150px) {
+        .product-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 930px) {
+        .shop-grid { grid-template-columns: 1fr; }
+        .filter-panel { position: static; }
+    }
+
+    @media (max-width: 700px) {
+        .product-layout { grid-template-columns: 1fr; }
+        .helper-grid { grid-template-columns: 1fr; }
+        #ai-chat-window { width: calc(100vw - 24px); right: 12px; }
+    }
 </style>
 {% endblock %}
 
-{# ===========================
-   MAIN BODY CONTENT
-   =========================== #}
 {% block body %}
+<section class="front-card" style="margin-bottom:16px;background:linear-gradient(130deg,#0f2f22,#1f6b49);color:#fff;">
+    <span style="font-size:12px;letter-spacing:.6px;text-transform:uppercase;font-weight:800;color:#cff1de;">Boutique Football</span>
+    <h1 style="font-size:48px;line-height:.95;margin:6px 0 8px;">Trouvez le bon equipement rapidement</h1>
+    <p style="margin:0;max-width:760px;color:#d8f7e6;">Chaussures, maillots, gants, ballons et tenues d entrainement avec options de match : taille, couleur, coupe, edition, surface et personnalisation.</p>
+</section>
 
-<h2 class="section-title">Équipement du Club</h2>
+<div class="catalog-bar">
+    <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;width:100%;">
+        <input type="search" name="q" class="form-control" style="max-width:360px;" placeholder="Rechercher des produits" value="{{ app.request.query.get('q') }}" list="search-names">
+        <datalist id="search-names">
+            {% for product in products %}
+                <option value="{{ product.name }}"></option>
+            {% endfor %}
+            {% for apiProduct in apiProducts|default([]) %}
+                <option value="{{ apiProduct.name|default('') }}"></option>
+            {% endfor %}
+        </datalist>
 
-<div class="d-flex justify-content-between align-items-center mb-4" style="gap: 16px;">
-    <form method="get" class="front-card marketing-accent" style="display:flex; gap:12px; align-items:center; padding:18px; flex:1;">
-        <input type="search" name="q" placeholder="Rechercher un produit..." 
-               class="form-control" style="flex:1; max-width:420px;" 
-               value="{{ app.request.query.get('q') }}">
-
-        <select name="category" class="form-select" style="width:220px;">
-            <option value="">Toutes les catégories</option>
+        <select name="category" class="form-select" style="max-width:190px;">
+            <option value="">Toutes les categories</option>
             {% for cat in categories|default([]) %}
-                <option value="{{ cat }}" 
-                    {% if app.request.query.get('category') == cat %}selected{% endif %}>
-                    {{ cat }}
-                </option>
+                <option value="{{ cat }}" {% if app.request.query.get('category') == cat %}selected{% endif %}>{{ cat }}</option>
             {% endfor %}
         </select>
 
-        <select name="sort" class="form-select" style="width:220px;">
-            <option value="name" {% if app.request.query.get('sort') == 'name' %}selected{% endif %}>
-                Trier par nom
-            </option>
-            <option value="price" {% if app.request.query.get('sort') == 'price' %}selected{% endif %}>
-                Trier par prix
-            </option>
-            <option value="stock" {% if app.request.query.get('sort') == 'stock' %}selected{% endif %}>
-                Trier par stock
-            </option>
+        <select name="sort" class="form-select" style="max-width:170px;">
+            <option value="name" {% if app.request.query.get('sort') == 'name' %}selected{% endif %}>Tri : nom</option>
+            <option value="price" {% if app.request.query.get('sort') == 'price' %}selected{% endif %}>Tri : prix</option>
+            <option value="stock" {% if app.request.query.get('sort') == 'stock' %}selected{% endif %}>Tri : stock</option>
         </select>
 
-        <button class="btn btn-primary" type="submit">Chercher</button>
+        <button class="btn btn-primary" type="submit">Appliquer</button>
+        <a class="btn btn-secondary" href="{{ path('front_equipement_index') }}">Reinitialiser</a>
+        <a class="btn btn-secondary" href="{{ apiProductsUrl }}" target="_blank" rel="noopener">JSON API</a>
     </form>
-
-    <div style="display: flex; gap: 10px;">
-        <a href="{{ apiProductsUrl }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
-            API JSON
-        </a>
-        <a href="{{ path('front_equipement_cart') }}" class="btn btn-success">
-            Panier
-        </a>
-    </div>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
-    {% for product in products %}
-        <div class="front-card">
-            <div class="card-hero">
-                {% if product.image %}
-                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
-                {% endif %}
+<div class="shop-grid">
+    <aside class="front-card filter-panel">
+        <h2 class="filter-title">Filtres</h2>
+
+        <div class="filter-group">
+            <label for="f-brand">Marque</label>
+            <select id="f-brand" class="form-select js-filter">
+                <option value="">Toutes</option>
+                <option>Nike</option>
+                <option>Adidas</option>
+                <option>Puma</option>
+                <option>New Balance</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="f-price">Plage de prix</label>
+            <select id="f-price" class="form-select js-filter">
+                <option value="">Toutes</option>
+                <option value="0-50">0 - 50 USD</option>
+                <option value="50-100">50 - 100 USD</option>
+                <option value="100-200">100 - 200 USD</option>
+                <option value="200-99999">200+ USD</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="f-size">Taille</label>
+            <select id="f-size" class="form-select js-filter">
+                <option value="">Toutes</option>
+                <option>XS</option>
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+                <option>40</option>
+                <option>41</option>
+                <option>42</option>
+                <option>43</option>
+                <option>44</option>
+                <option>45</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="f-color">Couleur</label>
+            <select id="f-color" class="form-select js-filter">
+                <option value="">Toutes</option>
+                <option>black</option>
+                <option>white</option>
+                <option>red</option>
+                <option>blue</option>
+                <option>green</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="f-surface">Surface / usage</label>
+            <select id="f-surface" class="form-select js-filter">
+                <option value="">Toutes</option>
+                <option>firm ground</option>
+                <option>soft ground</option>
+                <option>indoor</option>
+                <option>training</option>
+                <option>match</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="f-availability">Disponibilite</label>
+            <select id="f-availability" class="form-select js-filter">
+                <option value="">Toutes</option>
+                <option value="in">En stock uniquement</option>
+                <option value="low">Stock faible</option>
+            </select>
+        </div>
+
+        <p style="font-size:12px;color:#64748b;margin:8px 0 0;">Inclut des options football : equipe/ligue, coupe, matiere et edition sur chaque carte.</p>
+    </aside>
+
+    <section>
+        <div class="product-layout" id="product-grid">
+            {% for product in products %}
+                {% set price = product.price|default(0) + 0 %}
+                {% set discount = product.stock > 12 ? 15 : (product.stock > 6 ? 10 : 5) %}
+                {% set oldPrice = price / (1 - (discount / 100)) %}
+                {% set inferredColor = product.id is odd ? 'black' : 'white' %}
+                {% set inferredSurface = product.category and ('boot' in product.category|lower or 'chauss' in product.category|lower) ? 'firm ground' : 'training' %}
+                {% set rating = ((product.id % 2) + 4) %}
+                <article class="front-card product-card js-card"
+                         data-brand="{{ (product.brand ?: 'Nike')|lower }}"
+                         data-size="{{ (product.size ?: 'M')|lower }}"
+                         data-color="{{ inferredColor }}"
+                         data-surface="{{ inferredSurface }}"
+                         data-stock="{{ product.stock }}"
+                         data-price="{{ price }}">
+                    <div class="card-media">
+                        <div class="product-badges">
+                            <span>{{ discount }}% de reduction</span>
+                            <span>{{ product.category ?: 'Equipement football' }}</span>
+                        </div>
+                        <button type="button" class="wishlist-btn" aria-label="Basculer favoris">+</button>
+                        {% if product.image %}
+                            {% set imageSrc = product.image starts with 'http://' or product.image starts with 'https://' ? product.image : (product.image starts with 'api/' ? asset(product.image) : (product.image starts with '/api/' ? product.image : asset('uploads/' ~ product.image))) %}
+                            <img src="{{ imageSrc }}" alt="{{ product.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="product-body">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-meta">{{ product.brand ?: 'Nike' }} | taille {{ product.size ?: 'M' }} | {{ inferredSurface }}</p>
+                        <p class="rating">{% for _ in 1..rating %}&#9733;{% endfor %} <span style="color:#64748b;">({{ 90 + product.id }} avis)</span></p>
+
+                        <div class="price-row">
+                            <strong>{{ price|number_format(2, '.', ',') }} USD</strong>
+                            <span class="old-price">{{ oldPrice|number_format(2, '.', ',') }} USD</span>
+                        </div>
+
+                        <div class="option-tags">
+                            <span>coupe : reguliere</span>
+                            <span>matiere : maille</span>
+                            <span>edition : pro</span>
+                            <span>equipe : club</span>
+                        </div>
+
+                        <p style="margin:10px 0 0; font-size:12px;" class="{{ product.stock <= 0 ? 'stock-out' : (product.stock < 5 ? 'stock-low' : 'stock-ok') }}">
+                            {% if product.stock <= 0 %}
+                                Rupture de stock
+                            {% elseif product.stock < 5 %}
+                                Plus que {{ product.stock }} restants
+                            {% else %}
+                                {{ product.stock }} en stock
+                            {% endif %}
+                        </p>
+
+                        <div class="card-actions">
+                            <a href="{{ path('front_equipement_show', {'id': product.id}) }}" class="btn btn-secondary">Voir</a>
+                            {% if product.stock > 0 %}
+                                <a href="{{ path('front_equipement_buy', {'id': product.id}) }}" class="btn btn-primary">Ajout rapide</a>
+                            {% else %}
+                                <button class="btn btn-secondary" disabled>Indisponible</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+            {% else %}
+                <div class="front-card">
+                    <h3 style="font-size:28px;margin:0 0 6px;">Aucun produit trouve</h3>
+                    <p style="margin:0;color:#64748b;">Essayez de modifier votre recherche ou vos filtres.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="helper-grid">
+            <div class="front-card">
+                <h3 style="font-size:25px;margin:0 0 8px;">Personnalisation</h3>
+                <p style="margin:0;color:#64748b;">Ajoutez nom, numero et patches depuis la fiche produit.</p>
             </div>
-
-            <div class="card-body-custom">
-                <div class="product-category">{{ product.category ?: 'Maillots' }}</div>
-                <h3>{{ product.name }}</h3>
-                <div class="product-price">{{ product.price|number_format(2, ',', ' ') }} USD</div>
-                <div class="stock-text">
-                    {% if product.stock > 0 %}{{ product.stock }} en stock{% else %}Rupture de stock{% endif %}
-                </div>
-
-                <div class="card-actions">
-                    <a href="{{ path('front_equipement_show', {'id': product.id}) }}" class="btn btn-light" style="flex:1;">Détails</a>
-                    {% if product.stock > 0 %}
-                        <a href="{{ path('front_equipement_buy', {'id': product.id}) }}" class="btn btn-success" style="flex:1;">Ajouter</a>
-                    {% else %}
-                        <button class="btn btn-secondary" disabled style="flex:1;">Indisponible</button>
-                    {% endif %}
-                </div>
+            <div class="front-card">
+                <h3 style="font-size:25px;margin:0 0 8px;">Offres pack</h3>
+                <p style="margin:0;color:#64748b;">Creez des packs maillot + chaussettes ou gants + spray grip.</p>
+            </div>
+            <div class="front-card">
+                <h3 style="font-size:25px;margin:0 0 8px;">Options de livraison</h3>
+                <p style="margin:0;color:#64748b;">Livraison a domicile, retrait et express disponibles au paiement.</p>
             </div>
         </div>
-    {% else %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <p>Aucun produit trouvé.</p>
-        </div>
-    {% endfor %}
+    </section>
 </div>
 
-<h3 class="section-title" style="margin-top: 36px;">Produits API (products.json)</h3>
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
+<h2 class="section-title" style="margin-top:22px;">Produits phares API</h2>
+<div class="product-layout">
     {% for apiProduct in apiProducts|default([]) %}
-        <div class="front-card">
-            <div class="card-hero">
+        {% set apiPrice = apiProduct.price|default(0) + 0 %}
+        {% set apiStock = apiProduct.stock|default(0) %}
+        <article class="front-card product-card">
+            <div class="card-media">
+                <div class="product-badges">
+                    <span>Article API</span>
+                    <span>{{ apiProduct.category|default('football') }}</span>
+                </div>
                 {% if apiProduct.image %}
-                    <img src="{{ asset('api/' ~ apiProduct.image) }}" alt="{{ apiProduct.name }}">
+                    {% if apiProduct.imageUrl is defined and apiProduct.imageUrl %}
+                        <img src="{{ apiProduct.imageUrl }}" alt="{{ apiProduct.name|default('API product') }}">
+                    {% elseif apiProduct.image starts with 'http://' or apiProduct.image starts with 'https://' %}
+                        <img src="{{ apiProduct.image }}" alt="{{ apiProduct.name|default('API product') }}">
+                    {% else %}
+                        <img src="{{ asset('api/' ~ apiProduct.image) }}" alt="{{ apiProduct.name|default('API product') }}">
+                    {% endif %}
                 {% endif %}
             </div>
-            <div class="card-body-custom">
-                <div class="product-category">{{ apiProduct.category|default('Football') }}</div>
-                <h3>{{ apiProduct.name|default('Produit API') }}</h3>
-                <div class="product-price">{{ (apiProduct.price|default(0))|number_format(2, ',', ' ') }} USD</div>
-                <p style="margin: 8px 0 0 0; color: var(--text-muted); font-size: 14px;">
-                    Marque: {{ apiProduct.brand|default('N/A') }} | Taille: {{ apiProduct.size|default('N/A') }}
+            <div class="product-body">
+                <h3 class="product-name">{{ apiProduct.name|default('Produit API') }}</h3>
+                <p class="product-meta">{{ apiProduct.brand|default('Marque N/A') }} | taille {{ apiProduct.size|default('M') }}</p>
+                <div class="price-row">
+                    <strong>{{ apiPrice|number_format(2, '.', ',') }} USD</strong>
+                    <span class="old-price">{{ (apiPrice * 1.2)|number_format(2, '.', ',') }} USD</span>
+                </div>
+                <p style="margin:10px 0 0; font-size:12px;" class="{{ apiStock <= 0 ? 'stock-out' : 'stock-ok' }}">
+                    {{ apiStock > 0 ? apiStock ~ ' en stock' : 'Rupture de stock' }}
                 </p>
-                <div class="stock-text" style="margin-top: 8px;">
-                    {% if (apiProduct.stock|default(0)) > 0 %}
-                        {{ apiProduct.stock }} en stock
+                <p style="margin:8px 0 0;color:#64748b;font-size:13px;">{{ apiProduct.description|default('Produit API depuis products.json') }}</p>
+                <div class="card-actions">
+                    {% if apiProduct.dbId is defined %}
+                        <a href="{{ path('front_equipement_show', {'id': apiProduct.dbId}) }}" class="btn btn-secondary">Details</a>
+                        {% if apiStock > 0 %}
+                            <a href="{{ path('front_equipement_buy', {'id': apiProduct.dbId}) }}" class="btn btn-primary">Ajouter</a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>Indisponible</button>
+                        {% endif %}
                     {% else %}
-                        Rupture de stock
+                        <button class="btn btn-secondary" disabled>Non synchronise</button>
+                        <button class="btn btn-secondary" disabled>Non synchronise</button>
                     {% endif %}
                 </div>
-                {% if apiProduct.description is defined and apiProduct.description %}
-                    <p style="margin-top: 8px; color: var(--text-muted);">{{ apiProduct.description }}</p>
-                {% endif %}
             </div>
-        </div>
+        </article>
     {% else %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <p>Aucun produit API trouvé dans `public/api/products.json`.</p>
+        <div class="front-card">
+            <p style="margin:0;color:#64748b;">Aucun produit API trouve dans public/api/products.json.</p>
         </div>
     {% endfor %}
 </div>
-
 {% endblock %}
 
-{# ===========================
-   JAVASCRIPT (AI CHAT FUNCTIONALITY)
-   =========================== #}
 {% block javascripts %}
 {{ parent() }}
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
+    const cards = Array.from(document.querySelectorAll('.js-card'));
+    const filters = Array.from(document.querySelectorAll('.js-filter'));
 
-    const bubble = document.getElementById("ai-chat-bubble");
-    const chatWindow = document.getElementById("ai-chat-window");
-    const closeBtn = document.getElementById("ai-chat-close");
-    const form = document.getElementById("ai-chat-form");
-    const input = document.getElementById("ai-chat-input");
-    const messages = document.getElementById("ai-chat-messages");
+    function withinPrice(cardPrice, range) {
+        if (!range) return true;
+        const [min, max] = range.split('-').map(Number);
+        return cardPrice >= min && cardPrice <= max;
+    }
 
-    bubble.addEventListener("click", function () {
-        chatWindow.style.display = "flex";
-        bubble.style.display = "none";
+    function applyFilters() {
+        const values = {
+            brand: (document.getElementById('f-brand')?.value || '').toLowerCase(),
+            size: (document.getElementById('f-size')?.value || '').toLowerCase(),
+            color: (document.getElementById('f-color')?.value || '').toLowerCase(),
+            surface: (document.getElementById('f-surface')?.value || '').toLowerCase(),
+            availability: (document.getElementById('f-availability')?.value || '').toLowerCase(),
+            price: (document.getElementById('f-price')?.value || '').toLowerCase()
+        };
+
+        cards.forEach((card) => {
+            const brand = card.dataset.brand || '';
+            const size = card.dataset.size || '';
+            const color = card.dataset.color || '';
+            const surface = card.dataset.surface || '';
+            const stock = parseInt(card.dataset.stock || '0', 10);
+            const price = parseFloat(card.dataset.price || '0');
+
+            const matchBrand = !values.brand || brand.includes(values.brand);
+            const matchSize = !values.size || size.includes(values.size);
+            const matchColor = !values.color || color.includes(values.color);
+            const matchSurface = !values.surface || surface.includes(values.surface);
+            const matchPrice = withinPrice(price, values.price);
+            const matchAvailability = !values.availability
+                || (values.availability === 'in' && stock > 0)
+                || (values.availability === 'low' && stock > 0 && stock < 5);
+
+            card.style.display = matchBrand && matchSize && matchColor && matchSurface && matchPrice && matchAvailability
+                ? ''
+                : 'none';
+        });
+    }
+
+    filters.forEach((el) => el.addEventListener('change', applyFilters));
+
+    document.querySelectorAll('.wishlist-btn').forEach((btn) => {
+        btn.addEventListener('click', function () {
+            btn.classList.toggle('active');
+            btn.textContent = btn.classList.contains('active') ? 'x' : '+';
+        });
+    });
+
+    const bubble = document.getElementById('ai-chat-bubble');
+    const chatWindow = document.getElementById('ai-chat-window');
+    const closeBtn = document.getElementById('ai-chat-close');
+    const form = document.getElementById('ai-chat-form');
+    const input = document.getElementById('ai-chat-input');
+    const messages = document.getElementById('ai-chat-messages');
+    const chatEndpoint = "{{ path('front_equipement_ai_chat') }}";
+
+    if (!bubble || !chatWindow || !closeBtn || !form || !input || !messages) return;
+
+    bubble.addEventListener('click', function () {
+        chatWindow.style.display = 'flex';
+        bubble.style.display = 'none';
         input.focus();
     });
 
-    closeBtn.addEventListener("click", function () {
-        chatWindow.style.display = "none";
-        bubble.style.display = "flex";
+    closeBtn.addEventListener('click', function () {
+        chatWindow.style.display = 'none';
+        bubble.style.display = 'flex';
     });
 
-    form.addEventListener("submit", async function (e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
-
         const userText = input.value.trim();
         if (!userText) return;
 
-        messages.innerHTML += `<div class="user-message"><b>You:</b> ${userText}</div>`;
-        input.value = "";
+        messages.innerHTML += `<div class="user-message"><strong>Vous :</strong> ${userText}</div>`;
+        input.value = '';
         messages.scrollTop = messages.scrollHeight;
 
-        messages.innerHTML += `<div class="ai-message" id="loading">AI is typing...</div>`;
-        messages.scrollTop = messages.scrollHeight;
+        messages.innerHTML += '<div class="ai-message" id="loading">Assistant en train d ecrire...</div>';
 
         try {
-            const response = await fetch("/equipement/ai-chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch(chatEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userText })
             });
 
             const data = await response.json();
-            document.getElementById("loading").remove();
+            const loading = document.getElementById('loading');
+            if (loading) loading.remove();
 
-            messages.innerHTML += `<div class="ai-message"><b>AI:</b> ${data.reply}</div>`;
+            messages.innerHTML += `<div class="ai-message"><strong>IA :</strong> ${data.reply || 'Impossible de repondre pour le moment.'}</div>`;
             messages.scrollTop = messages.scrollHeight;
-
         } catch (error) {
-            document.getElementById("loading").remove();
-            messages.innerHTML += `<div class="ai-message">⚠ Error connecting to AI.</div>`;
+            const loading = document.getElementById('loading');
+            if (loading) loading.remove();
+            messages.innerHTML += '<div class="ai-message">Erreur de connexion. Veuillez reessayer.</div>';
         }
     });
-
 });
 </script>
-
 {% endblock %}
-
-

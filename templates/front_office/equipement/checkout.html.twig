@@ -1,0 +1,130 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Paiement - Sport Insight{% endblock %}
+
+{% block body %}
+<h1 class="section-title">Finaliser la commande</h1>
+
+<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;">
+    <section class="front-card">
+        <h2 style="font-size:30px;margin:0 0 12px;">Informations client</h2>
+
+        <form method="post" action="{{ path('front_equipement_checkout') }}" style="display:grid;gap:10px;">
+            <input type="hidden" name="_token" value="{{ csrf_token('checkout') }}">
+
+            <div>
+                <label class="form-label">Nom complet</label>
+                <input type="text" name="full_name" class="form-control" required>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div>
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div>
+                    <label class="form-label">Telephone</label>
+                    <input type="text" name="phone" class="form-control" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label">Adresse</label>
+                <input type="text" name="address" class="form-control" required>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div>
+                    <label class="form-label">Ville</label>
+                    <input type="text" name="city" class="form-control" required>
+                </div>
+                <div>
+                    <label class="form-label">Code postal</label>
+                    <input type="text" name="postal_code" class="form-control" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label">Mode de paiement</label>
+                <select name="payment_method" id="payment_method" class="form-select" required>
+                    <option value="cod">Paiement a la livraison</option>
+                    <option value="online">Paiement en ligne</option>
+                </select>
+            </div>
+
+            <div id="online_payment_fields" style="display:none; border:1px solid #dbeafe; border-radius:10px; padding:12px;">
+                <h3 style="font-size:16px; margin:0 0 10px;">Paiement en ligne (simulation)</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div>
+                        <label class="form-label">Nom du porteur</label>
+                        <input type="text" name="card_holder" id="card_holder" class="form-control" placeholder="Nom complet">
+                    </div>
+                    <div>
+                        <label class="form-label">Numero de carte</label>
+                        <input type="text" name="card_number" id="card_number" class="form-control" placeholder="16 chiffres" maxlength="19">
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px; margin-top:10px;">
+                    <div>
+                        <label class="form-label">Expiration</label>
+                        <input type="text" name="card_expiry" id="card_expiry" class="form-control" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div>
+                        <label class="form-label">CVV</label>
+                        <input type="text" name="card_cvv" id="card_cvv" class="form-control" placeholder="3-4 chiffres" maxlength="4">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Valider et payer</button>
+            <a href="{{ path('front_equipement_cart') }}" class="btn btn-secondary">Retour au panier</a>
+        </form>
+    </section>
+
+    <aside class="front-card">
+        <h2 style="font-size:30px;margin:0 0 12px;">Resume</h2>
+
+        <div style="display:grid;gap:8px;max-height:360px;overflow:auto;">
+            {% for item in items %}
+                <div style="display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #e5e7eb;padding-bottom:8px;">
+                    <div>
+                        <strong>{{ item.product.name }}</strong>
+                        <div style="font-size:12px;color:#64748b;">Qte : {{ item.quantity }}</div>
+                    </div>
+                    <strong>{{ item.lineTotal|number_format(2, '.', ',') }} USD</strong>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top:12px;border-top:1px solid #e5e7eb;padding-top:10px;display:flex;justify-content:space-between;">
+            <strong>Total</strong>
+            <strong>{{ total|number_format(2, '.', ',') }} USD</strong>
+        </div>
+
+        <p style="margin-top:10px;font-size:12px;color:#64748b;">Apres validation, une facture sera telechargee et un email de confirmation sera envoye.</p>
+    </aside>
+</div>
+<script>
+(() => {
+    const method = document.getElementById('payment_method');
+    const wrap = document.getElementById('online_payment_fields');
+    const fields = ['card_holder', 'card_number', 'card_expiry', 'card_cvv']
+        .map((id) => document.getElementById(id));
+
+    const toggle = () => {
+        if (!method || !wrap) return;
+        const online = method.value === 'online';
+        wrap.style.display = online ? 'block' : 'none';
+        fields.forEach((f) => {
+            if (!f) return;
+            f.required = online;
+        });
+    };
+
+    if (method) {
+        method.addEventListener('change', toggle);
+        toggle();
+    }
+})();
+</script>
+{% endblock %}

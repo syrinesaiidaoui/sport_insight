@@ -1,52 +1,140 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Your Cart - Sport Insight{% endblock %}
+{% block title %}Panier - Sport Insight{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1.6fr .9fr;
+        gap: 14px;
+    }
+
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 10px 8px;
+        text-align: left;
+    }
+
+    .cart-table th {
+        font-size: 12px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .summary-row.total {
+        border-top: 1px solid #e5e7eb;
+        padding-top: 10px;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .checkout-meta {
+        margin-top: 12px;
+        display: grid;
+        gap: 8px;
+        font-size: 13px;
+        color: #475569;
+    }
+
+    .checkout-meta label {
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        padding: 10px;
+        background: #fff;
+        font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+        .cart-layout { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-    <h2 class="section-title">Your Cart</h2>
+<h1 class="section-title">Votre panier</h1>
 
-    <div class="front-table">
-        <table>
+<div class="cart-layout">
+    <section class="front-card">
+        <table class="cart-table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Subtotal</th>
-                    <th>Action</th>
+                    <th>Produit</th>
+                    <th>Options</th>
+                    <th>Prix</th>
+                    <th>Qte</th>
+                    <th>Sous-total</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in items %}
                     <tr>
-                        <td>{{ item.product.name }}</td>
-                        <td>{{ item.product.category }}</td>
-                        <td>{{ item.product.price }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ (item.product.price * item.quantity) }}</td>
                         <td>
-                            <a href="{{ path('front_equipement_remove', {id: item.product.id}) }}" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 12px;"><svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>Remove</a>
+                            <strong>{{ item.product.name }}</strong>
+                            <div style="font-size:12px;color:#64748b;">{{ item.product.category ?: 'Equipement football' }}</div>
+                        </td>
+                        <td style="font-size:12px;color:#475569;">taille {{ item.product.size ?: 'M' }} | couleur noire | edition pro</td>
+                        <td>{{ item.product.price|number_format(2, '.', ',') }} USD</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ (item.product.price * item.quantity)|number_format(2, '.', ',') }} USD</td>
+                        <td>
+                            <a href="{{ path('front_equipement_remove', {id: item.product.id}) }}" class="btn btn-secondary">Retirer</a>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6">Your cart is empty.</td>
+                        <td colspan="6">Votre panier est vide. <a href="{{ path('front_equipement_index') }}">Continuer vos achats</a>.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="mt-4 text-end">
-        <strong>Total: {{ total }}</strong>
-    </div>
+    <aside class="front-card">
+        <h2 style="font-size:30px;margin:0 0 10px;">Resume de commande</h2>
 
-    <div class="mt-3">
-        <form method="post" action="{{ path('front_equipement_checkout') }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('checkout') }}">
-            <button class="btn btn-primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#icon-cart"/></svg>Checkout</button>
-            <a href="{{ path('front_equipement_index') }}" class="btn btn-secondary"><svg class="icon" aria-hidden="true"><use href="#icon-home"/></svg>Continue shopping</a>
-        </form>
-    </div>
+        <div class="summary-row"><span>Sous-total</span><strong>{{ total|number_format(2, '.', ',') }} USD</strong></div>
+        <div class="summary-row"><span>Code promo</span><span>-0.00 USD</span></div>
+        <div class="summary-row"><span>Livraison estimee</span><span>8.00 USD</span></div>
+        <div class="summary-row total"><span>Total</span><span>{{ (total + 8)|number_format(2, '.', ',') }} USD</span></div>
+
+        <div style="margin-top:10px;">
+            <label for="promo" style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:800;">Code promo</label>
+            <div style="display:flex;gap:6px;">
+                <input id="promo" class="form-control" placeholder="MATCHDAY10">
+                <button class="btn btn-secondary" type="button">Appliquer</button>
+            </div>
+        </div>
+
+        <div class="checkout-meta">
+            <label><input type="radio" name="ship" checked> Livraison standard (2-4 jours)</label>
+            <label><input type="radio" name="ship"> Express (jour suivant)</label>
+            <label><input type="radio" name="ship"> Retrait en magasin</label>
+        </div>
+
+        <div style="margin-top:12px;display:grid;gap:8px;">
+            <a href="{{ path('front_equipement_checkout') }}" class="btn btn-primary">Passer au paiement</a>
+            <a href="{{ path('front_equipement_index') }}" class="btn btn-secondary">Continuer vos achats</a>
+        </div>
+
+        <p style="margin:10px 0 0;font-size:12px;color:#64748b;">Paiements : Visa, Mastercard, PayPal, Apple Pay. Retours acceptes sous 30 jours.</p>
+    </aside>
+</div>
 {% endblock %}

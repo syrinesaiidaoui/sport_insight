@@ -13,10 +13,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 
-#[Route('/order')]
+#[Route('/legacy-order')]
 class OrderController extends AbstractController
 {
-    #[Route('/', name: 'app_order_index', methods: ['GET'])]
+    #[Route('/', name: 'legacy_order_index', methods: ['GET'])]
     public function index(Request $request, OrderRepository $orderRepository): Response
     {
         // access control removed to allow public access during local development
@@ -37,7 +37,7 @@ class OrderController extends AbstractController
                ->setParameter('search', '%' . $searchTerm . '%');
         }
         
-        if ($statusFilter && in_array($statusFilter, ['pending', 'confirmed', 'shipped', 'delivered'])) {
+        if ($statusFilter && in_array($statusFilter, ['pending', 'confirmed', 'shipped', 'delivered', 'rejected'])) {
             $qb->andWhere('o.status = :status')
                ->setParameter('status', $statusFilter);
         }
@@ -53,6 +53,25 @@ class OrderController extends AbstractController
         }
         
         $orders = $qb->getQuery()->getResult();
+
+        $stats = [
+            'total' => count($orders),
+            'pending' => 0,
+            'confirmed' => 0,
+            'shipped' => 0,
+            'delivered' => 0,
+            'rejected' => 0,
+            'revenue' => 0.0,
+        ];
+        foreach ($orders as $order) {
+            $status = (string)$order->getStatus();
+            if (array_key_exists($status, $stats)) {
+                $stats[$status]++;
+            }
+            if (in_array($status, ['confirmed', 'shipped', 'delivered'], true)) {
+                $stats['revenue'] += ((float)$order->getProduct()?->getPrice() * (int)$order->getQuantity());
+            }
+        }
         
         return $this->render('order/index.html.twig', [
             'orders' => $orders,
@@ -60,10 +79,13 @@ class OrderController extends AbstractController
             'statusFilter' => $statusFilter,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
+            'stats' => $stats,
+            'page' => 1,
+            'totalPages' => 1,
         ]);
     }
 
-    #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'legacy_order_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         // access control removed to allow public access during local development
@@ -98,7 +120,7 @@ class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'legacy_order_show', methods: ['GET'])]
     public function show(Order $order): Response
     {
         // access control removed to allow public access during local development
@@ -108,7 +130,7 @@ class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'legacy_order_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Order $order, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         // access control removed to allow public access during local development
@@ -141,7 +163,7 @@ class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'legacy_order_delete', methods: ['POST'])]
     public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
         // access control removed to allow public access during local development

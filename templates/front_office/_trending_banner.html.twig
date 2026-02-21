@@ -1,7 +1,7 @@
-{# Trending banner partial - shows top trending products with marketing UI #}
+{# Bandeau tendances #}
 <div class="trending-banner" style="background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(16,185,129,0.02)); padding:12px 20px; border-radius:10px; margin-bottom:18px; display:flex; align-items:center; gap:16px;">
     <div style="flex:0 0 auto; display:flex; align-items:center; gap:12px;">
-        <div style="width:48px; height:48px; background:var(--primary); color:#fff; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px;">🔥</div>
+        <div style="width:48px; height:48px; background:var(--primary); color:#fff; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px;">TOP</div>
     </div>
     <div style="flex:1 1 auto;">
         {% set names = [] %}
@@ -10,14 +10,14 @@
             {% endfor %}
 
             {% if names is defined and names|length > 0 %}
-            <div style="font-weight:700; color:var(--dark); font-size:16px;">Trending this month:</div>
-            <div style="margin-top:6px; color:var(--text-muted);">{{ names|slice(0,3)|join(', ') }}{% if names|length > 3 %} and {{ names|length - 3 }} more{% endif %} — Most bought this month.</div>
+            <div style="font-weight:700; color:var(--dark); font-size:16px;">Tendances du mois :</div>
+            <div style="margin-top:6px; color:var(--text-muted);">{{ names|slice(0,3)|join(', ') }}{% if names|length > 3 %} et {{ names|length - 3 }} autres{% endif %} - Les plus achetes ce mois-ci.</div>
         {% else %}
-            <div style="font-weight:700; color:var(--dark); font-size:16px;">No trending items yet</div>
-            <div style="margin-top:6px; color:var(--text-muted);">Be the first to buy and make an item trend!</div>
+            <div style="font-weight:700; color:var(--dark); font-size:16px;">Aucun article tendance pour le moment</div>
+            <div style="margin-top:6px; color:var(--text-muted);">Soyez le premier a acheter pour lancer une tendance !</div>
         {% endif %}
     </div>
     <div style="flex:0 0 auto;">
-        <a href="{{ path('app_shop_index') }}" class="btn btn-primary">Shop Trending</a>
+        <a href="{{ path('app_shop_index') }}" class="btn btn-primary">Voir les tendances</a>
     </div>
 </div>

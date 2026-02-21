@@ -29,6 +29,7 @@ security:
         # Allow anonymous access to login and register
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
         # Everything else requires authentication
         - { path: ^/, roles: ROLE_USER }

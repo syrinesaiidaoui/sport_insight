@@ -1,52 +1,99 @@
 {% extends 'back_office/base.html.twig' %}
 
-{% block title %}Order #{{ order.id }}{% endblock %}
-{% block page_title %}Order #{{ order.id }}{% endblock %}
+{% block title %}Commande #{{ order.id }}{% endblock %}
+{% block page_title %}Commande #{{ order.id }}{% endblock %}
 
 {% block body %}
-    <div style="max-width: 600px;">
-        <div class="front-card">
-            <div style="margin-bottom: 20px; padding: 20px; background: #f9fafb; border-radius: 8px;">
-                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="margin: 0; font-size: 18px;">Order Details</h3>
-                        <span class="badge-{{ order.status == 'delivered' ? 'success' : (order.status == 'confirmed' ? 'success' : 'info') }}">
-                            {% if order.status == 'pending' %}
-                                Pending
-                            {% elseif order.status == 'confirmed' %}
-                                Confirmed
-                            {% elseif order.status == 'shipped' %}
-                                Shipped
-                            {% elseif order.status == 'delivered' %}
-                                Delivered
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 12px;">
-                    <strong>Product:</strong> {{ order.product.name }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>User:</strong> {{ order.entraineur.email }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Quantity:</strong> {{ order.quantity }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Order Date:</strong> {{ order.orderDate|date('d/m/Y H:i') }}
-                </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>Status:</strong> {{ order.status }}
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px; display: flex; gap: 12px;">
-                <a href="{{ path('app_order_edit', { id: order.id }) }}" class="btn btn-primary">Edit</a>
-                <a href="{{ path('app_order_index') }}" class="btn btn-secondary">Back</a>
-            </div>
-            
-            {{ include('order/_delete_form.html.twig') }}
+<style>
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 20px;
+    }
+    @media (max-width: 900px) {
+        .form-row { grid-template-columns: 1fr; }
+    }
+</style>
+<div class="data-table" style="margin-bottom:16px;">
+    <div class="data-table-header">
+        <div>
+            <h3>Client</h3>
+            <p class="muted">Informations utilisateur et contact</p>
+        </div>
+        <div>
+            {% if order.status == 'pending' %}
+                <span class="badge-warning">Pending</span>
+            {% elseif order.status == 'confirmed' %}
+                <span class="badge-info">Confirmed</span>
+            {% elseif order.status == 'shipped' %}
+                <span class="badge-info">Expedie</span>
+            {% elseif order.status == 'delivered' %}
+                <span class="badge-success">Livre</span>
+            {% elseif order.status == 'rejected' %}
+                <span class="badge-danger">Rejected</span>
+            {% endif %}
         </div>
     </div>
+    <div style="padding:20px 24px;">
+        <div class="form-row">
+            <div><strong>Prenom:</strong> {{ order.entraineur ? order.entraineur.prenom : '-' }}</div>
+            <div><strong>Nom:</strong> {{ order.entraineur ? order.entraineur.nom : '-' }}</div>
+            <div><strong>Email:</strong> {{ order.contactEmail ?: (order.entraineur ? order.entraineur.email : '-') }}</div>
+            <div><strong>Telephone:</strong> {{ order.contactPhone ?: (order.entraineur ? order.entraineur.telephone : '-') }}</div>
+            <div><strong>Date de commande:</strong> {{ order.orderDate ? order.orderDate|date('Y-m-d') : '-' }}</div>
+            <div><strong>Statut:</strong> {{ order.status }}</div>
+            <div><strong>Mode de paiement:</strong> {{ order.paymentMethod == 'online' ? 'Paiement en ligne' : 'Paiement a la livraison' }}</div>
+            <div><strong>Statut paiement:</strong> {{ order.paymentStatus ?: 'pending' }}</div>
+        </div>
+        <div style="margin-top:12px;"><strong>Adresse livraison:</strong><br>{{ order.shippingAddress ?: '-' }}</div>
+        <div style="margin-top:12px;"><strong>Adresse facturation:</strong><br>{{ order.billingAddress ?: (order.shippingAddress ?: '-') }}</div>
+    </div>
+</div>
+
+<div class="data-table">
+    <div class="data-table-header">
+        <div>
+            <h3>Produits commandes</h3>
+            <p class="muted">Details lignes et montant total</p>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Prix unitaire</th>
+                <th>Quantite</th>
+                <th>Montant ligne</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if order.items|length > 0 %}
+                {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.product ? item.product.name : '-' }}</td>
+                        <td>${{ item.unitPrice|number_format(2, '.', ',') }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ (item.unitPrice * item.quantity)|number_format(2, '.', ',') }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>{{ order.product ? order.product.name : '-' }}</td>
+                    <td>${{ (order.product ? order.product.price : 0)|number_format(2, '.', ',') }}</td>
+                    <td>{{ order.quantity ?: 0 }}</td>
+                    <td>${{ ((order.product ? order.product.price : 0) * (order.quantity ?: 0))|number_format(2, '.', ',') }}</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <div style="padding:16px 24px; text-align:right; font-size:18px; font-weight:700;">
+        Total: ${{ (order.totalAmount ?: order.computedTotal)|number_format(2, '.', ',') }}
+    </div>
+</div>
+
+<div style="display:flex; gap:10px; margin-top:16px;">
+    <a href="{{ path('app_order_edit', {id: order.id}) }}" class="btn btn-primary">Modifier</a>
+    <a href="{{ path('app_order_index') }}" class="btn btn-outline-secondary">Retour</a>
+    {{ include('order/_delete_form.html.twig') }}
+</div>
 {% endblock %}

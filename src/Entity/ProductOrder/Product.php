@@ -79,9 +79,16 @@ class Product
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'product')]
     private Collection $orders;
 
+    /**
+     * @var Collection<int, OrderItem>
+     */
+    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'product')]
+    private Collection $orderItems;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
+        $this->orderItems = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -201,5 +208,13 @@ class Product
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderItem>
+     */
+    public function getOrderItems(): Collection
+    {
+        return $this->orderItems;
     }
 }

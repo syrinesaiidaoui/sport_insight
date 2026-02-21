@@ -1,30 +1,296 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Équipement - Sport Insight{% endblock %}
+{% block title %}{{ product.name }} - Sport Insight{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 16px;
+    }
+
+    .gallery-main {
+        height: 470px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: linear-gradient(140deg, #0f2f22, #1f6b49);
+    }
+
+    .gallery-main img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .thumbs {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .thumb {
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 82px;
+        background: #fff;
+    }
+
+    .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .detail-title {
+        margin: 0;
+        font-size: 44px;
+        line-height: .95;
+    }
+
+    .opt-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .opt-group label {
+        display: block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #64748b;
+        margin-bottom: 6px;
+        font-weight: 800;
+    }
+
+    .option-choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+    .option-choices span {
+        border: 1px solid #dbe2ea;
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #fff;
+    }
+
+    .size-guide {
+        margin-top: 14px;
+        border: 1px dashed #a7f3d0;
+        border-radius: 10px;
+        padding: 10px;
+        background: #f0fdf4;
+        color: #065f46;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .bundle-box {
+        margin-top: 14px;
+        background: #f8fafc;
+        border: 1px solid #dbe2ea;
+        border-radius: 12px;
+        padding: 12px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .bundle-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .delivery-options {
+        margin-top: 14px;
+        display: grid;
+        gap: 8px;
+    }
+
+    .delivery-options label {
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        display: block;
+        background: #fff;
+    }
+
+    .recommend-grid {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    @media (max-width: 980px) {
+        .detail-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+        .opt-grid { grid-template-columns: 1fr; }
+        .recommend-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-<div class="page-container">
-    <div class="front-card" style="display:flex; gap:24px; align-items:flex-start;">
-        <div style="width:420px;">
-            <div style="height:380px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg, #6b46c1 0%, #667eea 100%); display:flex; align-items:center; justify-content:center; color:white; font-size:2rem;">
-                Image de l'équipement
+{% set price = product.price|default(0) + 0 %}
+{% set oldPrice = price * 1.22 %}
+{% set stock = product.stock|default(0) %}
+
+<div class="detail-grid">
+    <section>
+        <div class="gallery-main">
+            {% if product.image %}
+                {% set imageSrc = product.image starts with 'http://' or product.image starts with 'https://' ? product.image : (product.image starts with 'api/' ? asset(product.image) : (product.image starts with '/api/' ? product.image : asset('uploads/' ~ product.image))) %}
+                <img src="{{ imageSrc }}" alt="{{ product.name }}">
+            {% endif %}
+        </div>
+        <div class="thumbs">
+            {% for i in 1..4 %}
+                <div class="thumb">
+                    {% if product.image %}
+                        {% set thumbSrc = product.image starts with 'http://' or product.image starts with 'https://' ? product.image : (product.image starts with 'api/' ? asset(product.image) : (product.image starts with '/api/' ? product.image : asset('uploads/' ~ product.image))) %}
+                        <img src="{{ thumbSrc }}" alt="{{ product.name }} view {{ i }}">
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="front-card">
+        <span class="badge-soft">{{ product.category ?: 'Equipement football' }}</span>
+        <h1 class="detail-title">{{ product.name }}</h1>
+        <p style="margin:8px 0 0;color:#64748b;font-weight:700;">{{ product.brand ?: 'Sport Insight' }} | note 4.8/5 (212 avis)</p>
+
+        <div style="display:flex;gap:10px;align-items:flex-end;margin-top:10px;">
+            <strong style="font-size:38px;font-family:'Barlow Condensed',sans-serif;color:#0f5132;line-height:1;">{{ price|number_format(2, '.', ',') }} USD</strong>
+            <span style="color:#94a3b8;text-decoration:line-through;font-weight:700;">{{ oldPrice|number_format(2, '.', ',') }} USD</span>
+            <span class="badge-soft">-18%</span>
+        </div>
+
+        <p style="margin:10px 0 0;" class="{{ stock <= 0 ? 'stock-out' : (stock < 5 ? 'stock-low' : 'stock-ok') }}">
+            {% if stock <= 0 %}
+                Rupture de stock
+            {% elseif stock < 5 %}
+                Stock faible : {{ stock }} restants
+            {% else %}
+                En stock : {{ stock }} unites
+            {% endif %}
+        </p>
+
+        <div class="opt-grid">
+            <div class="opt-group">
+                <label>Taille</label>
+                <div class="option-choices">
+                    <span>{{ product.size ?: 'M' }}</span><span>S</span><span>M</span><span>L</span><span>XL</span>
+                </div>
+            </div>
+            <div class="opt-group">
+                <label>Couleur</label>
+                <div class="option-choices">
+                    <span>Noir</span><span>Blanc</span><span>Rouge</span><span>Bleu</span>
+                </div>
+            </div>
+            <div class="opt-group">
+                <label>Coupe</label>
+                <div class="option-choices">
+                    <span>Reguliere</span><span>Slim</span>
+                </div>
+            </div>
+            <div class="opt-group">
+                <label>Matiere</label>
+                <div class="option-choices">
+                    <span>Maille</span><span>Synthetique</span><span>Mesh</span>
+                </div>
+            </div>
+            <div class="opt-group">
+                <label>Edition</label>
+                <div class="option-choices">
+                    <span>Academy</span><span>Pro</span><span>Elite</span>
+                </div>
+            </div>
+            <div class="opt-group">
+                <label>Usage</label>
+                <div class="option-choices">
+                    <span>Terrain sec</span><span>Terrain gras</span><span>Indoor</span><span>Entrainement</span><span>Match</span>
+                </div>
             </div>
         </div>
-        <div style="flex:1;">
-            <div class="product-category">Catégorie d'équipement</div>
-            <h1 style="margin-top:6px;">Nom de l'équipement</h1>
-            <div class="product-price">Prix à définir</div>
-            <p style="color:var(--text-muted); margin-top:8px;">Marque: à définir — Taille: à définir</p>
 
-            <div style="margin-top:18px;">
-                <button class="btn btn-primary btn-lg">Ajouter manuellement</button>
-            </div>
+        <div class="size-guide">Guide des tailles : si vous etes entre deux tailles, choisissez la plus grande pour plus de confort.</div>
 
-            <div style="margin-top:24px; color:var(--text-muted);">
-                <strong>Description</strong>
-                <p>Ajoutez ici la description de l'équipement.</p>
+        <div style="margin-top:14px;">
+            <h3 style="font-size:28px;margin:0 0 8px;">Personnalisation</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <input class="form-control" placeholder="Nom du joueur">
+                <input class="form-control" placeholder="Numero">
+                <select class="form-select"><option>Patch ligue : aucun</option><option>Premier League</option><option>Ligue des Champions</option></select>
+                <select class="form-select"><option>Pack : aucun</option><option>Kit + chaussettes (+12 USD)</option><option>Gants + spray grip (+9 USD)</option></select>
             </div>
         </div>
-    </div>
+
+        <div class="bundle-box">
+            <div class="bundle-item"><span>Spray entretien chaussures</span><strong>+8 USD</strong></div>
+            <div class="bundle-item"><span>Chaussettes performance</span><strong>+12 USD</strong></div>
+            <div class="bundle-item"><span>Protege-tibias</span><strong>+16 USD</strong></div>
+        </div>
+
+        <div class="delivery-options">
+            <label><input type="radio" name="delivery" checked> Livraison standard (2-4 jours)</label>
+            <label><input type="radio" name="delivery"> Livraison express (24h)</label>
+            <label><input type="radio" name="delivery"> Retrait magasin (meme jour)</label>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+            {% if stock > 0 %}
+                <a href="{{ path('front_equipement_buy', {'id': product.id}) }}" class="btn btn-primary">Ajouter au panier</a>
+            {% else %}
+                <button class="btn btn-secondary" disabled>Indisponible</button>
+            {% endif %}
+            <a href="{{ path('front_equipement_cart') }}" class="btn btn-secondary">Aller au panier</a>
+            <button class="btn btn-secondary" type="button">Ajouter aux favoris</button>
+        </div>
+
+        <div style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:12px;font-size:13px;color:#475569;display:grid;gap:4px;">
+            <span>Paiement securise : carte, PayPal, Apple Pay</span>
+            <span>Retours : politique 30 jours</span>
+            <span>Suivi de commande inclus apres achat</span>
+        </div>
+    </section>
+</div>
+
+<div class="front-card" style="margin-top:18px;">
+    <h2 style="font-size:34px;margin:0 0 8px;">Questions et reponses</h2>
+    <p style="margin:0;color:#64748b;">Q : Convient-il a un terrain humide ? R : Oui, choisissez l option terrain gras pour plus d adherence.</p>
+    <p style="margin:8px 0 0;color:#64748b;">Q : Puis-je ajouter un nom plus tard ? R : La personnalisation est possible avant validation.</p>
+</div>
+
+<h2 class="section-title" style="margin-top:18px;">Vous aimerez aussi</h2>
+<div class="recommend-grid">
+    <a href="{{ path('front_equipement_index', {q: 'boots'}) }}" class="front-card" style="text-decoration:none;color:inherit;">
+        <h3 style="font-size:27px;margin:0 0 6px;">Chaussures Elite</h3>
+        <p style="margin:0;color:#64748b;">Versions terrain sec/gras/indoor</p>
+    </a>
+    <a href="{{ path('front_equipement_index', {q: 'jersey'}) }}" class="front-card" style="text-decoration:none;color:inherit;">
+        <h3 style="font-size:27px;margin:0 0 6px;">Maillots de match</h3>
+        <p style="margin:0;color:#64748b;">Coupes slim et reguliere</p>
+    </a>
+    <a href="{{ path('front_equipement_index', {q: 'gloves'}) }}" class="front-card" style="text-decoration:none;color:inherit;">
+        <h3 style="font-size:27px;margin:0 0 6px;">Gants de gardien</h3>
+        <p style="margin:0;color:#64748b;">Coupe negative et hybride</p>
+    </a>
 </div>
 {% endblock %}

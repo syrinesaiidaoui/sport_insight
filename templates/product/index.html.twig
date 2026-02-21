@@ -1,226 +1,161 @@
 {% extends 'back_office/base.html.twig' %}
 
-{% block title %}Products{% endblock %}
-{% block page_title %}Manage Products{% endblock %}
+{% block title %}Produits - Admin{% endblock %}
+{% block page_title %}Gestion des produits{% endblock %}
 
 {% block header_actions %}
-    <a href="{{ path('app_product_new') }}" class="btn btn-primary btn-add-product">
-     Add Product
-</a>
-    <!-- AI Chatbot Widget (UI Only) -->
-    <style>
-        #ai-chatbot-btn {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            background: #10b981;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-            font-size: 28px;
-            cursor: pointer;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        #ai-chatbot-btn:hover { background: #059669; }
-        #ai-chatbot-window {
-            position: fixed;
-            bottom: 100px;
-            right: 32px;
-            width: 340px;
-            max-width: 95vw;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            z-index: 10000;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        #ai-chatbot-header {
-            background: #10b981;
-            color: #fff;
-            padding: 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        #ai-chatbot-messages {
-            padding: 16px;
-            height: 220px;
-            overflow-y: auto;
-            background: #f9fafb;
-            font-size: 15px;
-        }
-        #ai-chatbot-input {
-            display: flex;
-            border-top: 1px solid #e5e7eb;
-        }
-        #ai-chatbot-input input {
-            flex: 1;
-            border: none;
-            padding: 12px;
-            font-size: 15px;
-            outline: none;
-        }
-        #ai-chatbot-input button {
-            background: #10b981;
-            color: #fff;
-            border: none;
-            padding: 0 18px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 0 0 16px 0;
-        }
-    </style>
-    <button id="ai-chatbot-btn" title="AI Chatbot">
-        <span>💬</span>
-    </button>
-    <div id="ai-chatbot-window">
-        <div id="ai-chatbot-header">
-            <span>Sport Insight AI</span>
-            <button onclick="document.getElementById('ai-chatbot-window').style.display='none'" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
-        </div>
-        <div id="ai-chatbot-messages">
-            <div style="color:#10b981;font-weight:bold;margin-bottom:8px;">🤖 Bonjour ! Je suis votre assistant Sport Insight.<br>Posez-moi une question sur les équipements ou demandez un conseil !</div>
-        </div>
-        <form id="ai-chatbot-input" onsubmit="event.preventDefault(); aiSendMessage();">
-            <input type="text" id="ai-chatbot-user-input" placeholder="Votre question..." autocomplete="off" />
-            <button type="submit">Envoyer</button>
-        </form>
-    </div>
-    <script>
-        const btn = document.getElementById('ai-chatbot-btn');
-        const win = document.getElementById('ai-chatbot-window');
-        btn.onclick = () => { win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; win.style.flexDirection = 'column'; };
-        function aiSendMessage() {
-            const input = document.getElementById('ai-chatbot-user-input');
-            const msg = input.value.trim();
-            if (!msg) return;
-            const messages = document.getElementById('ai-chatbot-messages');
-            messages.innerHTML += `<div style='margin-bottom:6px;'><b>Vous:</b> ${msg}</div>`;
-            input.value = '';
-            // Placeholder AI response
-            setTimeout(() => {
-                messages.innerHTML += `<div style='color:#10b981;margin-bottom:8px;'><b>AI:</b> (Ceci est une réponse fictive. L'IA sera connectée plus tard.)</div>`;
-                messages.scrollTop = messages.scrollHeight;
-            }, 600);
-            messages.scrollTop = messages.scrollHeight;
-        }
-    </script>
+    <a href="{{ path('app_product_new') }}" class="btn btn-primary btn-add-product">Ajouter un produit</a>
 {% endblock %}
 
 {% block body %}
-    <div class="data-table">
-        <div class="data-table-header">
-            <div>
-                <h3>Products</h3>
-                <p class="muted">Equipment list — manage inventory and details</p>
-            </div>
-            <div>
-                <form method="GET" style="display:flex; gap:8px; align-items:center;">
-                    <div>
-                        <input type="text" name="search" class="form-control" placeholder="Search by name, category, or brand..." value="{{ searchTerm }}">
-                    </div>
-                    <select name="sort" class="form-select">
-                        <option value="id" {% if sortBy == 'id' %}selected{% endif %}>ID</option>
-                        <option value="name" {% if sortBy == 'name' %}selected{% endif %}>Name</option>
-                        <option value="price" {% if sortBy == 'price' %}selected{% endif %}>Price</option>
-                        <option value="stock" {% if sortBy == 'stock' %}selected{% endif %}>Stock</option>
-                        <option value="category" {% if sortBy == 'category' %}selected{% endif %}>Category</option>
-                    </select>
-                    <select name="order" class="form-select" style="max-width:96px;">
-                        <option value="ASC" {% if sortOrder == 'ASC' %}selected{% endif %}>↑ ASC</option>
-                        <option value="DESC" {% if sortOrder == 'DESC' %}selected{% endif %}>↓ DESC</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="{{ path('app_product_index') }}" class="btn btn-outline-secondary">Reset</a>
-                </form>
-            </div>
-        </div>
+{% set dashboard = dashboard|default({
+    totalProducts: products|length,
+    totalOrders: 0,
+    pendingOrders: 0,
+    revenue: 0,
+    lowStockCount: 0,
+    outOfStockCount: 0,
+    deliveryRate: 0
+}) %}
 
-        <div style="overflow-x:auto;">
-            <table class="data-table-table">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Brand</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                        <tr>
-                            <td>
-                                {% if product.image %}
-                                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;border:1px solid rgba(0,0,0,0.06);">
-                                {% else %}
-                                    <div style="width:50px;height:50px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9ca3af;">📦</div>
-                                {% endif %}
-                            </td>
-                            <td style="font-weight:500;">{{ product.name }}</td>
-                            <td class="muted">{{ product.category ?? '-' }}</td>
-                            <td style="font-weight:600;color:var(--primary);">${{ product.price }}</td>
-                            <td>
-                                {% if product.stock > 10 %}
-                                    <span class="badge-success">{{ product.stock }}</span>
-                                {% elseif product.stock > 0 %}
-                                    <span class="badge-warning">{{ product.stock }}</span>
-                                {% else %}
-                                    <span class="badge-danger">0</span>
-                                {% endif %}
-                            </td>
-                            <td class="muted">{{ product.brand ?? '-' }}</td>
-                            <td>
-                                <div style="display:flex; gap:8px; align-items:center;">
-                                    <a href="{{ path('app_product_show', { id: product.id }) }}" class="btn btn-sm btn-info">View</a>
-                                    <a href="{{ path('app_product_edit', { id: product.id }) }}" class="btn btn-sm btn-warning">Edit</a>
-                                    <form method="POST" action="{{ path('app_product_delete', { id: product.id }) }}" style="display:inline;" onsubmit="return confirm('Delete this product?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
-                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="7" style="padding:40px;text-align:center;color:#9ca3af;">
-                                <svg style="width:64px;height:64px;margin:0 auto 12px;opacity:0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m0 0l8 4 8-4m0 0v10l-8 4-8-4V7m8 4v10m-8-6l8 4 8-4"/>
-                                </svg>
-                                <p style="font-size:14px;margin:0;">No products found</p>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="admin-kpis">
+    <div class="stat-card">
+        <div class="stat-card-label">Produits</div>
+        <div class="stat-card-value">{{ dashboard.totalProducts }}</div>
+        <div class="stat-card-sub">Catalogue actif</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Commandes</div>
+        <div class="stat-card-value">{{ dashboard.totalOrders }}</div>
+        <div class="stat-card-sub">Activite totale</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">CA valide</div>
+        <div class="stat-card-value">{{ dashboard.revenue|number_format(0, ',', ' ') }} USD</div>
+        <div class="stat-card-sub">Confirmee/expediee/livree</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Taux livraison</div>
+        <div class="stat-card-value">{{ dashboard.deliveryRate }}%</div>
+        <div class="stat-card-sub">Progression commandes</div>
+    </div>
+</div>
+
+<div class="admin-kpis" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+    <div class="stat-card">
+        <div class="stat-card-label">En attente</div>
+        <div class="stat-card-value">{{ dashboard.pendingOrders }}</div>
+        <div class="stat-card-sub">Commandes a traiter</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Stock faible</div>
+        <div class="stat-card-value">{{ dashboard.lowStockCount }}</div>
+        <div class="stat-card-sub">Produits <= 5</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Rupture</div>
+        <div class="stat-card-value">{{ dashboard.outOfStockCount }}</div>
+        <div class="stat-card-sub">Produits a reapprovisionner</div>
+    </div>
+</div>
+
+<div class="data-table">
+    <div class="data-table-header">
+        <div class="toolbar">
+            <div>
+                <h3>Produits</h3>
+                <p class="muted">Ajouter, modifier, supprimer et suivre le stock</p>
+            </div>
+            <form method="GET">
+                <input type="text" name="search" class="form-control" style="min-width:220px;" placeholder="Nom, categorie, marque..." value="{{ searchTerm|default('') }}">
+                <select name="sort" class="form-select">
+                    <option value="id" {% if sortBy == 'id' %}selected{% endif %}>ID</option>
+                    <option value="name" {% if sortBy == 'name' %}selected{% endif %}>Nom</option>
+                    <option value="price" {% if sortBy == 'price' %}selected{% endif %}>Prix</option>
+                    <option value="stock" {% if sortBy == 'stock' %}selected{% endif %}>Stock</option>
+                    <option value="category" {% if sortBy == 'category' %}selected{% endif %}>Categorie</option>
+                </select>
+                <select name="order" class="form-select" style="max-width:96px;">
+                    <option value="ASC" {% if sortOrder == 'ASC' %}selected{% endif %}>ASC</option>
+                    <option value="DESC" {% if sortOrder == 'DESC' %}selected{% endif %}>DESC</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+                <a href="{{ path('app_product_index') }}" class="btn btn-outline-secondary">Reinit.</a>
+            </form>
         </div>
     </div>
-    {# Pagination Controls #}
+
+    <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Categorie</th>
+                    <th>Prix</th>
+                    <th>Stock</th>
+                    <th>Marque</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>
+                            {% if product.image %}
+                                {% set imageSrc = product.image starts with 'http://' or product.image starts with 'https://' ? product.image : (product.image starts with 'api/' ? asset(product.image) : (product.image starts with '/api/' ? product.image : asset('uploads/' ~ product.image))) %}
+                                <img src="{{ imageSrc }}" alt="{{ product.name }}" style="width:52px;height:52px;object-fit:cover;border-radius:10px;border:1px solid #e5e7eb;">
+                            {% else %}
+                                <div style="width:52px;height:52px;border-radius:10px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#9ca3af;">IMG</div>
+                            {% endif %}
+                        </td>
+                        <td style="font-weight:600;">{{ product.name }}</td>
+                        <td>{{ product.category ?? '-' }}</td>
+                        <td style="font-weight:700;color:var(--primary);">{{ product.price|number_format(2, ',', ' ') }} USD</td>
+                        <td>
+                            {% if product.stock > 10 %}
+                                <span class="badge-success">{{ product.stock }}</span>
+                            {% elseif product.stock > 0 %}
+                                <span class="badge-warning">{{ product.stock }}</span>
+                            {% else %}
+                                <span class="badge-danger">0</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ product.brand ?? '-' }}</td>
+                        <td>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <a href="{{ path('app_product_show', { id: product.id }) }}" class="btn btn-sm btn-info">Voir</a>
+                                <a href="{{ path('app_product_edit', { id: product.id }) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                <form method="POST" action="{{ path('app_product_delete', { id: product.id }) }}" data-confirm="Supprimer ce produit ?">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="padding:40px;text-align:center;color:#9ca3af;">Aucun produit trouve</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
     {% if totalPages is defined and page is defined and totalPages > 1 %}
         <nav aria-label="Product pagination" class="mt-3">
             <ul class="pagination justify-content-center">
                 <li class="page-item{% if page == 1 %} disabled{% endif %}">
-                    <a class="page-link" href="?search={{ searchTerm }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ page-1 }}" tabindex="-1">Previous</a>
+                    <a class="page-link" href="?search={{ searchTerm|default('') }}&sort={{ sortBy|default('id') }}&order={{ sortOrder|default('ASC') }}&page={{ page-1 }}">Precedent</a>
                 </li>
                 {% for p in 1..totalPages %}
-                    <li class="page-item{% if p == page %} active{% endif %}"><a class="page-link" href="?search={{ searchTerm }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ p }}">{{ p }}</a></li>
+                    <li class="page-item{% if p == page %} active{% endif %}"><a class="page-link" href="?search={{ searchTerm|default('') }}&sort={{ sortBy|default('id') }}&order={{ sortOrder|default('ASC') }}&page={{ p }}">{{ p }}</a></li>
                 {% endfor %}
                 <li class="page-item{% if page == totalPages %} disabled{% endif %}">
-                    <a class="page-link" href="?search={{ searchTerm }}&sort={{ sortBy }}&order={{ sortOrder }}&page={{ page+1 }}">Next</a>
+                    <a class="page-link" href="?search={{ searchTerm|default('') }}&sort={{ sortBy|default('id') }}&order={{ sortOrder|default('ASC') }}&page={{ page+1 }}">Suivant</a>
                 </li>
             </ul>
         </nav>
     {% endif %}
+</div>
 {% endblock %}

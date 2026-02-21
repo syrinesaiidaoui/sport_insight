@@ -278,8 +278,8 @@
                             <i class="fa fa-lock"></i> Procéder à la caisse
                         </a>
                         
-                        <form method="POST" action="{{ path('app_cart_clear') }}" class="mb-0">
-                            <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Êtes-vous sûr de vouloir vider le panier ?')">
+                        <form method="POST" action="{{ path('app_cart_clear') }}" class="mb-0" data-confirm="Etes-vous sur de vouloir vider le panier ?">
+                            <button type="submit" class="btn btn-outline-danger w-100">
                                 <i class="fa fa-trash"></i> Vider le panier
                             </button>
                         </form>

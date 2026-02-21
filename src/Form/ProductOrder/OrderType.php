@@ -3,13 +3,15 @@
 namespace App\Form\ProductOrder;
 
 use App\Entity\ProductOrder\Order;
-use App\Entity\ProductOrder\Product;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,38 +20,68 @@ class OrderType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('quantity', IntegerType::class, [
-                'label' => 'Quantité',
-                'attr' => ['placeholder' => 'Nombre de produits à commander']
+            ->add('entraineur', EntityType::class, [
+                'label' => 'Utilisateur',
+                'class' => User::class,
+                'choice_label' => fn(User $user) => sprintf('%s %s (%s)', $user->getPrenom(), $user->getNom(), $user->getEmail()),
+                'placeholder' => 'Selectionner un utilisateur',
+            ])
+            ->add('contactEmail', EmailType::class, [
+                'label' => 'Email de contact',
+                'required' => false,
+            ])
+            ->add('contactPhone', TextType::class, [
+                'label' => 'Telephone',
+                'required' => false,
+            ])
+            ->add('shippingAddress', TextareaType::class, [
+                'label' => 'Adresse de livraison',
+                'required' => false,
+                'attr' => ['rows' => 2],
+            ])
+            ->add('billingAddress', TextareaType::class, [
+                'label' => 'Adresse de facturation',
+                'required' => false,
+                'attr' => ['rows' => 2],
             ])
             ->add('orderDate', DateType::class, [
                 'label' => 'Date de commande',
                 'widget' => 'single_text',
-                'attr' => ['placeholder' => 'YYYY-MM-DD']
             ])
             ->add('status', ChoiceType::class, [
                 'label' => 'Statut',
                 'choices' => [
                     'En attente' => 'pending',
-                    'Confirmée' => 'confirmed',
-                    'Expédiée' => 'shipped',
-                    'Livrée' => 'delivered',
+                    'Confirmee' => 'confirmed',
+                    'Expediee' => 'shipped',
+                    'Livree' => 'delivered',
+                    'Rejetee' => 'rejected',
                 ],
-                'attr' => ['class' => 'form-control']
             ])
-            ->add('product', EntityType::class, [
-                'label' => 'Produit',
-                'class' => Product::class,
-                'choice_label' => 'name',
-                'attr' => ['class' => 'form-control']
+            ->add('paymentMethod', ChoiceType::class, [
+                'label' => 'Mode de paiement',
+                'choices' => [
+                    'Paiement a la livraison' => 'cod',
+                    'Paiement en ligne' => 'online',
+                ],
             ])
-            ->add('entraineur', EntityType::class, [
-                'label' => 'Entraîneur',
-                'class' => User::class,
-                'choice_label' => 'email',
-                'attr' => ['class' => 'form-control']
+            ->add('paymentStatus', ChoiceType::class, [
+                'label' => 'Statut du paiement',
+                'choices' => [
+                    'Pending' => 'pending',
+                    'Paid' => 'paid',
+                    'Failed' => 'failed',
+                ],
             ])
-        ;
+            ->add('items', CollectionType::class, [
+                'entry_type' => OrderItemType::class,
+                'label' => false,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'prototype' => true,
+                'required' => false,
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

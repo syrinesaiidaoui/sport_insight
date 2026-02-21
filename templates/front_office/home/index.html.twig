@@ -1,61 +1,84 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Sport Insight - Accueil{% endblock %}
+{% block title %}Sport Insight | Boutique Football{% endblock %}
 
 {% block hero %}
-    <section class="hero">
-        <h1>Welcome to Sport Insight</h1>
-        <p>Suivez les entrainements, matchs, offres, sponsors et equipements de votre club prefere.</p>
-    </section>
+<section class="hero">
+    <span class="badge-soft">Nouvelle collection</span>
+    <h1>Composez Votre Kit De Match</h1>
+    <p>Chaussures, maillots, ballons, gants et essentiels d entrainement avec options pro : coupe, taille, matiere, edition et personnalisation.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+        <a href="{{ path('front_equipement_index') }}" class="btn btn-primary">Voir tous les produits</a>
+        <a href="{{ path('front_equipement_index', {category: 'Boots'}) }}" class="btn btn-secondary">Voir les chaussures</a>
+    </div>
+</section>
 {% endblock %}
 
 {% block body %}
-    <h2 class="section-title">Nos sections</h2>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <a href="{{ path('front_entrainement_index') }}" style="text-decoration:none;color:inherit">
-                <div class="front-card">
-                    <div class="card-icon"><i class="lucide-dumbbell"></i></div>
-                    <h3>Entrainement</h3>
-                    <p>Consultez le planning des seances, les horaires et les types d'entrainement de l'equipe.</p>
-                </div>
-            </a>
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:stretch;margin-bottom:18px;">
+    <article class="front-card" style="background:linear-gradient(140deg,#0f2f22,#1f6b49);color:#fff;">
+        <p style="margin:0;color:#d7f3e2;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;">Offre vedette</p>
+        <h2 style="font-size:40px;margin:6px 0 10px;">Economisez 20% sur les chaussures Elite</h2>
+        <p style="max-width:530px;color:#d7f3e2;">Versions terrain sec et indoor disponibles. Stock limite pour les tailles 40-45.</p>
+        <a href="{{ path('front_equipement_index', {q: 'boots'}) }}" class="btn btn-light" style="margin-top:10px;">Profiter de cette offre</a>
+    </article>
+
+    <aside class="front-card">
+        <h3 style="margin:0 0 10px;font-size:30px;">Acces rapide</h3>
+        <div style="display:grid;gap:10px;">
+            <a class="btn btn-secondary" href="{{ path('front_equipement_cart') }}">Voir le panier</a>
+            <a class="btn btn-secondary" href="{{ path('front_equipement_orders') }}">Suivre les commandes</a>
+            <a class="btn btn-secondary" href="{{ path('front_equipement_index', {sort: 'price'}) }}">Trier par prix</a>
         </div>
-        <div class="col-md-4">
-            <a href="{{ path('front_offre_index') }}" style="text-decoration:none;color:inherit">
-                <div class="front-card">
-                    <div class="card-icon"><i class="lucide-tag"></i></div>
-                    <h3>Offres</h3>
-                    <p>Decouvrez nos abonnements, packs et billets disponibles pour les supporters.</p>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="{{ path('front_match_index') }}" style="text-decoration:none;color:inherit">
-                <div class="front-card">
-                    <div class="card-icon"><i class="lucide-trophy"></i></div>
-                    <h3>Matchs</h3>
-                    <p>Calendrier des prochains matchs et resultats des rencontres passees.</p>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="{{ path('front_sponsoring_index') }}" style="text-decoration:none;color:inherit">
-                <div class="front-card">
-                    <div class="card-icon"><i class="lucide-handshake"></i></div>
-                    <h3>Sponsoring</h3>
-                    <p>Nos partenaires et sponsors officiels qui soutiennent le club.</p>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="{{ path('front_equipement_index') }}" style="text-decoration:none;color:inherit">
-                <div class="front-card">
-                    <div class="card-icon"><i class="lucide-shirt"></i></div>
-                    <h3>Equipement</h3>
-                    <p>Les tenues, materiel et equipements utilises par notre equipe.</p>
-                </div>
-            </a>
-        </div>
+    </aside>
+</div>
+
+<h2 class="section-title">Categories Boutique</h2>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px;">
+    <a class="front-card" href="{{ path('front_equipement_index', {category: 'Boots'}) }}" style="text-decoration:none;color:inherit;">
+        <span class="badge-soft">Boots</span>
+        <h3 style="font-size:28px;margin:8px 0 6px;">Chaussures par surface</h3>
+        <p style="margin:0;color:var(--muted);">Terrain sec, terrain gras, turf et indoor.</p>
+    </a>
+    <a class="front-card" href="{{ path('front_equipement_index', {category: 'Jersey'}) }}" style="text-decoration:none;color:inherit;">
+        <span class="badge-soft">Jerseys</span>
+        <h3 style="font-size:28px;margin:8px 0 6px;">Kits et tenues supporters</h3>
+        <p style="margin:0;color:var(--muted);">Domicile, exterieur, coupe slim ou reguliere, personnalisation joueur.</p>
+    </a>
+    <a class="front-card" href="{{ path('front_equipement_index', {category: 'Accessories'}) }}" style="text-decoration:none;color:inherit;">
+        <span class="badge-soft">Accessories</span>
+        <h3 style="font-size:28px;margin:8px 0 6px;">Sacs, chaussettes, protections</h3>
+        <p style="margin:0;color:var(--muted);">Essentiels prets en packs pour match et entrainement.</p>
+    </a>
+    <a class="front-card" href="{{ path('front_equipement_index', {q: 'goalkeeper'}) }}" style="text-decoration:none;color:inherit;">
+        <span class="badge-soft">Gardien</span>
+        <h3 style="font-size:28px;margin:8px 0 6px;">Gants et grip</h3>
+        <p style="margin:0;color:var(--muted);">Coupe negative, hybride, options protege-doigts.</p>
+    </a>
+    <a class="front-card" href="{{ path('front_equipement_index', {q: 'ball'}) }}" style="text-decoration:none;color:inherit;">
+        <span class="badge-soft">Balls</span>
+        <h3 style="font-size:28px;margin:8px 0 6px;">Match et entrainement</h3>
+        <p style="margin:0;color:var(--muted);">Choisissez par age, surface et durabilite.</p>
+    </a>
+    <a class="front-card" href="{{ path('front_equipement_index', {q: 'training'}) }}" style="text-decoration:none;color:inherit;">
+        <span class="badge-soft">Training</span>
+        <h3 style="font-size:28px;margin:8px 0 6px;">Tenues performance</h3>
+        <p style="margin:0;color:var(--muted);">Sous-couches, hauts et couches pour tous les temps.</p>
+    </a>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+    <div class="front-card">
+        <h3 style="font-size:26px;margin:0 0 6px;">Livraison et retrait</h3>
+        <p style="margin:0;color:var(--muted);">Livraison rapide, retrait en magasin et suivi depuis votre compte.</p>
     </div>
+    <div class="front-card">
+        <h3 style="font-size:26px;margin:0 0 6px;">Retours faciles</h3>
+        <p style="margin:0;color:var(--muted);">Retours sous 30 jours pour les articles non utilises, support paiement inclus.</p>
+    </div>
+    <div class="front-card">
+        <h3 style="font-size:26px;margin:0 0 6px;">Tailles enregistrees</h3>
+        <p style="margin:0;color:var(--muted);">Conservez votre profil de taille pour des achats plus rapides.</p>
+    </div>
+</div>
 {% endblock %}

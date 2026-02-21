@@ -1,4 +1,4 @@
-{% if errors is defined and errors %}
+﻿{% if errors is defined and errors %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <h4 class="alert-heading"><i class="fa fa-exclamation-circle"></i> Erreurs de validation</h4>
         <ul class="mb-0">
@@ -61,12 +61,12 @@
 <div class="form-card">
     <h4><i class="fa fa-plus-circle"></i> Ajouter un produit</h4>
 
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'product-form', 'onsubmit': 'return validateProductForm(this);'}}) }}
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'product-form'}}) }}
 
     <div class="form-row full">
         <div class="form-group">
             {{ form_label(form.name) }}
-            {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Maillot Équipe', 'required': 'required', 'minlength': '2'}}) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Maillot Ã‰quipe', 'required': 'required', 'minlength': '2'}}) }}
             {% if form.name.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -81,7 +81,7 @@
     <div class="form-row">
         <div class="form-group">
             {{ form_label(form.category) }}
-            {{ form_widget(form.category, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Vêtements', 'required': 'required'}}) }}
+            {{ form_widget(form.category, {'attr': {'class': 'form-control', 'placeholder': 'Ex: VÃªtements', 'required': 'required'}}) }}
             {% if form.category.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
@@ -122,28 +122,7 @@
 
         <div class="form-group">
             {{ form_label(form.stock) }}
-            {{ form_widget(form.stock, {'attr': {'class': 'form-control', 'placeholder': '0', 'required': 'required', 'min': '0', 'type': 'number'}}) }}
-            <script>
-            function validateProductForm(form) {
-                let name = form.querySelector('[name$="[name]"]');
-                let category = form.querySelector('[name$="[category]"]');
-                let brand = form.querySelector('[name$="[brand]"]');
-                let price = form.querySelector('[name$="[price]"]');
-                let stock = form.querySelector('[name$="[stock]"]');
-                let errors = [];
-                if (!name.value.trim() || name.value.length < 2) errors.push('Nom du produit requis (min 2 caractères)');
-                if (!category.value.trim()) errors.push('Catégorie requise');
-                if (!brand.value.trim()) errors.push('Marque requise');
-                if (!price.value || isNaN(price.value) || Number(price.value) < 0.01) errors.push('Prix doit être supérieur à 0');
-                if (!stock.value || isNaN(stock.value) || Number(stock.value) < 0) errors.push('Stock doit être 0 ou plus');
-                if (errors.length > 0) {
-                    alert(errors.join('\n'));
-                    return false;
-                }
-                return true;
-            }
-            </script>
-            {% if form.stock.vars.errors %}
+            {{ form_widget(form.stock, {'attr': {'class': 'form-control', 'placeholder': '0', 'required': 'required', 'min': '0', 'type': 'number'}}) }}`r`n{% if form.stock.vars.errors %}
                 <div class="text-danger small mt-2">
                     <i class="fa fa-times-circle"></i>
                     {% for error in form.stock.vars.errors %}
@@ -193,3 +172,5 @@
 
     {{ form_end(form) }}
 </div>
+
+

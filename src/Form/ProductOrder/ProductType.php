@@ -48,7 +48,7 @@ class ProductType extends AbstractType
             ->add('image', FileType::class, [
                 'label' => 'Image du produit',
                 'required' => false,
-                'data_class' => null
+                'mapped' => false
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Enregistrer le produit',

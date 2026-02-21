@@ -1,6 +1,6 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Shop - Équipement du Club{% endblock %}
+{% block title %}Boutique - Equipement du Club{% endblock %}
 
 {% block body %}
 <style>
@@ -311,7 +311,8 @@
                     {# Image #}
                     <div class="product-image-wrapper">
                         {% if product.image %}
-                            <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
+                            {% set imageSrc = product.image starts with 'http://' or product.image starts with 'https://' ? product.image : (product.image starts with 'api/' ? asset(product.image) : (product.image starts with '/api/' ? product.image : asset('uploads/' ~ product.image))) %}
+                            <img src="{{ imageSrc }}" alt="{{ product.name }}">
                         {% else %}
                             <i class="fa fa-cube"></i>
                         {% endif %}
@@ -363,3 +364,4 @@
     {% endif %}
 </div>
 {% endblock %}
+

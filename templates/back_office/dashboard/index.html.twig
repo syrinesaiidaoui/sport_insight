@@ -1,0 +1,104 @@
+{% extends 'back_office/base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+{% set maxDailyRevenue = 0 %}
+{% for day in dailyStats %}
+    {% if day.revenue > maxDailyRevenue %}
+        {% set maxDailyRevenue = day.revenue %}
+    {% endif %}
+{% endfor %}
+
+<section class="admin-kpis">
+    <article class="stat-card">
+        <div class="stat-card-label">Total sales</div>
+        <div class="stat-card-value">{{ overview.totalSales }}</div>
+        <div class="stat-card-sub">Sold items</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-label">Total revenue</div>
+        <div class="stat-card-value">${{ overview.totalRevenue|number_format(2, '.', ',') }}</div>
+        <div class="stat-card-sub">Confirmed, shipped and delivered</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-label">Orders</div>
+        <div class="stat-card-value">{{ overview.totalOrders }}</div>
+        <div class="stat-card-sub">All statuses</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-label">Confirmed orders</div>
+        <div class="stat-card-value">{{ overview.confirmedOrders }}</div>
+        <div class="stat-card-sub">Status: confirmed</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-label">Pending orders</div>
+        <div class="stat-card-value">{{ overview.pendingOrders }}</div>
+        <div class="stat-card-sub">Awaiting admin action</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-label">Rejected orders</div>
+        <div class="stat-card-value">{{ statusBreakdown.rejected }}</div>
+        <div class="stat-card-sub">Status: rejected</div>
+    </article>
+</section>
+
+<section class="data-table" style="margin-bottom: 20px;">
+    <div class="data-table-header">
+        <div>
+            <h3>Daily revenue progress (last 14 days)</h3>
+            <p class="muted">Quick trend of business performance</p>
+        </div>
+    </div>
+    <div style="padding: 20px 24px;">
+        <div style="display:grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 10px; align-items:end; min-height: 190px;">
+            {% for day in dailyStats %}
+                {% set height = maxDailyRevenue > 0 ? ((day.revenue / maxDailyRevenue) * 150)|round(0, 'ceil') : 4 %}
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                    <div style="width:100%; max-width:38px; height: {{ height }}px; border-radius:8px 8px 4px 4px; background: linear-gradient(180deg, #10b981 0%, #047857 100%);" title="${{ day.revenue|number_format(2, '.', ',') }}"></div>
+                    <div style="font-size:11px; color:#6b7280;">{{ day.label }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="data-table">
+    <div class="data-table-header">
+        <div>
+            <h3>Monthly overview</h3>
+            <p class="muted">Orders, sales and revenue by month</p>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Orders</th>
+                <th>Sales</th>
+                <th>Revenue</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for month in monthlyStats %}
+                <tr>
+                    <td>{{ month.label }}</td>
+                    <td>{{ month.orders }}</td>
+                    <td>{{ month.sales }}</td>
+                    <td>${{ month.revenue|number_format(2, '.', ',') }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">No monthly data available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -4,13 +4,17 @@ namespace App\Controller\ProductOrder;
 
 use App\Entity\ProductOrder\Product;
 use App\Form\ProductOrder\ProductType;
+use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Service\ValidationService;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 // security attribute import removed for public/no-login mode
 
 #[Route('/product')]
@@ -21,7 +25,7 @@ class ProductController extends AbstractController
     }
 
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(Request $request, ProductRepository $productRepository): Response
+    public function index(Request $request, ProductRepository $productRepository, OrderRepository $orderRepository): Response
     {
         // Pagination and search
         $searchTerm = trim($request->query->get('search', ''));
@@ -54,6 +58,40 @@ class ProductController extends AbstractController
         }
         $totalProducts = (int)$countQb->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
         $totalPages = (int)ceil($totalProducts / $perPage);
+
+        $allProducts = $productRepository->findAll();
+        $allOrders = $orderRepository->findAll();
+
+        $lowStockCount = 0;
+        $outOfStockCount = 0;
+        foreach ($allProducts as $p) {
+            $stock = (int)$p->getStock();
+            if ($stock <= 0) {
+                $outOfStockCount++;
+            } elseif ($stock <= 5) {
+                $lowStockCount++;
+            }
+        }
+
+        $revenue = 0.0;
+        $pendingOrders = 0;
+        $deliveredOrders = 0;
+        foreach ($allOrders as $order) {
+            $status = (string)$order->getStatus();
+            if ($status === 'pending') {
+                $pendingOrders++;
+            }
+            if ($status === 'delivered') {
+                $deliveredOrders++;
+            }
+            if (in_array($status, ['confirmed', 'shipped', 'delivered'], true)) {
+                $revenue += ((float)$order->getProduct()?->getPrice() * (int)$order->getQuantity());
+            }
+        }
+
+        $totalOrders = count($allOrders);
+        $deliveryRate = $totalOrders > 0 ? (int)round(($deliveredOrders / $totalOrders) * 100) : 0;
+
         return $this->render('product/index.html.twig', [
             'products' => $products,
             'searchTerm' => $searchTerm,
@@ -61,11 +99,20 @@ class ProductController extends AbstractController
             'sortOrder' => $sortOrder,
             'page' => $page,
             'totalPages' => $totalPages,
+            'dashboard' => [
+                'totalProducts' => count($allProducts),
+                'totalOrders' => $totalOrders,
+                'pendingOrders' => $pendingOrders,
+                'revenue' => $revenue,
+                'lowStockCount' => $lowStockCount,
+                'outOfStockCount' => $outOfStockCount,
+                'deliveryRate' => $deliveryRate,
+            ],
         ]);
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         // access control removed to allow public access during local development
         
@@ -92,6 +139,7 @@ class ProductController extends AbstractController
             }
 
             if ($form->isValid()) {
+                $this->handleProductImageUpload($form->get('image')->getData(), $product, $slugger);
                 $entityManager->persist($product);
                 $entityManager->flush();
 
@@ -118,7 +166,7 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         // access control removed to allow public access during local development
         
@@ -144,6 +192,7 @@ class ProductController extends AbstractController
             }
 
             if ($form->isValid()) {
+                $this->handleProductImageUpload($form->get('image')->getData(), $product, $slugger);
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Produit mis à jour avec succès');
@@ -176,6 +225,25 @@ class ProductController extends AbstractController
         }
 
         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function handleProductImageUpload(?UploadedFile $uploadedFile, Product $product, SluggerInterface $slugger): void
+    {
+        if (!$uploadedFile) {
+            return;
+        }
+
+        $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = (string) $slugger->slug($originalFilename);
+        $newFilename = $safeFilename . '-' . uniqid('', true) . '.' . $uploadedFile->guessExtension();
+
+        $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
+        }
+
+        $uploadedFile->move($uploadDir, $newFilename);
+        $product->setImage($newFilename);
     }
 }
 

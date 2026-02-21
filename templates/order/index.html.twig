@@ -1,56 +1,85 @@
 {% extends 'back_office/base.html.twig' %}
 
-{% block title %}Orders{% endblock %}
-{% block page_title %}Manage Orders{% endblock %}
+{% block title %}Commandes - Admin{% endblock %}
+{% block page_title %}Gestion des commandes{% endblock %}
 
 {% block header_actions %}
-    <a href="{{ path('app_order_new') }}" class="btn btn-primary btn-sm">
-        Add Order
-    </a>
+    <a href="{{ path('app_order_new') }}" class="btn btn-primary btn-add-product">Nouvelle commande</a>
 {% endblock %}
 
 {% block body %}
-    <div class="data-table">
-        <div class="data-table-header">
-            <div>
-                <h3>Orders</h3>
-                <p class="muted">Manage and filter customer orders</p>
-            </div>
-            <div>
-                <form method="GET" style="display:flex; gap:8px; align-items:center;">
-                    <input type="text" name="search" class="form-control" placeholder="Search by product or user email..." value="{{ searchTerm }}">
-                    <select name="status" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="pending" {% if statusFilter == 'pending' %}selected{% endif %}>Pending</option>
-                        <option value="confirmed" {% if statusFilter == 'confirmed' %}selected{% endif %}>Confirmed</option>
-                        <option value="shipped" {% if statusFilter == 'shipped' %}selected{% endif %}>Shipped</option>
-                        <option value="delivered" {% if statusFilter == 'delivered' %}selected{% endif %}>Delivered</option>
-                    </select>
-                    <select name="sort" class="form-select">
-                        <option value="orderDate" {% if sortBy == 'orderDate' %}selected{% endif %}>Sort by Date</option>
-                        <option value="id" {% if sortBy == 'id' %}selected{% endif %}>Sort by ID</option>
-                        <option value="status" {% if sortBy == 'status' %}selected{% endif %}>Sort by Status</option>
-                        <option value="quantity" {% if sortBy == 'quantity' %}selected{% endif %}>Sort by Qty</option>
-                    </select>
-                    <select name="order" class="form-select" style="max-width:96px;">
-                        <option value="DESC" {% if sortOrder == 'DESC' %}selected{% endif %}>DESC</option>
-                        <option value="ASC" {% if sortOrder == 'ASC' %}selected{% endif %}>ASC</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="{{ path('app_order_index') }}" class="btn btn-outline-secondary">Reset</a>
-                </form>
-            </div>
-        </div>
+{% set stats = stats|default({
+    total: orders|length,
+    pending: 0,
+    confirmed: 0,
+    shipped: 0,
+    delivered: 0,
+    rejected: 0,
+    revenue: 0
+}) %}
+{% set page = page|default(1) %}
+{% set totalPages = totalPages|default(1) %}
 
-        <table class="data-table-table">
+<div class="admin-kpis">
+    <div class="stat-card">
+        <div class="stat-card-label">Commandes</div>
+        <div class="stat-card-value">{{ stats.total }}</div>
+        <div class="stat-card-sub">Total enregistre</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">A traiter</div>
+        <div class="stat-card-value">{{ stats.pending }}</div>
+        <div class="stat-card-sub">En attente</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Validees</div>
+        <div class="stat-card-value">{{ stats.confirmed + stats.shipped + stats.delivered }}</div>
+        <div class="stat-card-sub">Pipeline actif</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Rejetees</div>
+        <div class="stat-card-value">{{ stats.rejected }}</div>
+        <div class="stat-card-sub">Demandes refusees</div>
+    </div>
+</div>
+
+<div class="data-table">
+    <div class="data-table-header">
+        <div class="toolbar">
+            <div>
+                <h3>Commandes clients</h3>
+                <p class="muted">Valider, rejeter et suivre la progression logistique</p>
+            </div>
+            <form method="GET">
+                <input type="text" name="search" class="form-control" style="min-width:220px;" placeholder="Produit ou email..." value="{{ searchTerm|default('') }}">
+                <select name="status" class="form-select">
+                    <option value="">Tous statuts</option>
+                    <option value="pending" {% if statusFilter == 'pending' %}selected{% endif %}>En attente</option>
+                    <option value="confirmed" {% if statusFilter == 'confirmed' %}selected{% endif %}>Confirmee</option>
+                    <option value="shipped" {% if statusFilter == 'shipped' %}selected{% endif %}>Expediee</option>
+                    <option value="delivered" {% if statusFilter == 'delivered' %}selected{% endif %}>Livree</option>
+                    <option value="rejected" {% if statusFilter == 'rejected' %}selected{% endif %}>Rejetee</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+                <a href="{{ path('app_order_index') }}" class="btn btn-outline-secondary">Reinit.</a>
+            </form>
+        </div>
+    </div>
+
+    <div style="overflow-x:auto;">
+        <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Product</th>
-                    <th>User</th>
-                    <th>Quantity</th>
+                    <th>Telephone</th>
+                    <th>Email</th>
+                    <th>Produits</th>
+                    <th>Client</th>
+                    <th>Total</th>
+                    <th>Paiement</th>
+                    <th>Statut paiement</th>
                     <th>Date</th>
-                    <th>Status</th>
+                    <th>Statut</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -58,38 +87,94 @@
                 {% for order in orders %}
                     <tr>
                         <td>#{{ order.id }}</td>
-                        <td>{{ order.product.name }}</td>
-                        <td>{{ order.entraineur.email }}</td>
-                        <td>{{ order.quantity }}</td>
-                        <td>{{ order.orderDate|date('d/m/Y') }}</td>
+                        <td>{{ order.entraineur ? order.entraineur.prenom ~ ' ' ~ order.entraineur.nom : 'Client' }}</td>
+                        <td>{{ order.contactEmail ?: (order.entraineur ? order.entraineur.email : '-') }}</td>
                         <td>
-                            {% if order.status == 'pending' %}
-                                <span class="badge-warning">Pending</span>
-                            {% elseif order.status == 'confirmed' %}
-                                <span class="badge-success">Confirmed</span>
-                            {% elseif order.status == 'shipped' %}
-                                <span class="badge-info">Shipped</span>
-                            {% elseif order.status == 'delivered' %}
-                                <span class="badge-success">Delivered</span>
+                            {% if order.items|length > 0 %}
+                                {{ order.items|length }} produit(s)
+                            {% else %}
+                                {{ order.product ? order.product.name : '-' }}
+                            {% endif %}
+                        </td>
+                        <td>{{ order.contactPhone ?: (order.entraineur ? order.entraineur.telephone : '-') }}</td>
+                        <td>{{ (order.totalAmount ?: order.computedTotal)|number_format(2, ',', ' ') }} USD</td>
+                        <td>
+                            {% if order.paymentMethod == 'online' %}
+                                <span class="badge-info">En ligne</span>
+                            {% else %}
+                                <span class="badge-warning">Livraison</span>
                             {% endif %}
                         </td>
                         <td>
-                            <div style="display:flex; gap:8px; align-items:center;">
-                                <a href="{{ path('app_order_show', { id: order.id }) }}" class="btn btn-sm btn-info">View</a>
-                                <a href="{{ path('app_order_edit', { id: order.id }) }}" class="btn btn-sm btn-warning">Edit</a>
-                                <form method="POST" action="{{ path('app_order_delete', { id: order.id }) }}" style="display:inline;" onsubmit="return confirm('Delete this order?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ order.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            {% if order.paymentStatus == 'paid' %}
+                                <span class="badge-success">Paid</span>
+                            {% elseif order.paymentStatus == 'failed' %}
+                                <span class="badge-danger">Failed</span>
+                            {% else %}
+                                <span class="badge-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.orderDate|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if order.status == 'pending' %}
+                                <span class="badge-warning">En attente</span>
+                            {% elseif order.status == 'confirmed' %}
+                                <span class="badge-info">Confirmee</span>
+                            {% elseif order.status == 'shipped' %}
+                                <span class="badge-info">Expediee</span>
+                            {% elseif order.status == 'delivered' %}
+                                <span class="badge-success">Livree</span>
+                            {% elseif order.status == 'rejected' %}
+                                <span class="badge-danger">Rejetee</span>
+                            {% else %}
+                                <span class="badge-warning">{{ order.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <a href="{{ path('app_order_show', {id: order.id}) }}" class="btn btn-sm btn-outline-secondary">Voir</a>
+                                <form method="POST" action="{{ path('app_order_change_status', {id: order.id, status: 'confirmed'}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('order_status_' ~ order.id) }}">
+                                    <button class="btn btn-sm btn-success" type="submit">Confirmer</button>
+                                </form>
+                                <form method="POST" action="{{ path('app_order_change_status', {id: order.id, status: 'rejected'}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('order_status_' ~ order.id) }}">
+                                    <button class="btn btn-sm btn-danger" type="submit">Rejeter</button>
+                                </form>
+                                <form method="POST" action="{{ path('app_order_change_status', {id: order.id, status: 'shipped'}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('order_status_' ~ order.id) }}">
+                                    <button class="btn btn-sm btn-primary" type="submit">Expedier</button>
+                                </form>
+                                <form method="POST" action="{{ path('app_order_change_status', {id: order.id, status: 'delivered'}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('order_status_' ~ order.id) }}">
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit">Livrer</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="7" style="text-align: center; color: #9ca3af;">No orders found</td>
+                        <td colspan="11" style="text-align:center; color:#9ca3af;">Aucune commande trouvee</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    {% if totalPages > 1 %}
+        <nav aria-label="Order pagination" class="mt-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item{% if page == 1 %} disabled{% endif %}">
+                    <a class="page-link" href="?search={{ searchTerm|default('') }}&status={{ statusFilter|default('') }}&sort={{ sortBy|default('orderDate') }}&order={{ sortOrder|default('DESC') }}&page={{ page-1 }}">Precedent</a>
+                </li>
+                {% for p in 1..totalPages %}
+                    <li class="page-item{% if p == page %} active{% endif %}"><a class="page-link" href="?search={{ searchTerm|default('') }}&status={{ statusFilter|default('') }}&sort={{ sortBy|default('orderDate') }}&order={{ sortOrder|default('DESC') }}&page={{ p }}">{{ p }}</a></li>
+                {% endfor %}
+                <li class="page-item{% if page == totalPages %} disabled{% endif %}">
+                    <a class="page-link" href="?search={{ searchTerm|default('') }}&status={{ statusFilter|default('') }}&sort={{ sortBy|default('orderDate') }}&order={{ sortOrder|default('DESC') }}&page={{ page+1 }}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+</div>
 {% endblock %}

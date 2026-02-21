@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Admin - Sport Insight{% endblock %}</title>
-   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/lucide-static@latest/font/lucide.css" rel="stylesheet">
+
     <style>
         :root {
             --sidebar-bg: #111827;
@@ -161,12 +163,20 @@
             padding: 32px;
         }
 
+        .admin-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
         /* ===== CARDS ===== */
         .stat-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 24px;
+            padding: 18px;
+            min-height: 132px;
         }
 
         .stat-card-label {
@@ -207,6 +217,27 @@
         .data-table-header h3 {
             font-size: 16px;
             font-weight: 600;
+        }
+
+        .muted {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .data-table table {
@@ -288,9 +319,10 @@
             padding: 8px 16px;
         }
         .btn-add-product {
-    padding: 4px 10px;  /* smaller padding */
-    font-size: 12px;    /* smaller text */
-}
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+        }
 
         .btn-primary:hover {
             background: var(--primary-hover) !important;
@@ -324,6 +356,18 @@
             .main-content { margin-left: 0; }
             .page-content { padding: 16px; }
         }
+
+        @media (max-width: 1100px) {
+            .admin-kpis {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .admin-kpis {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
     {% block stylesheets %}{% endblock %}
 </head>
@@ -341,6 +385,12 @@
 
         <nav class="sidebar-nav">
             <div class="sidebar-label">Gestion</div>
+
+            <a href="{{ path('admin_dashboard') }}"
+               class="sidebar-link {{ app.request.get('_route') starts with 'admin_dashboard' ? 'active' : '' }}">
+                <i class="lucide-layout-dashboard"></i>
+                Dashboard
+            </a>
 
             <a href="{{ path('back_entrainement_index') }}"
                class="sidebar-link {{ app.request.get('_route') starts with 'back_entrainement' ? 'active' : '' }}">
@@ -375,7 +425,7 @@
             <a href="{{ path('app_order_index') }}"
                class="sidebar-link {{ app.request.get('_route') starts with 'app_order' ? 'active' : '' }}">
                 <i class="lucide-cart"></i>
-                Orders
+                Commandes
             </a>
         </nav>
 
@@ -402,7 +452,7 @@
             <div class="mb-16">
                 {% for type, messages in app.flashes %}
                     {% for message in messages %}
-                        <div class="stat-card" style="border-left:4px solid {% if type in ['danger','error'] %}#ef4444{% elseif type in ['success'] %}#16a34a{% else %}#f59e0b{% endif %}; margin-bottom:12px;">
+                        <div class="stat-card js-flash-message" data-flash-type="{{ type }}" style="border-left:4px solid {% if type in ['danger','error'] %}#ef4444{% elseif type in ['success'] %}#16a34a{% else %}#f59e0b{% endif %}; margin-bottom:12px;">
                             <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
                                 <div style="font-weight:600;">{{ message }}</div>
                             </div>
@@ -416,6 +466,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% include '_partials/global_form_ux.html.twig' %}
     {% block javascripts %}{% endblock %}
 </body>
 </html>
