@@ -36,9 +36,35 @@
                         {% endif %}
                     </div>
 
-                    <p style="color: var(--text-dark); line-height: 1.6; margin-bottom: 0; word-wrap: break-word; padding: 12px; background: rgba(16, 185, 129, 0.02); border-radius: 8px; border-left: 3px solid var(--primary);">
+                    <p style="color: var(--text-dark); line-height: 1.6; margin-bottom: 12px; word-wrap: break-word; padding: 12px; background: rgba(16, 185, 129, 0.02); border-radius: 8px; border-left: 3px solid var(--primary);">
                         {{ commentaire.contenu }}
                     </p>
+
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <form method="post" action="{{ path('app_commentaire_like', {'id': commentaire.id}) }}" style="display: inline;">
+                            <button type="submit" 
+                                    class="btn btn-sm btn-outline-success" 
+                                    style="font-size: 11px; padding: 2px 8px; border-radius: 4px; border-color: rgba(16, 185, 129, 0.2); color: var(--text-dark);">
+                                👍 {{ commentaire.nbLikes }}
+                            </button>
+                        </form>
+                        
+                        <a href="{{ path('app_traduire_comment', {'id': commentaire.id, 'target': 'ar'}) }}" 
+                           class="btn btn-sm btn-outline-secondary" 
+                           style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
+                           TR (AR)
+                        </a>
+                        <a href="{{ path('app_traduire_comment', {'id': commentaire.id, 'target': 'en'}) }}" 
+                           class="btn btn-sm btn-outline-secondary" 
+                           style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
+                           TR (EN)
+                        </a>
+                        <a href="{{ path('app_resumer_comment', {'id': commentaire.id}) }}" 
+                           class="btn btn-sm btn-outline-info" 
+                           style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
+                           Résumer
+                        </a>
+                    </div>
                 </div>
             {% endfor %}
         </div>

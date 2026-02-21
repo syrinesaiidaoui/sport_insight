@@ -31,6 +31,15 @@ class Commentaire
     #[ORM\JoinColumn(nullable: false)]
     private ?Annonce $annonce = null;
 
+    #[ORM\Column]
+    private int $nbLikes = 0;
+
+    #[ORM\Column(length: 20)]
+    private string $moderationStatus = 'PENDING';
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $moderationReason = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,6 +101,42 @@ class Commentaire
     public function setAnnonce(?Annonce $annonce): static
     {
         $this->annonce = $annonce;
+
+        return $this;
+    }
+
+    public function getNbLikes(): int
+    {
+        return $this->nbLikes;
+    }
+
+    public function setNbLikes(int $nbLikes): static
+    {
+        $this->nbLikes = $nbLikes;
+
+        return $this;
+    }
+
+    public function getModerationStatus(): string
+    {
+        return $this->moderationStatus;
+    }
+
+    public function setModerationStatus(string $moderationStatus): static
+    {
+        $this->moderationStatus = $moderationStatus;
+
+        return $this;
+    }
+
+    public function getModerationReason(): ?string
+    {
+        return $this->moderationReason;
+    }
+
+    public function setModerationReason(?string $moderationReason): static
+    {
+        $this->moderationReason = $moderationReason;
 
         return $this;
     }

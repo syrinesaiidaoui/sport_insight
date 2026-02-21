@@ -1,0 +1,267 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Chat - {{ entraineur.nom }}{% endblock %}
+
+{% block body %}
+<style>
+    .chat-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 200px);
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+    }
+
+    .trainer-avatar {
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .chat-info h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text-dark);
+    }
+
+    .chat-info p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    #chat-messages {
+        flex: 1;
+        padding: 24px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: #f8fafc;
+    }
+
+    .message-row {
+        display: flex;
+        flex-direction: column;
+        max-width: 75%;
+    }
+
+    .message-row.sent {
+        align-self: flex-end;
+        align-items: flex-end;
+    }
+
+    .message-row.received {
+        align-self: flex-start;
+        align-items: flex-start;
+    }
+
+    .message-bubble {
+        padding: 10px 16px;
+        border-radius: 18px;
+        font-size: 14px;
+        line-height: 1.5;
+        position: relative;
+    }
+
+    .sent .message-bubble {
+        background: var(--primary);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+    }
+
+    .received .message-bubble {
+        background: #fff;
+        color: var(--text-dark);
+        border: 1px solid var(--border-color);
+        border-bottom-left-radius: 4px;
+    }
+
+    .message-time {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .chat-footer {
+        padding: 16px 24px;
+        background: #fff;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .input-wrapper {
+        display: flex;
+        gap: 12px;
+        background: #f3f4f6;
+        padding: 4px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .input-wrapper:focus-within {
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+
+    #chat-input {
+        border: none;
+        background: transparent;
+        padding: 8px 12px;
+        flex: 1;
+        outline: none;
+        font-size: 14px;
+    }
+
+    .btn-send {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+
+    .btn-send:hover {
+        background: var(--primary-hover);
+        transform: scale(1.05);
+    }
+
+    .btn-send:active {
+        transform: scale(0.95);
+    }
+
+    /* Scrollbar style */
+    #chat-messages::-webkit-scrollbar { width: 6px; }
+    #chat-messages::-webkit-scrollbar-track { background: transparent; }
+    #chat-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+</style>
+
+<div class="chat-wrapper">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="trainer-avatar">
+            {{ entraineur.nom|first|upper }}
+        </div>
+        <div class="chat-info">
+            <h3>Discussion avec {{ entraineur.nom }} {{ entraineur.prenom }}</h3>
+            <p>Annonce : {{ annonce.titre }}</p>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="chat-messages">
+        {% for msg in messages %}
+            {% set is_me = (msg.auteur == app.user) %}
+            <div class="message-row {{ is_me ? 'sent' : 'received' }}">
+                <div class="message-bubble">
+                    {{ msg.message }}
+                </div>
+                <div class="message-time">
+                    {{ msg.createdAt|date('H:i') }}
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align:center;color:var(--text-muted);margin-top:40px;font-size:14px;">
+                <i class="lucide-message-circle" style="display:block;margin-bottom:8px;font-size:24px;"></i>
+                Aucun message pour le moment. Commencez la discussion !
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Footer -->
+    <div class="chat-footer">
+        <form id="chat-form" onsubmit="return false;">
+            <div class="input-wrapper">
+                <input type="text" id="chat-input" placeholder="Votre message..." autocomplete="off" required>
+                <button type="submit" class="btn-send">
+                    <i class="lucide-send"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Scroll to bottom helper
+    const scrollToBottom = () => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    // Initial scroll
+    scrollToBottom();
+
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        chatInput.disabled = true;
+
+        try {
+            const response = await fetch('{{ path('front_annonce_chat_send', {id: annonce.id}) }}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message})
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                const newMsg = document.createElement('div');
+                newMsg.className = 'message-row sent';
+                newMsg.style.animation = 'scaleIn 0.2s ease-out';
+                newMsg.innerHTML = `
+                    <div class="message-bubble">${data.message}</div>
+                    <div class="message-time">${data.createdAt.split(' ')[1]}</div>
+                `;
+                chatMessages.appendChild(newMsg);
+                chatInput.value = '';
+                scrollToBottom();
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'envois du message', error);
+        } finally {
+            chatInput.disabled = false;
+            chatInput.focus();
+        }
+    });
+
+    // Add animation style
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }`;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}

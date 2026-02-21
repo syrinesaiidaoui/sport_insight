@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% block title %}Chat privé{% endblock %}
+{% block body %}
+<div class="container" style="max-width:600px;margin:auto;">
+    <h2>Chat privé</h2>
+    <div id="chat-messages" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;height:300px;overflow-y:auto;margin-bottom:16px;"></div>
+    <form id="chat-form" autocomplete="off" style="display:flex;gap:8px;">
+        <input type="text" id="chat-input" class="form-control" placeholder="Votre message..." style="flex:1;">
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+</div>
+<script>
+const chatId = {{ chat.id }};
+const chatMessages = document.getElementById('chat-messages');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+
+function fetchMessages() {
+    fetch(`/chat/${chatId}`)
+        .then(r => r.json())
+        .then(data => {
+            chatMessages.innerHTML = '';
+            if(data.success) {
+                data.messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '8px';
+                    div.style.textAlign = msg.sender === '{{ app.user.username }}' ? 'right' : 'left';
+                    div.innerHTML = `<span style="background:${msg.sender === '{{ app.user.username }}' ? '#d1fae5' : '#fff'};padding:6px 12px;border-radius:8px;display:inline-block;">${msg.content}</span><br><small style="color:#888;">${msg.sentAt}</small>`;
+                    chatMessages.appendChild(div);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+}
+chatForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const content = chatInput.value.trim();
+    if (!content) return;
+    fetch(`/chat/${chatId}/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'content=' + encodeURIComponent(content)
+    }).then(() => {
+        chatInput.value = '';
+        fetchMessages();
+    });
+});
+setInterval(fetchMessages, 2000);
+fetchMessages();
+</script>
+{% endblock %}

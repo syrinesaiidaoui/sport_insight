@@ -5,7 +5,10 @@
 {% block body %}
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <h1 class="section-title" style="margin-bottom: 0;">Annonces</h1>
-        <a href="{{ path('app_annonce_new') }}" class="btn btn-primary" style="padding: 10px 20px; font-size: 14px; text-decoration: none; display: inline-block;">+ Créer une annonce</a>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <a href="{{ path('app_statistics') }}" class="btn btn-outline-secondary" style="padding: 10px 20px; font-size: 14px; text-decoration: none; border: 1px solid #cbd5e1; color: #475569; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">📊 Statistiques</a>
+            <a href="{{ path('app_annonce_new') }}" class="btn btn-primary" style="padding: 10px 20px; font-size: 14px; text-decoration: none; display: inline-block;">+ Créer une annonce</a>
+        </div>
     </div>
 
     <!-- FILTRES ET TRI -->
@@ -45,44 +48,35 @@
     </div>
 
     {% if annonces|length > 0 %}
-        <div class="front-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Titre</th>
-                        <th>Poste Recherché</th>
-                        <th>Niveau Requis</th>
-                        <th>Date Publication</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for annonce in annonces %}
-                    <tr>
-                        <td><strong>{{ annonce.titre }}</strong></td>
-                        <td>{{ annonce.posteRecherche }}</td>
-                        <td>{{ annonce.niveauRequis }}</td>
-                        <td>{{ annonce.datePublication ? annonce.datePublication|date('d/m/Y') : 'N/A' }}</td>
-                        <td>
+        <div class="row" style="display: flex; flex-wrap: wrap; gap: 32px; justify-content: flex-start;">
+            {% for annonce in annonces %}
+                <div class="front-card" style="flex: 1 1 350px; min-width: 320px; max-width: 400px; margin-bottom: 32px; background: #fff; border: 1px solid #e2e8f0;">
+                    <div class="card-body">
+                        <h3 style="font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">{{ annonce.titre }}</h3>
+                        <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Publié le {{ annonce.datePublication ? annonce.datePublication|date('d/m/Y') : 'N/A' }}</p>
+                        
+                        <div style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <div style="margin-bottom: 6px;"><span style="color: #64748b; font-size: 13px;">Poste :</span> <strong style="color: #1e293b;">{{ annonce.posteRecherche }}</strong></div>
+                            <div><span style="color: #64748b; font-size: 13px;">Niveau :</span> <strong style="color: #1e293b;">{{ annonce.niveauRequis }}</strong></div>
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
                             {% if annonce.statut == 'active' %}
                                 <span class="badge-success">Actif</span>
                             {% elseif annonce.statut == 'inactive' %}
                                 <span class="badge-warning">Inactif</span>
-                            {% elseif annonce.statut == 'archivée' %}
-                                <span class="badge-secondary">Archivée</span>
                             {% else %}
                                 <span class="badge-warning">{{ annonce.statut }}</span>
                             {% endif %}
-                        </td>
-                        <td>
-                            <a href="{{ path('app_annonce_show', {'id': annonce.id}) }}" style="color: var(--primary); text-decoration: none; font-weight: 500; margin-right: 12px;">Voir</a>
-                            <a href="{{ path('app_annonce_edit', {'id': annonce.id}) }}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Éditer</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <a href="{{ path('app_annonce_show', {'id': annonce.id}) }}" class="btn btn-primary" style="flex: 1; text-align: center; text-decoration: none; color: #fff;">Voir Détails</a>
+                            <a href="{{ path('app_annonce_edit', {'id': annonce.id}) }}" class="btn btn-outline-secondary" style="border-radius: 10px; padding: 10px 16px; text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid #cbd5e1; color: #475569;">Éditer</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     {% else %}
         <div class="front-card" style="text-align: center; padding: 60px 40px;">

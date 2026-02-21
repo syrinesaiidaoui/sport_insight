@@ -1,0 +1,31 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Statistiques - FC Club{% endblock %}
+
+{% block body %}
+    <div style="margin-bottom: 40px;">
+        <h1 class="section-title">📊 Graphiques & Statistiques</h1>
+        <p style="color: var(--text-muted); font-size: 16px;">Analyse de l'engagement par annonce (Nombre de commentaires)</p>
+    </div>
+
+    <div class="front-card" style="padding: 40px; margin-bottom: 40px;">
+        <h3 style="color: #fff; margin-bottom: 24px; font-weight: 700;">Engagement par Annonce</h3>
+        <div style="height: 500px; position: relative;">
+            {{ render_chart(chart) }}
+        </div>
+    </div>
+
+    <div class="row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+        <div class="front-card">
+            <h4 style="color: var(--primary); margin-bottom: 12px;">Apperçu Rapide</h4>
+            <p style="color: #fff; font-size: 32px; font-weight: 800; margin-bottom: 4px;">{{ data|default([])|reduce((carry, item) => carry + item, 0) }}</p>
+            <p style="color: var(--text-muted); font-size: 14px;">Total des interactions détectées</p>
+        </div>
+        
+        <div class="front-card">
+            <h4 style="color: var(--primary); margin-bottom: 12px;">Annonces Actives</h4>
+            <p style="color: #fff; font-size: 32px; font-weight: 800; margin-bottom: 4px;">{{ chart.data.labels|length }}</p>
+            <p style="color: var(--text-muted); font-size: 14px;">Total des annonces analysées</p>
+        </div>
+    </div>
+{% endblock %}

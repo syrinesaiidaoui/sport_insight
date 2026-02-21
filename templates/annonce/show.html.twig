@@ -51,6 +51,11 @@
             </div>
         </div>
 
+        <!-- BOUTON CHAT ENTRAÎNEUR -->
+        <div style="margin-top: 40px;">
+            <a href="{{ path('front_annonce_chat', {id: annonce.id}) }}" class="btn btn-success" style="margin-bottom: 24px;">Contacter l'entraîneur</a>
+        </div>
+
         <!-- SECTION COMMENTAIRES -->
         <div style="margin-top: 40px;">
             {{ include('commentaire/_comments_list.html.twig') }}
