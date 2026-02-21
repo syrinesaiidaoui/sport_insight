@@ -4,9 +4,9 @@ import re
 
 # Categorized forbidden words
 CATEGORIES = {
-    "Insulte": ["idiot", "débile", "con", "salaud", "merde", "pute", "enculé", "foufou"],
-    "Toxicity": ["tuer", "mort", "haine", "déteste", "raciste", "nazi", "violence", "suicide"],
-    "Spam": ["viagra", "casino", "gagner argent", "cliquez ici", "sexy", "gratuit"]
+    "Insulte": ["idiot", "débile", "con", "salaud", "merde", "pute", "enculé", "foufou", "connard", "salope"],
+    "Toxicity": ["tuer", "mort", "haine", "déteste", "raciste", "nazi", "violence", "suicide", "sang", "menace"],
+    "Spam": ["viagra", "casino", "gagner argent", "cliquez ici", "sexy", "gratuit", "vendre", "achat", "promo"]
 }
 
 def analyze_text(text):
@@ -19,12 +19,16 @@ def analyze_text(text):
     if len(text) > 5 and text.isupper():
         return "BLOCKED", "Toxicity (Shouting)", text
     
-    # Check categories with more robust word boundary matching
+    # Check categories with more robust word boundary matching and character repetition
     for category, words in CATEGORIES.items():
         for word in words:
-            # Match whole words or part of words for higher toxicity
-            if word in text_lower:
-                return "BLOCKED", f"Catégorie détectée: {category} (Mot: {word})", text
+            # Create a regex pattern that handles repeated characters (e.g., "morrt" matching "mort")
+            # We add \b for word boundaries if possible, but keep it flexible for toxicity
+            pattern_str = r"".join([re.escape(c) + r"+" for c in word])
+            pattern = re.compile(pattern_str, re.IGNORECASE)
+            
+            if pattern.search(text_lower):
+                return "BLOCKED", f"Catégorie détectée: {category} (Mot: {word} - Pattern match)", text
 
     # Clean text (Sanitization)
     cleaned_text = text

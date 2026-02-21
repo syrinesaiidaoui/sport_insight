@@ -40,9 +40,9 @@ class ModerationService
         $textLower = mb_strtolower(trim($text));
 
         $forbidden = [
-            'insulte' => ['idiot', 'debile', 'con', 'salaud', 'merde', 'pute', 'encule', 'foufou'],
-            'toxicity' => ['tuer', 'mort', 'haine', 'deteste', 'raciste', 'nazi', 'violence', 'suicide'],
-            'spam' => ['viagra', 'casino', 'gagner argent', 'cliquez ici', 'sexy', 'gratuit']
+            'insulte' => ['idiot', 'debile', 'con', 'salaud', 'merde', 'pute', 'encule', 'foufou', 'connard', 'salope'],
+            'toxicity' => ['tuer', 'mort', 'haine', 'deteste', 'raciste', 'nazi', 'violence', 'suicide', 'sang', 'menace'],
+            'spam' => ['viagra', 'casino', 'gagner argent', 'cliquez ici', 'sexy', 'gratuit', 'vendre', 'achat', 'promo']
         ];
 
         // Shouting check
@@ -56,10 +56,17 @@ class ModerationService
 
         foreach ($forbidden as $category => $words) {
             foreach ($words as $word) {
-                if (str_contains($textLower, $word)) {
+                // Match with character repetition (e.g. "morrt" -> "mort")
+                $pattern = '/';
+                for ($i = 0; $i < mb_strlen($word); $i++) {
+                    $pattern .= preg_quote(mb_substr($word, $i, 1), '/') . '+';
+                }
+                $pattern .= '/iu';
+
+                if (preg_match($pattern, $textLower)) {
                     return [
                         'status' => 'BLOCKED',
-                        'reason' => "Catégorie détectée: " . ucfirst($category) . " (Mot: $word - Fallback PHP)",
+                        'reason' => "Catégorie détectée: " . ucfirst($category) . " (Mot: $word - Regex PHP)",
                         'cleanedText' => $text
                     ];
                 }

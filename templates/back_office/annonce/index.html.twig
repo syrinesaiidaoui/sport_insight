@@ -1,12 +1,16 @@
-{% extends 'front_office/base.html.twig' %}
+{% extends 'back_office/base.html.twig' %}
 
 {% block title %}Annonces - FC Club{% endblock %}
 
+{% block page_title %}Gestion des Annonces{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('app_annonce_new') }}" class="btn btn-primary" style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 18px;">+</span> Créer une annonce
+    </a>
+{% endblock %}
+
 {% block body %}
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 class="section-title" style="margin-bottom: 0;">Annonces</h1>
-        <a href="{{ path('app_annonce_new') }}" class="btn btn-primary" style="padding: 10px 20px; font-size: 14px; text-decoration: none; display: inline-block;">+ Créer une annonce</a>
-    </div>
 
     <!-- FILTRES ET TRI -->
     <div style="margin-bottom: 30px; padding: 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;">
@@ -75,9 +79,17 @@
                                 <span class="badge-warning">{{ annonce.statut }}</span>
                             {% endif %}
                         </td>
-                        <td>
-                            <a href="{{ path('app_annonce_show', {'id': annonce.id}) }}" style="color: var(--primary); text-decoration: none; font-weight: 500; margin-right: 12px;">Voir</a>
-                            <a href="{{ path('app_annonce_edit', {'id': annonce.id}) }}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Éditer</a>
+                        <td style="white-space: nowrap;">
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{{ path('app_annonce_show', {'id': annonce.id}) }}" 
+                                   style="padding: 6px 12px; background: rgba(16, 185, 129, 0.1); color: var(--primary); border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s;">
+                                    Voir
+                                </a>
+                                <a href="{{ path('app_annonce_edit', {'id': annonce.id}) }}" 
+                                   style="padding: 6px 12px; background: #f1f5f9; color: var(--text-dark); border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s;">
+                                    Éditer
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}

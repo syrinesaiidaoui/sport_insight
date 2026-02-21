@@ -27,7 +27,31 @@
 
             <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);">
                 <h3 style="color: var(--text-dark); font-weight: 600; margin-bottom: 8px;">Description</h3>
-                <p style="color: var(--text-dark); line-height: 1.6;">{{ annonce.description }}</p>
+                <p id="annonce-description" style="color: var(--text-dark); line-height: 1.6;">{{ annonce.description }}</p>
+                
+                <!-- AI Result Container for Announcement -->
+                <div id="ai-result-annonce" style="display:none; margin-top: 12px; padding: 12px; background: rgba(16, 185, 129, 0.05); border-radius: 8px; border: 1px dashed var(--primary); font-size: 14px; position: relative;">
+                    <button type="button" onclick="this.parentElement.style.display='none'" style="position: absolute; top: 4px; right: 4px; background: none; border: none; font-size: 16px; cursor: pointer;">&times;</button>
+                    <div class="ai-content" style="color: var(--text-dark);"></div>
+                </div>
+
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button type="button" 
+                            onclick="processAI('ai-result-annonce', 'annonce-description', 'translate', 'ar')"
+                            class="btn-ai" title="Translate description to Arabic">
+                        <span style="font-size: 12px;">TR (AR)</span>
+                    </button>
+                    <button type="button" 
+                            onclick="processAI('ai-result-annonce', 'annonce-description', 'translate', 'en')"
+                            class="btn-ai" title="Translate description to English">
+                        <span style="font-size: 12px;">TR (EN)</span>
+                    </button>
+                    <button type="button" 
+                            onclick="processAI('ai-result-annonce', 'annonce-description', 'summarize')"
+                            class="btn-ai-outline" title="Summarize description">
+                        <span style="font-size: 12px;">Résumer</span>
+                    </button>
+                </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
@@ -66,4 +90,40 @@
             {{ include('commentaire/_form.html.twig') }}
         </div>
     </div>
+
+    <script>
+        function processAI(resultContainerId, textSourceId, actionType, targetLang = null) {
+            const container = document.getElementById(resultContainerId);
+            const content = container.querySelector('.ai-content');
+            const textSource = document.getElementById(textSourceId);
+            const text = textSource.innerText || textSource.value;
+
+            if (!text.trim()) return alert('Contenu vide');
+
+            container.style.display = 'block';
+            content.innerHTML = '<span style="color: var(--text-muted); font-style: italic;">Processing...</span>';
+
+            const endpoint = actionType === 'translate' ? '{{ path('app_api_traduire_texte') }}' : '{{ path('app_api_resumer_texte') }}';
+            const body = { text: text };
+            if (targetLang) body.target = targetLang;
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    content.innerHTML = '<span style="color: #ef4444;">Error: ' + data.error + '</span>';
+                } else {
+                    const result = actionType === 'translate' ? data.text : data.summary;
+                    content.innerHTML = '<strong>' + (actionType === 'translate' ? 'Traduction (' + targetLang.toUpperCase() + ')' : 'Résumé IA') + ' :</strong><br>' + result;
+                }
+            })
+            .catch(err => {
+                content.innerHTML = '<span style="color: #ef4444;">Technical error occurred</span>';
+            });
+        }
+    </script>
 {% endblock %}

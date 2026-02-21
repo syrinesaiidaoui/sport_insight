@@ -1,186 +1,270 @@
 {% extends 'front_office/base.html.twig' %}
 
-{% block title %}Chat - {{ entraineur.nom }}{% endblock %}
+{% block title %}Discussion avec {{ entraineur.prenom }} - FC Club{% endblock %}
 
 {% block body %}
 <style>
-    .chat-wrapper {
+    :root {
+        --chat-bg: #f0f4f8;
+        --message-sent: #10b981;
+        --message-received: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --accent: #0ea5e9;
+    }
+
+    .chat-container {
+        max-width: 1000px;
+        margin: 20px auto;
+        height: calc(100vh - 180px);
         display: flex;
         flex-direction: column;
-        height: calc(100vh - 200px);
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid var(--border-color);
+        background: var(--chat-bg);
+        border-radius: 24px;
         overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        position: relative;
+    }
+
+    /* Pattern Overlay */
+    .chat-container::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        opacity: 0.03;
+        background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px);
+        background-size: 20px 20px;
+        pointer-events: none;
     }
 
     .chat-header {
-        padding: 16px 24px;
-        border-bottom: 1px solid var(--border-color);
+        padding: 20px 30px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
         display: flex;
         align-items: center;
-        gap: 12px;
-        background: #fff;
+        justify-content: space-between;
+        z-index: 10;
     }
 
-    .trainer-avatar {
-        width: 40px;
-        height: 40px;
-        background: var(--primary);
-        color: #fff;
-        border-radius: 50%;
+    .header-left { display: flex; align-items: center; gap: 15px; }
+
+    .header-avatar {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--message-sent), #059669);
+        color: white;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 18px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
     }
 
-    .chat-info h3 {
-        font-size: 16px;
-        font-weight: 700;
-        margin: 0;
-        color: var(--text-dark);
-    }
+    .header-info h3 { font-size: 17px; font-weight: 700; margin: 0; color: var(--text-main); }
+    .header-info p { font-size: 13px; color: var(--text-muted); margin: 0; }
 
-    .chat-info p {
+    .header-right .cv-badge {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--message-sent);
+        padding: 6px 14px;
+        border-radius: 20px;
         font-size: 12px;
-        color: var(--text-muted);
-        margin: 0;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .header-right .cv-badge:hover {
+        background: var(--message-sent);
+        color: white;
+        transform: translateY(-1px);
     }
 
     #chat-messages {
         flex: 1;
-        padding: 24px;
+        padding: 30px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        background: #f8fafc;
+        gap: 20px;
+        scroll-behavior: smooth;
     }
 
-    .message-row {
+    .message-group {
         display: flex;
         flex-direction: column;
-        max-width: 75%;
+        max-width: 80%;
     }
 
-    .message-row.sent {
-        align-self: flex-end;
-        align-items: flex-end;
-    }
+    .message-group.sent { align-self: flex-end; align-items: flex-end; }
+    .message-group.received { align-self: flex-start; align-items: flex-start; }
 
-    .message-row.received {
-        align-self: flex-start;
-        align-items: flex-start;
-    }
-
-    .message-bubble {
-        padding: 10px 16px;
-        border-radius: 18px;
-        font-size: 14px;
+    .message-content {
+        padding: 12px 18px;
+        border-radius: 20px;
+        font-size: 15px;
         line-height: 1.5;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         position: relative;
     }
 
-    .sent .message-bubble {
-        background: var(--primary);
-        color: #fff;
+    .sent .message-content {
+        background: var(--message-sent);
+        color: white;
         border-bottom-right-radius: 4px;
+        background: linear-gradient(135deg, #10b981, #059669);
     }
 
-    .received .message-bubble {
-        background: #fff;
-        color: var(--text-dark);
-        border: 1px solid var(--border-color);
+    .received .message-content {
+        background: var(--message-received);
+        color: var(--text-main);
         border-bottom-left-radius: 4px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
     }
 
     .message-time {
         font-size: 11px;
         color: var(--text-muted);
-        margin-top: 4px;
+        margin-top: 6px;
+        font-weight: 500;
     }
 
     .chat-footer {
-        padding: 16px 24px;
-        background: #fff;
-        border-top: 1px solid var(--border-color);
+        padding: 20px 30px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(226, 232, 240, 0.8);
+        z-index: 10;
     }
 
-    .input-wrapper {
+    .input-box {
+        background: #f1f5f9;
+        border-radius: 20px;
+        padding: 8px 8px 8px 16px;
         display: flex;
+        align-items: center;
         gap: 12px;
-        background: #f3f4f6;
-        padding: 4px;
-        border-radius: 12px;
-        border: 1px solid transparent;
-        transition: all 0.2s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
     }
 
-    .input-wrapper:focus-within {
-        border-color: var(--primary);
+    .input-box:focus-within {
         background: #fff;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        border-color: var(--message-sent);
+        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
     }
 
     #chat-input {
         border: none;
         background: transparent;
-        padding: 8px 12px;
         flex: 1;
+        padding: 10px 0;
+        font-size: 15px;
         outline: none;
-        font-size: 14px;
+        color: var(--text-main);
     }
 
-    .btn-send {
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
+    .action-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: transform 0.1s;
+        transition: all 0.2s;
+        border: none;
     }
 
-    .btn-send:hover {
-        background: var(--primary-hover);
+    .btn-attach {
+        color: var(--text-muted);
+        background: transparent;
+    }
+
+    .btn-attach:hover {
+        color: var(--message-sent);
+        background: rgba(16, 185, 129, 0.1);
+    }
+
+    .btn-submit {
+        background: var(--message-sent);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-submit:hover {
         transform: scale(1.05);
+        background: #059669;
     }
 
-    .btn-send:active {
-        transform: scale(0.95);
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .file-preview {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 16px;
+        background: #fff;
+        border: 1px solid var(--message-sent);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: var(--message-sent);
+        width: fit-content;
+        animation: slideUp 0.3s ease;
     }
 
-    /* Scrollbar style */
-    #chat-messages::-webkit-scrollbar { width: 6px; }
-    #chat-messages::-webkit-scrollbar-track { background: transparent; }
-    #chat-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Empty state */
+    .empty-chat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 40px;
+    }
+
+    .empty-chat i { font-size: 48px; margin-bottom: 20px; opacity: 0.5; }
 </style>
 
-<div class="chat-wrapper">
-    <!-- Header -->
+<div class="chat-container">
     <div class="chat-header">
-        <div class="trainer-avatar">
-            {{ entraineur.nom|first|upper }}
+        <div class="header-left">
+            <div class="header-avatar">
+                {{ entraineur.nom|first|upper }}
+            </div>
+            <div class="header-info">
+                <h3>{{ entraineur.prenom }} {{ entraineur.nom }}</h3>
+                <p>Annonce : {{ annonce.titre }}</p>
+            </div>
         </div>
-        <div class="chat-info">
-            <h3>Discussion avec {{ entraineur.nom }} {{ entraineur.prenom }}</h3>
-            <p>Annonce : {{ annonce.titre }}</p>
+        <div class="header-right">
+            {% if app.user.cvName %}
+                <a href="{{ asset('uploads/cvs/' ~ app.user.cvName) }}" target="_blank" class="cv-badge">
+                    <i class="lucide-file-text"></i>
+                    Mon CV Actuel
+                </a>
+            {% endif %}
         </div>
     </div>
 
-    <!-- Messages -->
     <div id="chat-messages">
         {% for msg in messages %}
             {% set is_me = (msg.auteur == app.user) %}
-            <div class="message-row {{ is_me ? 'sent' : 'received' }}">
-                <div class="message-bubble">
+            <div class="message-group {{ is_me ? 'sent' : 'received' }}">
+                <div class="message-content">
                     {{ msg.message }}
                 </div>
                 <div class="message-time">
@@ -188,19 +272,35 @@
                 </div>
             </div>
         {% else %}
-            <div style="text-align:center;color:var(--text-muted);margin-top:40px;font-size:14px;">
-                <i class="lucide-message-circle" style="display:block;margin-bottom:8px;font-size:24px;"></i>
-                Aucun message pour le moment. Commencez la discussion !
+            <div class="empty-chat">
+                <i class="lucide-messages-square"></i>
+                <div>
+                    <h4 style="color:var(--text-main)">Aucun message</h4>
+                    <p>Posez vos questions sur cette annonce à l'entraîneur !</p>
+                </div>
             </div>
         {% endfor %}
     </div>
 
-    <!-- Footer -->
     <div class="chat-footer">
-        <form id="chat-form" onsubmit="return false;">
-            <div class="input-wrapper">
-                <input type="text" id="chat-input" placeholder="Votre message..." autocomplete="off" required>
-                <button type="submit" class="btn-send">
+        <div id="file-preview-area" class="file-preview">
+            <i class="lucide-file-check"></i>
+            <span id="file-name">Fichier sélectionné</span>
+            <button type="button" onclick="clearFile()" style="border:none;background:none;color:#ef4444;cursor:pointer;padding:0 5px;">
+                <i class="lucide-x-circle" style="font-size:16px;"></i>
+            </button>
+        </div>
+
+        <form id="chat-form">
+            <div class="input-box">
+                <label for="chat_cv_file" class="action-btn btn-attach" title="Joindre un CV (PDF)">
+                    <i class="lucide-paperclip"></i>
+                </label>
+                <input type="file" id="chat_cv_file" name="cv_file" accept=".pdf" style="display: none;" onchange="handleFileSelect(this)">
+                
+                <input type="text" id="chat-input" placeholder="Écrivez votre message..." autocomplete="off">
+                
+                <button type="submit" id="submit-btn" class="action-btn btn-submit">
                     <i class="lucide-send"></i>
                 </button>
             </div>
@@ -209,59 +309,104 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
+    const fileArea = document.getElementById('file-preview-area');
+    const fileName = document.getElementById('file-name');
+    const cvFileInput = document.getElementById('chat_cv_file');
+    const submitBtn = document.getElementById('submit-btn');
 
-    // Scroll to bottom helper
+    function handleFileSelect(input) {
+        if (input.files && input.files[0]) {
+            fileName.textContent = input.files[0].name;
+            fileArea.style.display = 'flex';
+        }
+    }
+
+    function clearFile() {
+        cvFileInput.value = '';
+        fileArea.style.display = 'none';
+    }
+
     const scrollToBottom = () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     };
 
-    // Initial scroll
     scrollToBottom();
 
     chatForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const message = chatInput.value.trim();
-        if (!message) return;
+        const cvFile = cvFileInput.files[0];
+        
+        if (!message && !cvFile) return;
 
         chatInput.disabled = true;
+        submitBtn.disabled = true;
 
         try {
+            const formData = new FormData();
+            if (message) formData.append('message', message);
+            if (cvFile) formData.append('cv_file', cvFile);
+
             const response = await fetch('{{ path('front_annonce_chat_send', {id: annonce.id}) }}', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message})
+                body: formData
             });
             
             const data = await response.json();
             
             if (data.success) {
-                const newMsg = document.createElement('div');
-                newMsg.className = 'message-row sent';
-                newMsg.style.animation = 'scaleIn 0.2s ease-out';
-                newMsg.innerHTML = `
-                    <div class="message-bubble">${data.message}</div>
-                    <div class="message-time">${data.createdAt.split(' ')[1]}</div>
-                `;
-                chatMessages.appendChild(newMsg);
+                // Remove empty state if present
+                const emptyState = document.querySelector('.empty-chat');
+                if (emptyState) emptyState.remove();
+
+                if (message) {
+                    const group = document.createElement('div');
+                    group.className = 'message-group sent';
+                    group.style.opacity = '0';
+                    group.style.transform = 'translateY(10px)';
+                    group.innerHTML = `
+                        <div class="message-content">${message}</div>
+                        <div class="message-time">${data.createdAt.split(' ')[1]}</div>
+                    `;
+                    chatMessages.appendChild(group);
+                    
+                    // Simple animation
+                    setTimeout(() => {
+                        group.style.transition = 'all 0.3s ease-out';
+                        group.style.opacity = '1';
+                        group.style.transform = 'translateY(0)';
+                    }, 10);
+                }
+
+                if (data.cv_uploaded) {
+                    const notice = document.createElement('div');
+                    notice.style.cssText = 'align-self:center; background:rgba(16,185,129,0.1); color:#059669; padding:8px 16px; border-radius:12px; font-size:12px; font-weight:600; margin:10px 0;';
+                    notice.innerHTML = `<i class="lucide-check-circle"></i> Votre CV a été mis à jour avec succès`;
+                    chatMessages.appendChild(notice);
+                    clearFile();
+                }
+
                 chatInput.value = '';
                 scrollToBottom();
+            } else {
+                alert('Erreur: ' + (data.error || 'Impossible d\'envoyer le message'));
             }
         } catch (error) {
-            console.error('Erreur lors de l\'envois du message', error);
+            console.error(error);
+            alert('Une erreur technique est survenue.');
         } finally {
             chatInput.disabled = false;
+            submitBtn.disabled = false;
             chatInput.focus();
         }
     });
 
-    // Add animation style
-    const style = document.createElement('style');
-    style.innerHTML = `@keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }`;
-    document.head.appendChild(style);
-});
+    // Make Lucide icons work
+    window.addEventListener('DOMContentLoaded', () => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
 </script>
 {% endblock %}

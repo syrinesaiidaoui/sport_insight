@@ -44,18 +44,6 @@
             transition: all 0.2s;
         }
         .btn-publish:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
-        .btn-ai-form {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .btn-ai-form:hover { transform: translateY(-1px); opacity: 0.95; }
         .btn-like-stat {
             background: #10b981;
             color: white;
@@ -69,7 +57,8 @@
         }
     </style>
     
-    <form method="post" action="{{ path('app_commentaire_new', {'annonce_id': annonce.id}) }}">
+    <form method="post" action="{{ path('app_commentaire_new', {'annonce_id': annonce.id}) }}" enctype="multipart/form-data">
+
         <div class="comment-textarea-group">
             <label for="auteur_anonyme">Votre nom</label>
             {% if app.user %}
@@ -80,13 +69,6 @@
         </div>
 
         <div class="comment-textarea-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <label for="contenu" style="margin: 0;">Partagez votre avis sur cette annonce</label>
-                <div id="mod_status_{{ annonce.id }}">
-                    <span id="badge_approved_{{ annonce.id }}" class="badge-success" style="display: none; background: #10b981; color: #fff;">✅ APPROUVÉ PAR IA</span>
-                    <span id="badge_blocked_{{ annonce.id }}" class="badge-danger" style="display: none; background: #ef4444; color: #fff;">❌ CONTENU BLOQUÉ</span>
-                </div>
-            </div>
             <textarea 
                 id="contenu_{{ annonce.id }}"
                 name="contenu" 
@@ -94,51 +76,88 @@
                 placeholder="Écrivez votre commentaire ici... Soyez constructif et respectueux 😊"
                 oninput="debouncedCheck('{{ annonce.id }}')"
             ></textarea>
-            <div id="mod_reason_{{ annonce.id }}" style="margin-top: 10px; font-size: 14px; color: #ef4444; font-weight: 600; display: none;"></div>
+            
+            <div id="mod_feedback_{{ annonce.id }}" style="margin-top: 16px;">
+                {# Status: Approved (Real-time) #}
+                <div id="mod_approved_{{ annonce.id }}" style="display: none; padding: 12px 16px; background: rgba(16, 185, 129, 0.05); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2); color: #059669; font-size: 14px; font-weight: 500; align-items: center; gap: 12px; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.05);">
+                    <div style="background: #10b981; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 800;">✓</div>
+                    <div>Votre message respecte les règles de la communauté.</div>
+                </div>
+
+                {# Status: Blocked (Real-time) #}
+                <div id="mod_blocked_{{ annonce.id }}" style="display: none; padding: 16px; background: #fff1f2; border-radius: 12px; border: 2px solid #fecaca; color: #dc2626; font-size: 14px; font-weight: 500; align-items: start; gap: 12px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);">
+                    <div style="background: #ef4444; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-weight: 900;">!</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: 800; font-size: 15px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Ce type de message doit être bloqué</div>
+                        <div id="mod_reason_{{ annonce.id }}" style="line-height: 1.5; color: #991b1b; background: white; padding: 10px; border-radius: 8px; border: 1px solid #fecaca; margin-top: 8px;"></div>
+                    </div>
+                </div>
+
+                {# Server-side moderation errors (Flash) #}
+                {% for message in app.flashes('moderation_error') %}
+                    <div class="server-mod-error" style="padding: 16px; background: rgba(239, 68, 68, 0.05); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); color: #dc2626; font-size: 14px; font-weight: 500; display: flex; align-items: start; gap: 12px; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.05);">
+                        <div style="background: #ef4444; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 800;">!</div>
+                        <div style="line-height: 1.5;">{{ message }}</div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-            <button type="submit" id="submit_{{ annonce.id }}" class="btn-publish">
+        {% if app.user %}
+            <div class="comment-textarea-group" style="margin-bottom: 24px; padding: 15px; background: #f1f5f9; border-radius: 10px;">
+                <label for="cv_file" style="margin-bottom: 8px;">📄 Déposer ou mettre à jour votre CV (PDF, Max 2Mo)</label>
+                <input type="file" id="cv_file" name="cv_file" accept=".pdf" style="padding: 8px; border: 1px dashed #cbd5e1; background: #fff; width: 100%;">
+                
+                {% if app.user.cvName %}
+                    <div style="margin-top: 8px; font-size: 13px;">
+                        <span style="color: #64748b;">CV actuel :</span> 
+                        <a href="{{ asset('uploads/cvs/' ~ app.user.cvName) }}" target="_blank" style="color: #10b981; font-weight: 600; text-decoration: none;">Voir mon CV</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+
+        <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+            <button type="submit" id="submit_{{ annonce.id }}" class="btn-publish" style="flex: 2;">
                 <span>📖</span> Publier
             </button>
-            
-            <button type="button" onclick="aiAction('ar')" class="btn-ai-form">Traduire en arabe</button>
-            <button type="button" onclick="aiAction('en')" class="btn-ai-form">Traduire en anglais</button>
-            
-            <div style="display: flex; gap: 12px;">
-                <button type="button" onclick="summarizeAction()" class="btn-ai-form" style="flex: 2;">Résumer</button>
-                <div class="btn-like-stat" style="flex: 1; justify-content: center;">
-                    <span>👍</span> 0
-                </div>
+            <div class="btn-like-stat" style="flex: 1; justify-content: center;">
+                <span>👍</span> 0
             </div>
         </div>
 
         <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Les commentaires sont visibles immédiatement</p>
-
-        <div style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-            <p style="margin-bottom: 10px; font-size: 15px;"><strong style="color: #1e293b;">Résumé :</strong> <span id="res_display_{{ annonce.id }}" style="color: #475569;"></span></p>
-            <p style="font-size: 15px;"><strong style="color: #1e293b;">Traduction :</strong> <span id="trad_display_{{ annonce.id }}" style="color: #475569;"></span></p>
-        </div>
     </form>
 
     <script>
         let timeout = null;
+        let moderationStatus = 'PENDING';
+
         function debouncedCheck(annonceId) {
             clearTimeout(timeout);
+            
+            // Hide everything when user starts typing new content
+            const serverErrors = document.querySelectorAll('.server-mod-error');
+            serverErrors.forEach(el => el.style.display = 'none');
+            document.getElementById('mod_approved_' + annonceId).style.display = 'none';
+            document.getElementById('mod_blocked_' + annonceId).style.display = 'none';
+            
+            moderationStatus = 'CHECKING';
             timeout = setTimeout(() => checkModeration(annonceId), 600);
         }
 
         function checkModeration(annonceId) {
             const text = document.getElementById('contenu_' + annonceId).value;
-            const badgeContainer = document.getElementById('mod_status_' + annonceId);
-            const badgeApp = document.getElementById('badge_approved_' + annonceId);
-            const badgeBlock = document.getElementById('badge_blocked_' + annonceId);
+            const statusApp = document.getElementById('mod_approved_' + annonceId);
+            const statusBlock = document.getElementById('mod_blocked_' + annonceId);
             const reason = document.getElementById('mod_reason_' + annonceId);
             const submit = document.getElementById('submit_' + annonceId);
 
             if (!text.trim()) {
-                badgeContainer.style.display = 'none';
-                reason.style.display = 'none';
+                moderationStatus = 'PENDING';
+                statusApp.style.display = 'none';
+                statusBlock.style.display = 'none';
                 return;
             }
 
@@ -149,69 +168,46 @@
             })
             .then(res => res.json())
             .then(data => {
-                badgeContainer.style.display = 'block';
                 if (data.status === 'BLOCKED') {
-                    badgeApp.style.display = 'none';
-                    badgeBlock.style.display = 'inline-block';
-                    reason.innerText = '⚠️ ' + data.reason;
-                    reason.style.display = 'block';
-                    submit.disabled = true;
-                    submit.style.opacity = '0.5';
-                    submit.style.cursor = 'not-allowed';
+                    moderationStatus = 'BLOCKED';
+                    statusApp.style.display = 'none';
+                    statusBlock.style.display = 'flex';
+                    reason.innerText = data.reason;
                 } else {
-                    badgeApp.style.display = 'inline-block';
-                    badgeBlock.style.display = 'none';
-                    reason.style.display = 'none';
-                    submit.disabled = false;
-                    submit.style.opacity = '1';
-                    submit.style.cursor = 'pointer';
+                    moderationStatus = 'APPROVED';
+                    statusApp.style.display = 'flex';
+                    statusBlock.style.display = 'none';
                 }
             });
         }
 
-        function aiAction(lang) {
-            const textarea = document.getElementById('contenu_{{ annonce.id }}');
-            const display = document.getElementById('trad_display_{{ annonce.id }}');
-            const text = textarea.value;
-
-            if (!text) return alert('Veuillez écrire un message d\'abord');
-
-            display.innerText = 'Chargement...';
-            
-            fetch('{{ path('app_api_traduire_texte') }}', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: text, target: lang })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) display.innerText = 'Erreur: ' + data.error;
-                else display.innerText = data.text;
-            })
-            .catch(err => display.innerText = 'Erreur technique');
-        }
-
-        function summarizeAction() {
-            const textarea = document.getElementById('contenu_{{ annonce.id }}');
-            const display = document.getElementById('res_display_{{ annonce.id }}');
-            const text = textarea.value;
-
-            if (!text) return alert('Veuillez écrire un message d\'abord');
-
-            display.innerText = 'Calcul en cours...';
-
-            fetch('{{ path('app_api_resumer_texte') }}', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: text })
-            })
-            .then(res => res.json())
-            .then(data => {
-                display.innerText = data.summary;
-            })
-            .catch(err => display.innerText = 'Erreur technique');
-        }
+        // Prevent submission if blocked
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const textarea = this.querySelector('textarea');
+                if (!textarea) return;
+                
+                const annonceId = textarea.id.split('_')[1];
+                if (moderationStatus === 'BLOCKED') {
+                    e.preventDefault();
+                    const statusBlock = document.getElementById('mod_blocked_' + annonceId);
+                    statusBlock.style.display = 'flex';
+                    statusBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Shake effect
+                    statusBlock.style.animation = 'shake 0.5s';
+                    setTimeout(() => statusBlock.style.animation = '', 500);
+                }
+            });
+        });
     </script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
 </div>
 
 

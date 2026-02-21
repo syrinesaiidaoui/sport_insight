@@ -1,0 +1,60 @@
+{% extends 'front_office/base.html.twig' %}
+
+{% block title %}Connexion - FC Club{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center" style="margin-top: 60px;">
+    <div class="col-md-5">
+        <div class="front-card shadow-lg" style="padding: 40px; border-radius: 16px; border: none;">
+            <div class="text-center mb-4">
+                <div class="nav-brand-icon" style="width: 60px; height: 60px; margin: 0 auto 16px; font-size: 24px;">FC</div>
+                <h1 class="h3 mb-3 fw-bold">Ravi de vous revoir !</h1>
+                <p class="text-muted">Connectez-vous pour gérer votre profil et vos commentaires.</p>
+            </div>
+
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger" style="border-radius: 10px; font-size: 14px; border: none; background: #fee2e2; color: #991b1b;">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
+                {% if app.user %}
+                    <div class="mb-3">
+                        Connecté en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Déconnexion</a>
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="inputEmail" class="form-label fw-600" style="font-size: 14px; color: #475569;">Email</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus style="padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc;">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="inputPassword" class="form-label fw-600" style="font-size: 14px; color: #475569;">Mot de passe</label>
+                    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required style="padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc;">
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="btn btn-primary w-100 py-3 fw-bold" type="submit" style="border-radius: 10px; font-size: 16px; transition: all 0.2s;">
+                    Se connecter
+                </button>
+
+                <div class="text-center mt-4 pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                    <p class="mb-0 text-muted" style="font-size: 14px;">
+                        Pas encore de compte ? 
+                        <a href="#" style="color: var(--primary); font-weight: 600; text-decoration: none;">Inscrivez-vous</a>
+
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-600 { font-weight: 600; }
+    .btn-primary:active { transform: scale(0.98); }
+</style>
+{% endblock %}

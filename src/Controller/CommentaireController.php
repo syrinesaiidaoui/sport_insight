@@ -36,7 +36,7 @@ final class CommentaireController extends AbstractController
 
         // If blocked, we could either show an error or just redirect
         if ($moderationResult['status'] === 'BLOCKED') {
-            $this->addFlash('danger', 'Votre commentaire a été bloqué par le système de modération automatique : ' . $moderationResult['reason']);
+            $this->addFlash('moderation_error', 'Ce type de message doit être bloqué');
             return $this->redirectToRoute('app_annonce_show', ['id' => $annonce->getId()]);
         }
 
@@ -58,7 +58,18 @@ final class CommentaireController extends AbstractController
         }
 
         $entityManager->persist($commentaire);
+
+        // Gestion du dépôt de CV par le joueur
+        if ($this->getUser() && $request->files->get('cv_file')) {
+            $user = $this->getUser();
+            /** @var \App\Entity\User $user */
+            $cvFile = $request->files->get('cv_file');
+            $user->setCvFile($cvFile);
+            $entityManager->persist($user);
+        }
+
         $entityManager->flush();
+
 
         $this->addFlash('success', 'Votre commentaire a été publié avec succès.');
 
@@ -83,7 +94,7 @@ final class CommentaireController extends AbstractController
                 $moderationResult = $moderationService->checkComment($contenu);
 
                 if ($moderationResult['status'] === 'BLOCKED') {
-                    $this->addFlash('danger', 'Modification bloquée par l\'IA : ' . $moderationResult['reason']);
+                    $this->addFlash('moderation_error', 'Ce type de message doit être bloqué');
                     return $this->render('commentaire/edit.html.twig', [
                         'commentaire' => $commentaire,
                         'annonce' => $annonce,

@@ -44,22 +44,44 @@ class FrontChatController extends AbstractController
     {
         $user = $this->getUser();
         $entraineur = $annonce->getEntraineur();
-        $data = json_decode($request->getContent(), true);
+
+        $message = $request->request->get('message');
+        $cvFile = $request->files->get('cv_file');
+
+        $cvUploaded = false;
+        if ($user && $cvFile) {
+            /** @var \App\Entity\User $user */
+            $user->setCvFile($cvFile);
+            $em->persist($user);
+            $cvUploaded = true;
+        }
+
+        if (!$message && !$cvUploaded) {
+            return new JsonResponse(['success' => false, 'error' => 'Message ou CV requis'], 400);
+        }
+
         $msg = new ChatMessage();
         $msg->setAnnonce($annonce);
         $msg->setAuteur($user);
         $msg->setDestinataire($entraineur);
-        $msg->setMessage($data['message'] ?? '');
+        $msg->setMessage($message ?? '');
         $msg->setCreatedAt(new \DateTime());
         $msg->setIsRead(false);
         $msg->setNotificationSent(false);
-        $em->persist($msg);
+
+        if ($message) {
+            $em->persist($msg);
+        }
+
         $em->flush();
+
         return new JsonResponse([
             'success' => true,
             'message' => $msg->getMessage(),
             'auteur' => $user->getNom(),
             'createdAt' => $msg->getCreatedAt()->format('Y-m-d H:i'),
+            'cv_uploaded' => $cvUploaded
         ]);
     }
+
 }

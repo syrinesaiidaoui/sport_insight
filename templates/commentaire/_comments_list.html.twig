@@ -36,9 +36,15 @@
                         {% endif %}
                     </div>
 
-                    <p style="color: var(--text-dark); line-height: 1.6; margin-bottom: 12px; word-wrap: break-word; padding: 12px; background: rgba(16, 185, 129, 0.02); border-radius: 8px; border-left: 3px solid var(--primary);">
+                    <p id="comment-text-{{ commentaire.id }}" style="color: var(--text-dark); line-height: 1.6; margin-bottom: 12px; word-wrap: break-word; padding: 12px; background: rgba(16, 185, 129, 0.02); border-radius: 8px; border-left: 3px solid var(--primary);">
                         {{ commentaire.contenu }}
                     </p>
+
+                    <!-- AI Result Container -->
+                    <div id="ai-result-comment-{{ commentaire.id }}" style="display:none; margin-bottom: 12px; padding: 12px; background: #fff; border-radius: 8px; border: 1px dashed var(--primary); font-size: 14px; position: relative;">
+                        <button type="button" onclick="this.parentElement.style.display='none'" style="position: absolute; top: 4px; right: 4px; background: none; border: none; font-size: 16px; cursor: pointer;">&times;</button>
+                        <div class="ai-content" style="color: var(--text-dark);"></div>
+                    </div>
 
                     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                         <form method="post" action="{{ path('app_commentaire_like', {'id': commentaire.id}) }}" style="display: inline;">
@@ -49,21 +55,24 @@
                             </button>
                         </form>
                         
-                        <a href="{{ path('app_traduire_comment', {'id': commentaire.id, 'target': 'ar'}) }}" 
-                           class="btn btn-sm btn-outline-secondary" 
-                           style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
+                        <button type="button" 
+                                onclick="processAI('ai-result-comment-{{ commentaire.id }}', 'comment-text-{{ commentaire.id }}', 'translate', 'ar')"
+                                class="btn btn-sm btn-outline-secondary" 
+                                style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
                            TR (AR)
-                        </a>
-                        <a href="{{ path('app_traduire_comment', {'id': commentaire.id, 'target': 'en'}) }}" 
-                           class="btn btn-sm btn-outline-secondary" 
-                           style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
+                        </button>
+                        <button type="button" 
+                                onclick="processAI('ai-result-comment-{{ commentaire.id }}', 'comment-text-{{ commentaire.id }}', 'translate', 'en')"
+                                class="btn btn-sm btn-outline-secondary" 
+                                style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
                            TR (EN)
-                        </a>
-                        <a href="{{ path('app_resumer_comment', {'id': commentaire.id}) }}" 
-                           class="btn btn-sm btn-outline-info" 
-                           style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
+                        </button>
+                        <button type="button" 
+                                onclick="processAI('ai-result-comment-{{ commentaire.id }}', 'comment-text-{{ commentaire.id }}', 'summarize')"
+                                class="btn btn-sm btn-outline-info" 
+                                style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
                            Résumer
-                        </a>
+                        </button>
                     </div>
                 </div>
             {% endfor %}
@@ -74,5 +83,3 @@
         </div>
     {% endif %}
 </div>
-
-

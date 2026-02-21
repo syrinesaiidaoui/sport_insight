@@ -14,7 +14,8 @@
             --text-dark: #111827;
             --text-muted: #6b7280;
             --border-color: #e5e7eb;
-            --body-bg: #f0f9ff; /* Light cyan-blue background */
+            --body-bg: #ffffff; /* White background */
+
             --card-bg: #ffffff;
         }
 
@@ -98,9 +99,13 @@
         .front-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .front-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -6px rgba(0, 0, 0, 0.08);
         }
 
         .section-title {
@@ -110,14 +115,68 @@
             color: var(--text-dark);
         }
 
+        /* ===== TABLES ===== */
+        .front-table {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .front-table table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .front-table th {
+            background: #f8fafc;
+            padding: 16px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .front-table td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-dark);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .front-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .front-table tr:hover {
+            background-color: #f1f5f9;
+        }
+
         /* ===== BADGES ===== */
         .badge-success { background: rgba(16,185,129,0.1); color: #059669; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
         .badge-warning { background: rgba(245,158,11,0.1); color: #d97706; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
         .badge-danger { background: rgba(239,68,68,0.1); color: #dc2626; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
 
         /* ===== BUTTONS ===== */
-        .btn-primary { background: var(--primary) !important; border-color: var(--primary) !important; border-radius: 8px; }
-        .btn-primary:hover { background: var(--primary-hover) !important; border-color: var(--primary-hover) !important; }
+        .btn-primary { 
+            background: var(--primary) !important; 
+            border: none !important; 
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+        }
+        .btn-primary:hover { 
+            background: var(--primary-hover) !important; 
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+        }
 
         .site-footer {
             background: #111827;
@@ -189,21 +248,37 @@
             </li>
         </ul>
 
-        <div class="nav-actions">
-            <a href="{{ path('back_entrainement_index') }}" class="btn-admin">Admin</a>
+        <div class="nav-actions" style="display: flex; gap: 12px; align-items: center;">
+            {% if app.user %}
+                <div style="display: flex; align-items: center; gap: 8px; margin-right: 8px;">
+                    <span style="color: #9ca3af; font-size: 13px;">{{ app.user.prenom }}</span>
+                    {% if app.user.photo %}
+                        <img src="{{ asset('uploads/photos/' ~ app.user.photo) }}" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--primary);">
+                    {% else %}
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #374151; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 600;">{{ app.user.prenom|first }}{{ app.user.nom|first }}</div>
+                    {% endif %}
+                </div>
+                <a href="{{ path('app_logout') }}" class="btn btn-outline-danger btn-sm" style="font-size: 12px; border-radius: 6px; padding: 4px 12px;">Déconnexion</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn btn-primary btn-sm" style="font-size: 12px; border-radius: 6px; padding: 4px 16px; font-weight: 600;">Connexion</a>
+            {% endif %}
+            <a href="{{ path('back_entrainement_index') }}" class="btn-admin" style="font-size: 12px; padding: 4px 12px; height: auto;">Admin</a>
         </div>
+
     </nav>
 
     {% block hero %}{% endblock %}
 
     <div class="page-container">
             {% for label, messages in app.flashes %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ label == 'danger' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert" style="border-radius: 10px; margin-bottom: 24px;">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
+                {% if label != 'moderation_error' %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label == 'danger' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert" style="border-radius: 10px; margin-bottom: 24px;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
 
             {% block body %}{% endblock %}
